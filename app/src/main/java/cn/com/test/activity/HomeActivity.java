@@ -61,7 +61,7 @@ public class HomeActivity extends BaseActivity {
         findViewById(R.id.sign_iv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(mContext, TestActivity.class));
+                //这里是中间按钮的点击事件
             }
         });
     }

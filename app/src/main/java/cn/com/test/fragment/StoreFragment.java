@@ -1,6 +1,7 @@
 package cn.com.test.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import cn.com.test.R;
+import cn.com.test.activity.GoodsInfoActivity;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseFragment;
@@ -93,6 +95,12 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
                 try {
                     TextView oldPrice = holder.getView(R.id.item_store_hot_oldprice);
                     oldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
+                    holder.getConvertView().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity(new Intent(mContext, GoodsInfoActivity.class));
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -123,7 +131,13 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
         TextView oldPrice6 = view6.findViewById(R.id.item_store_new_oldprice);
         oldPrice6.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
         store_new_layout.addView(view6);
-        loadData(1, null, getString(R.string.loading_hint), RequestMethod.POST);
+        store_new_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(mContext, GoodsInfoActivity.class));
+            }
+        });
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
     /**

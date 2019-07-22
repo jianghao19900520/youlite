@@ -20,7 +20,7 @@
         </activity>
         <activity android:name=".activity.GuideActivity" />
         <activity android:name=".activity.HomeActivity" />
-        <activity android:name=".activity.TestActivity" />
+        <activity android:name=".activity.TestActivity2" />
     </application>
 
 </manifest>

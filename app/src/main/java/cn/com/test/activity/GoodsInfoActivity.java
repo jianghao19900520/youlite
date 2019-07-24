@@ -2,12 +2,16 @@ package cn.com.test.activity;
 
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
@@ -28,6 +32,8 @@ public class GoodsInfoActivity extends BaseActivity {
     TextView goods_price_old;
     @BindView(R.id.goods_info_imgs)
     LinearLayout goods_info_imgs;
+
+    private String goodsId;//商品id
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -50,13 +56,18 @@ public class GoodsInfoActivity extends BaseActivity {
 
     @Override
     public void init() {
+        goodsId = getIntent().getStringExtra("goodsId");
+        if (TextUtils.isEmpty(goodsId)) {
+            ToastUtils.showShort("goodsId为空");
+        }
         setViewHeightByWidth(goods_main_img);
-        goods_main_img.setImageResource(R.mipmap.ic_logo);
+        Glide.with(mContext).load("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg").into(goods_main_img);
         goods_price_old.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        ImageView iv = new ImageView(mContext);
-        iv.setImageResource(R.mipmap.ic_logo);
-        setViewHeightByWidth(iv);
-        goods_info_imgs.addView(iv);
+        for (int i = 0; i < 5; i++) {
+            ImageView iv = new ImageView(mContext);
+            Glide.with(mContext).load("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg").into(iv);
+            goods_info_imgs.addView(iv);
+        }
     }
 
     @Override

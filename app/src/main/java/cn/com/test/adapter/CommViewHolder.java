@@ -115,33 +115,7 @@ public class CommViewHolder {
         }
         glide.setDefaultRequestOptions(BaseApplication.options)
                 .load(url)
-                .thumbnail(0.5f)
-                .into((ImageView) getView(viewId));
-        return this;
-    }
-
-    /**
-     * 为ImageView设置图片(url)
-     * @param resourceId 占位图的资源id
-     * @param width      需要显示图片的width
-     * @param height     需要显示图片的height
-     * @param viewId     要设置图片的ImageView的id
-     * @param url        图片的Url
-     */
-    public CommViewHolder setImageByUrl(int resourceId, int width, int height, int viewId, String url)
-    {
-        if (null == glide){
-            glide = Glide.with(mContext);
-        }
-        final RequestOptions options = new RequestOptions().centerCrop()
-                .dontAnimate()
-                .override(width, height)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(resourceId)
-                .error(resourceId);
-        glide.setDefaultRequestOptions(options)
-                .load(url)
-                .thumbnail(0.5f)
+                .thumbnail(0.1f)
                 .into((ImageView) getView(viewId));
         return this;
     }

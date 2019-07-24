@@ -1,5 +1,6 @@
 package cn.com.test.activity;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -45,11 +46,11 @@ public class GoodsInfoActivity extends BaseActivity {
         title.setText("商品详情");
     }
 
-    @OnClick({R.id.goods_main_img})
+    @OnClick({R.id.goods_info_cart_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.goods_main_img:
-                ToastUtils.showShort("textview");
+            case R.id.goods_info_cart_btn:
+                startActivity(new Intent(mContext, CartActivity.class));
                 break;
         }
     }

@@ -5,11 +5,17 @@
     android:background="#ffffff"
     android:orientation="horizontal">
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp" />
+
     <ImageView
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="10dp"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_store" />
@@ -30,40 +36,95 @@
             android:textColor="#333333"
             android:textSize="16dp" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="￥99.00"
-            android:textColor="#e74868"
-            android:textSize="13dp" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/item_store_hot_oldprice"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="￥99.00"
+                android:textColor="#e74868"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/item_cart_oldprice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:gravity="center_vertical"
+                android:text="￥199.00"
+                android:textColor="#999999"
+                android:textSize="13dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="￥199.00"
-            android:textColor="#999999"
-            android:textSize="13dp" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="X 1"
+                android:textColor="#333333"
+                android:textSize="16dp" />
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/backgroundColor"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="#333333" />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:background="#ffffff" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="@color/lineColor"
+                    android:gravity="center"
+                    android:text="5"
+                    android:textColor="#333333" />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:background="#ffffff" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/backgroundColor"
+                    android:gravity="center"
+                    android:text="+"
+                    android:textColor="#333333" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/buy_btn_bg"
-        android:paddingBottom="5dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="5dp"
-        android:text="购买"
-        android:textColor="#ffffff"
-        android:textSize="13dp" />
 
 </LinearLayout>

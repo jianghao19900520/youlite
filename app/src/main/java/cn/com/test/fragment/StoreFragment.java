@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.test.R;
+import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.GoodsInfoActivity;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
@@ -207,6 +209,15 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             Glide.with(context.getApplicationContext())
                     .load((String) path)
                     .into(imageView);
+        }
+    }
+
+    @OnClick({R.id.store_cart_btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.store_cart_btn:
+                startActivity(new Intent(mContext, CartActivity.class));
+                break;
         }
     }
 

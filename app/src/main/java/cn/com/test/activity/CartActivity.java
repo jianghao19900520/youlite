@@ -44,6 +44,7 @@ public class CartActivity extends BaseActivity {
     @Override
     public void init() {
         cartList = new ArrayList<>();
+        cartList.add(new JSONObject());
         mAdapter = new CommAdapter<JSONObject>(mContext, cartList, R.layout.item_store_goods_hot) {
             @Override
             public void convert(CommViewHolder holder, JSONObject item, int position) {

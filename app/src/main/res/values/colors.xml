@@ -7,6 +7,6 @@
 
     <color name="mainColor">#3EA0E0</color>
     <color name="backgroundColor">#FAFAFA</color>
-    <color name="lineColor">#999999</color>
+    <color name="lineColor">#CCCCCC</color>
 
 </resources>

@@ -98,7 +98,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
                     holder.getConvertView().setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            startActivity(new Intent(mContext, GoodsInfoActivity.class));
+                            startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", 123456));
                         }
                     });
                 } catch (Exception e) {
@@ -134,7 +134,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
         store_new_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(mContext, GoodsInfoActivity.class));
+                startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", 123456));
             }
         });
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);

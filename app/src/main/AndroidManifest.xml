@@ -26,6 +26,8 @@
 
         <!--商品详情页-->
         <activity android:name=".activity.GoodsInfoActivity" />
+        <!--购物车-->
+        <activity android:name=".activity.CartActivity" />
     </application>
 
 </manifest>

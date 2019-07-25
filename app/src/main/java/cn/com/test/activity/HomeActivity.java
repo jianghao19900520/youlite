@@ -22,7 +22,7 @@ import cn.com.test.fragment.StoreFragment;
 public class HomeActivity extends BaseActivity {
 
     @BindView(R.id.title)
-    TextView title;
+    public TextView title;
     @BindView(R.id.title_back_btn)
     ImageView title_back_btn;
     @BindView(R.id.tabs_rg)

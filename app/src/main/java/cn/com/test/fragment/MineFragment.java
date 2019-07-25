@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.yanzhenjie.nohttp.RequestMethod;
 
 import cn.com.test.R;
+import cn.com.test.activity.HomeActivity;
 import cn.com.test.base.BaseFragment;
 
 public class MineFragment extends BaseFragment {
@@ -19,7 +20,8 @@ public class MineFragment extends BaseFragment {
 
     @Override
     public void initTitle() {
-
+        HomeActivity activity = (HomeActivity) getActivity();
+        activity.title.setText("我的");
     }
 
     @Override

@@ -33,6 +33,7 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.GoodsInfoActivity;
+import cn.com.test.activity.HomeActivity;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseFragment;
@@ -62,7 +63,8 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
 
     @Override
     public void initTitle() {
-
+        HomeActivity activity = (HomeActivity) getActivity();
+        activity.title.setText("商城");
     }
 
     @Override

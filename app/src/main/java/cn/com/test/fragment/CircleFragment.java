@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import cn.com.test.R;
+import cn.com.test.activity.HomeActivity;
 import cn.com.test.base.BaseFragment;
 
 public class CircleFragment extends BaseFragment implements OnBannerListener {
@@ -38,7 +39,8 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
 
     @Override
     public void initTitle() {
-
+        HomeActivity activity = (HomeActivity) getActivity();
+        activity.title.setText("圈子");
     }
 
     @Override

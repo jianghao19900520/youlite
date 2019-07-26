@@ -10,6 +10,7 @@ public class CartBean extends DataSupport {
     private int goodsNum;//商品数量
     private String goodsPriceNew;//商品现价
     private String goodsPriceOld;//商品原价
+    private boolean isChecked = false;//是否被选中
 
     public CartBean(String goodsId, int goodsNum, String goodsName, String goodsPriceNew, String goodsPriceOld) {
         this.goodsId = goodsId;
@@ -57,5 +58,13 @@ public class CartBean extends DataSupport {
 
     public void setGoodsPriceOld(String goodsPriceOld) {
         this.goodsPriceOld = goodsPriceOld;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 }

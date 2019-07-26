@@ -11,8 +11,10 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.RequestMethod;
@@ -26,7 +28,6 @@ import butterknife.BindView;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
-import cn.com.test.bean.CartNode;
 import cn.com.test.utils.ArithUtils;
 
 public class CartActivity extends BaseActivity {
@@ -40,7 +41,7 @@ public class CartActivity extends BaseActivity {
     @BindView(R.id.cart_all_price)
     TextView cart_all_price;
 
-    private List<CartNode> cartList;
+    private List<CartBean> cartList;
     private CartAdapter mAdapter;
     private int width;
 
@@ -63,18 +64,17 @@ public class CartActivity extends BaseActivity {
         cartList = new ArrayList<>();
         mAdapter = new CartAdapter();
         cart_list.setAdapter(mAdapter);
-        refreshCart();
         cart_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                for (CartNode node : cartList) {
-                    node.isChecked = isChecked;
+                for (CartBean node : cartList) {
+                    node.setChecked(isChecked);
                 }
                 mAdapter.notifyDataSetChanged();
                 refreshAllPrice();
             }
         });
-        refreshAllPrice();
+        refreshCart();
     }
 
     /*
@@ -84,9 +84,10 @@ public class CartActivity extends BaseActivity {
         cartList.clear();
         List<CartBean> all = DataSupport.findAll(CartBean.class);
         for (CartBean bean : all) {
-            cartList.add(new CartNode(bean, false));
+            cartList.add(bean);
         }
         mAdapter.notifyDataSetChanged();
+        refreshAllPrice();
     }
 
     /*
@@ -94,14 +95,20 @@ public class CartActivity extends BaseActivity {
      */
     private void refreshAllPrice() {
         String allPrice = "0.00";
-        for (CartNode node : cartList) {
-            if (node.isChecked) {
-                CartBean bean = node.bean;
+        int checkNum = 0;
+        for (CartBean bean : cartList) {
+            if (bean.isChecked()) {
                 String itemPrice = ArithUtils.mul(bean.getGoodsPriceNew(), String.valueOf(bean.getGoodsNum()));
                 allPrice = ArithUtils.add(allPrice, itemPrice);
+                checkNum += 1;
             }
         }
         cart_all_price.setText("￥" + allPrice);
+        if (checkNum != 0 && checkNum == cartList.size()) {
+            cart_check.setChecked(true);
+        } else {
+            cart_check.setChecked(false);
+        }
     }
 
     @Override
@@ -133,6 +140,7 @@ public class CartActivity extends BaseActivity {
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 view = LayoutInflater.from(mContext).inflate(R.layout.item_cart, null);
+                viewHolder.item_cart_scroll = view.findViewById(R.id.item_cart_scroll);
                 viewHolder.item_cart_check = view.findViewById(R.id.item_cart_check);
                 viewHolder.item_cart_name = view.findViewById(R.id.item_cart_name);
                 viewHolder.item_cart_newprice = view.findViewById(R.id.item_cart_newprice);
@@ -152,14 +160,14 @@ public class CartActivity extends BaseActivity {
             viewHolder.item_cart_plus_btn.setTag(position);
             viewHolder.item_del_btn.setTag(position);
             viewHolder.item_cart_check.setTag(position);
-            CartNode node = cartList.get(position);
-            viewHolder.item_cart_check.setChecked(node.isChecked);
-            viewHolder.item_cart_name.setText(node.bean.getGoodsName());
-            viewHolder.item_cart_newprice.setText("￥" + node.bean.getGoodsPriceNew());
-            viewHolder.item_cart_oldprice.setText("￥" + node.bean.getGoodsPriceOld());
+            viewHolder.item_cart_scroll.scrollTo(0, 0);
+            viewHolder.item_cart_check.setChecked(cartList.get(position).isChecked());
+            viewHolder.item_cart_name.setText(cartList.get(position).getGoodsName());
+            viewHolder.item_cart_newprice.setText("￥" + cartList.get(position).getGoodsPriceNew());
+            viewHolder.item_cart_oldprice.setText("￥" + cartList.get(position).getGoodsPriceOld());
             viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_cart_num.setText(String.valueOf(node.bean.getGoodsNum()));
-            viewHolder.item_cart_num_btn.setText(String.valueOf(node.bean.getGoodsNum()));
+            viewHolder.item_cart_num.setText(String.valueOf(cartList.get(position).getGoodsNum()));
+            viewHolder.item_cart_num_btn.setText(String.valueOf(cartList.get(position).getGoodsNum()));
             //动态设置宽度
             ViewGroup.LayoutParams params = viewHolder.item_cart_content_layout.getLayoutParams();
             params.width = width;
@@ -169,11 +177,11 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量减1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).bean.getGoodsNum() - 1;
+                    int num = cartList.get(position).getGoodsNum() - 1;
                     if (num < 1) num = 1;
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).bean.getGoodsId())) {
+                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
                             bean.setGoodsNum(num);
                             bean.save();
                         }
@@ -186,11 +194,11 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量加1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).bean.getGoodsNum() + 1;
+                    int num = cartList.get(position).getGoodsNum() + 1;
                     if (num < 1) num = 1;
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).bean.getGoodsId())) {
+                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
                             bean.setGoodsNum(num);
                             bean.save();
                         }
@@ -202,19 +210,21 @@ public class CartActivity extends BaseActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                     int position = (int) compoundButton.getTag();
-                    cartList.get(position).isChecked = isChecked;
+                    CartBean bean = cartList.get(position);
+                    bean.setChecked(isChecked);
+                    bean.save();
                     refreshAllPrice();
                     if (isChecked) {
-                        for (CartNode node : cartList) {
-                            if (!node.isChecked) {
+                        for (CartBean node : cartList) {
+                            if (!node.isChecked()) {
                                 return;
                             }
                         }
                         //全部都是选中
                         cart_check.setChecked(true);
                     } else {
-                        for (CartNode node : cartList) {
-                            if (node.isChecked) {
+                        for (CartBean node : cartList) {
+                            if (node.isChecked()) {
                                 return;
                             }
                         }
@@ -230,7 +240,7 @@ public class CartActivity extends BaseActivity {
                     int position = (int) view.getTag();
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).bean.getGoodsId())) {
+                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
                             bean.delete();
                         }
                     }
@@ -241,6 +251,7 @@ public class CartActivity extends BaseActivity {
         }
 
         class ViewHolder {
+            HorizontalScrollView item_cart_scroll;
             CheckBox item_cart_check;
             TextView item_cart_name;
             TextView item_cart_newprice;

@@ -2,6 +2,7 @@ package cn.com.test.activity;
 
 import android.content.Intent;
 import android.graphics.Paint;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.atoliu.redpoint.TLRedPointView;
 import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
 
@@ -40,6 +42,8 @@ public class GoodsInfoActivity extends BaseActivity {
     TextView goods_price_old;
     @BindView(R.id.goods_info_imgs)
     LinearLayout goods_info_imgs;
+    @BindView(R.id.cart_num_text)
+    TLRedPointView cart_num_text;
 
     private String goodsId;//商品id
 
@@ -67,12 +71,14 @@ public class GoodsInfoActivity extends BaseActivity {
                             //已经有数据，就数量+1
                             bean.setGoodsNum(bean.getGoodsNum() + 1);
                             bean.save();
+                            cartRedpoint();
                             return;
                         }
                     }
                     //数据库还没有该条数据，则新增
                     CartBean bean = new CartBean(goodsId, 1, new JSONObject().put("goodsname", "商品名称"));
                     bean.save();
+                    cartRedpoint();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -94,6 +100,7 @@ public class GoodsInfoActivity extends BaseActivity {
             Glide.with(mContext).load("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg").into(iv);
             goods_info_imgs.addView(iv);
         }
+        cartRedpoint();
     }
 
     @Override
@@ -118,6 +125,20 @@ public class GoodsInfoActivity extends BaseActivity {
             }
         };
         observer.addOnPreDrawListener(preDrawListener);
+    }
+
+    /*
+    更新购物车红点
+     */
+    public void cartRedpoint() {
+        int num = 0;
+        List<CartBean> all = DataSupport.findAll(CartBean.class);
+        for (CartBean bean : all) {
+            num = +bean.getGoodsNum();
+        }
+        cart_num_text.isShowZeroNumPoint(false);
+        cart_num_text.setZeroRadius(10);
+        cart_num_text.setmCount(num);
     }
 
 }

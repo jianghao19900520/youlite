@@ -38,4 +38,5 @@ dependencies {
     implementation 'com.github.gittjy:LoadingDialog:1.0.2'
     implementation'com.youth.banner:banner:1.4.10'
     implementation 'org.litepal.android:core:1.6.1'
+    implementation 'com.atoliu.redpoint:Redpointlibrary:0.1'
 }

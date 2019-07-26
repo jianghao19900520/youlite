@@ -1,8 +1,13 @@
 package cn.com.test.activity;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,6 +37,7 @@ public class CartActivity extends BaseActivity {
 
     private List<JSONObject> cartList;
     private CommAdapter<JSONObject> mAdapter;
+    private int width;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -45,6 +51,10 @@ public class CartActivity extends BaseActivity {
 
     @Override
     public void init() {
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        width = displayMetrics.widthPixels;
         cartList = new ArrayList<>();
         mAdapter = new CommAdapter<JSONObject>(mContext, cartList, R.layout.item_cart) {
             @Override
@@ -57,6 +67,11 @@ public class CartActivity extends BaseActivity {
                     oldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
                     holder.setText(R.id.item_cart_num, "X " + item.getString("goodsNum"));
                     holder.setText(R.id.item_cart_num_btn, item.getString("goodsNum"));
+                    //动态设置宽度
+                    LinearLayout test = holder.getView(R.id.item_cart_content_layout);
+                    ViewGroup.LayoutParams params = test.getLayoutParams();
+                    params.width = width;
+                    test.setLayoutParams(params);
                     holder.getView(R.id.item_cart_reduce_btn).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -91,6 +106,23 @@ public class CartActivity extends BaseActivity {
                                         //已经有数据，就数量+1
                                         bean.setGoodsNum(num);
                                         bean.save();
+                                    }
+                                }
+                                refreshCart();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    holder.getView(R.id.item_del_btn).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //删除
+                            try {
+                                List<CartBean> all = DataSupport.findAll(CartBean.class);
+                                for (CartBean bean : all) {
+                                    if (bean.getGoodsId().equals(item.getString("goodsId"))) {
+                                        bean.delete();
                                     }
                                 }
                                 refreshCart();

@@ -13,10 +13,17 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.litepal.crud.DataSupport;
+
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.CartBean;
 import cn.com.test.utils.ToastUtils;
 
 public class GoodsInfoActivity extends BaseActivity {
@@ -46,11 +53,29 @@ public class GoodsInfoActivity extends BaseActivity {
         title.setText("商品详情");
     }
 
-    @OnClick({R.id.goods_info_cart_btn})
+    @OnClick({R.id.goods_info_cart_btn, R.id.add_cart_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.goods_info_cart_btn:
                 startActivity(new Intent(mContext, CartActivity.class));
+                break;
+            case R.id.add_cart_btn:
+                try {
+                    List<CartBean> all = DataSupport.findAll(CartBean.class);
+                    for (CartBean bean : all) {
+                        if (bean.getGoodsId() == goodsId) {
+                            //已经有数据，就数量+1
+                            bean.setGoodsNum(bean.getGoodsNum() + 1);
+                            bean.save();
+                            return;
+                        }
+                    }
+                    //数据库还没有该条数据，则新增
+                    CartBean bean = new CartBean(goodsId, 1, new JSONObject().put("goodsname", "商品名称"));
+                    bean.save();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }

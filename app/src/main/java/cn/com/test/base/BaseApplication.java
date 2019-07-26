@@ -25,6 +25,8 @@ import com.yanzhenjie.nohttp.OkHttpNetworkExecutor;
 import com.yanzhenjie.nohttp.cache.DBCacheStore;
 import com.yanzhenjie.nohttp.cookie.DBCookieStore;
 
+import org.litepal.LitePal;
+
 import cn.com.test.R;
 import cn.com.test.utils.AppUtils;
 import cn.com.test.utils.DynamicTimeFormat;
@@ -74,6 +76,7 @@ public class BaseApplication extends Application{
         AppUtils.init(this);
         MyErrorHandler.getInstance().init();
         initHttp();
+        LitePal.initialize(this);
     }
 
     public void initHttp() {

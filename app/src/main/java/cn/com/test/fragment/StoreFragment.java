@@ -99,9 +99,6 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
                 try {
                     TextView oldPrice = holder.getView(R.id.item_store_hot_oldprice);
                     oldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-//                    holder.setText(R.id.item_cart_name, "CKD低磷蛋白粉体验装");
-//                    holder.setText(R.id.item_cart_newprice, "￥99.00");
-//                    oldPrice.setText("￥199.00");
                     holder.getConvertView().setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

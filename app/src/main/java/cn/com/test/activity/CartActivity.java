@@ -1,6 +1,5 @@
 package cn.com.test.activity;
 
-import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
@@ -47,13 +46,15 @@ public class CartActivity extends BaseActivity {
     @Override
     public void init() {
         cartList = new ArrayList<>();
-        mAdapter = new CommAdapter<JSONObject>(mContext, cartList, R.layout.item_store_goods_hot) {
+        mAdapter = new CommAdapter<JSONObject>(mContext, cartList, R.layout.item_cart) {
             @Override
             public void convert(CommViewHolder holder, final JSONObject item, final int position) {
                 try {
                     holder.setText(R.id.item_cart_name, item.getString("goodsName"));
                     holder.setText(R.id.item_cart_newprice, item.getString("goodsPriceNew"));
-                    holder.setText(R.id.item_cart_oldprice, item.getString("goodsPriceOld"));
+                    TextView oldPrice = holder.getView(R.id.item_cart_oldprice);
+                    oldPrice.setText(item.getString("goodsPriceOld"));
+                    oldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
                     holder.setText(R.id.item_cart_num, "X " + item.getString("goodsNum"));
                     holder.setText(R.id.item_cart_num_btn, item.getString("goodsNum"));
                     holder.getView(R.id.item_cart_reduce_btn).setOnClickListener(new View.OnClickListener() {

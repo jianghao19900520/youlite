@@ -5,17 +5,11 @@
     android:background="#ffffff"
     android:orientation="horizontal">
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="10dp" />
-
     <ImageView
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_store" />
@@ -28,106 +22,48 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/item_cart_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text=""
+            android:text="CKD低磷蛋白粉体验装"
             android:textColor="#333333"
             android:textSize="16dp" />
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:text="￥99.00"
+            android:textColor="#e74868"
+            android:textSize="13dp" />
 
-            <TextView
-                android:id="@+id/item_cart_newprice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text=""
-                android:textColor="#e74868"
-                android:textSize="13dp" />
-
-            <TextView
-                android:id="@+id/item_cart_oldprice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:gravity="center_vertical"
-                android:text=""
-                android:textColor="#999999"
-                android:textSize="13dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/item_store_hot_oldprice"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/item_cart_num"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text=""
-                android:textColor="#333333"
-                android:textSize="16dp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/item_cart_reduce_btn"
-                    android:layout_width="25dp"
-                    android:layout_height="match_parent"
-                    android:background="#f1f1f1"
-                    android:gravity="center"
-                    android:text="-"
-                    android:textColor="#333333" />
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="#ffffff" />
-
-                <TextView
-                    android:id="@+id/item_cart_num_btn"
-                    android:layout_width="35dp"
-                    android:layout_height="match_parent"
-                    android:background="#e5e5e5"
-                    android:gravity="center"
-                    android:text=""
-                    android:textColor="#333333" />
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="#ffffff" />
-
-                <TextView
-                    android:id="@+id/item_cart_plus_btn"
-                    android:layout_width="25dp"
-                    android:layout_height="match_parent"
-                    android:background="#f1f1f1"
-                    android:gravity="center"
-                    android:text="+"
-                    android:textColor="#333333" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+            android:text="￥199.00"
+            android:textColor="#999999"
+            android:textSize="13dp" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/buy_btn_bg"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:text="购买"
+        android:textColor="#ffffff"
+        android:textSize="13dp" />
 
 </LinearLayout>

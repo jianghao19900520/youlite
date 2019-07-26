@@ -13,21 +13,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <!--启动页-->
-        <activity android:name=".activity.SplashActivity">
+        <activity
+            android:name=".activity.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <!--引导页-->
-        <activity android:name=".activity.GuideActivity" />
+        <activity
+            android:name=".activity.GuideActivity"
+            android:screenOrientation="portrait" />
         <!--主页-->
-        <activity android:name=".activity.HomeActivity" />
-
+        <activity
+            android:name=".activity.HomeActivity"
+            android:screenOrientation="portrait" />
         <!--商品详情页-->
-        <activity android:name=".activity.GoodsInfoActivity" />
+        <activity
+            android:name=".activity.GoodsInfoActivity"
+            android:screenOrientation="portrait" />
         <!--购物车-->
-        <activity android:name=".activity.CartActivity" />
+        <activity
+            android:name=".activity.CartActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

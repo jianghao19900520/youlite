@@ -6,13 +6,17 @@ import org.litepal.crud.DataSupport;
 public class CartBean extends DataSupport {
 
     private String goodsId;//商品id
+    private String goodsName;//商品名称
     private int goodsNum;//商品数量
-    private JSONObject goodsJSON;//商品详细信息
+    private String goodsPriceNew;//商品现价
+    private String goodsPriceOld;//商品原价
 
-    public CartBean(String goodsId, int goodsNum, JSONObject goodsJSON) {
+    public CartBean(String goodsId, int goodsNum, String goodsName, String goodsPriceNew, String goodsPriceOld) {
         this.goodsId = goodsId;
         this.goodsNum = goodsNum;
-        this.goodsJSON = goodsJSON;
+        this.goodsName = goodsName;
+        this.goodsPriceNew = goodsPriceNew;
+        this.goodsPriceOld = goodsPriceOld;
     }
 
     public String getGoodsId() {
@@ -23,6 +27,14 @@ public class CartBean extends DataSupport {
         this.goodsId = goodsId;
     }
 
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
     public int getGoodsNum() {
         return goodsNum;
     }
@@ -31,11 +43,19 @@ public class CartBean extends DataSupport {
         this.goodsNum = goodsNum;
     }
 
-    public JSONObject getGoodsJSON() {
-        return goodsJSON;
+    public String getGoodsPriceNew() {
+        return goodsPriceNew;
     }
 
-    public void setGoodsJSON(JSONObject goodsJSON) {
-        this.goodsJSON = goodsJSON;
+    public void setGoodsPriceNew(String goodsPriceNew) {
+        this.goodsPriceNew = goodsPriceNew;
+    }
+
+    public String getGoodsPriceOld() {
+        return goodsPriceOld;
+    }
+
+    public void setGoodsPriceOld(String goodsPriceOld) {
+        this.goodsPriceOld = goodsPriceOld;
     }
 }

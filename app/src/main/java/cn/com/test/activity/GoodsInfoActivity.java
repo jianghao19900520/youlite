@@ -67,7 +67,7 @@ public class GoodsInfoActivity extends BaseActivity {
                 try {
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId() == goodsId) {
+                        if (bean.getGoodsId().equals(goodsId)) {
                             //已经有数据，就数量+1
                             bean.setGoodsNum(bean.getGoodsNum() + 1);
                             bean.save();
@@ -76,10 +76,10 @@ public class GoodsInfoActivity extends BaseActivity {
                         }
                     }
                     //数据库还没有该条数据，则新增
-                    CartBean bean = new CartBean(goodsId, 1, new JSONObject().put("goodsname", "商品名称"));
+                    CartBean bean = new CartBean(goodsId, 1, "CKD低磷蛋白粉体验装", "￥99.00", "￥199.00");
                     bean.save();
                     cartRedpoint();
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -90,7 +90,7 @@ public class GoodsInfoActivity extends BaseActivity {
     public void init() {
         goodsId = getIntent().getStringExtra("goodsId");
         if (TextUtils.isEmpty(goodsId)) {
-            ToastUtils.showShort("goodsId为空");
+            finish();
         }
         setViewHeightByWidth(goods_main_img);
         Glide.with(mContext).load("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg").into(goods_main_img);
@@ -100,6 +100,11 @@ public class GoodsInfoActivity extends BaseActivity {
             Glide.with(mContext).load("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg").into(iv);
             goods_info_imgs.addView(iv);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         cartRedpoint();
     }
 

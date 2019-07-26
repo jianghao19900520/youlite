@@ -27,9 +27,9 @@ import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
 import cn.com.test.bean.CartNode;
+import cn.com.test.utils.ArithUtils;
 
 public class CartActivity extends BaseActivity {
-
 
     @BindView(R.id.title)
     TextView title;
@@ -37,11 +37,12 @@ public class CartActivity extends BaseActivity {
     ListView cart_list;
     @BindView(R.id.cart_check)
     CheckBox cart_check;
+    @BindView(R.id.cart_all_price)
+    TextView cart_all_price;
 
     private List<CartNode> cartList;
     private CartAdapter mAdapter;
     private int width;
-    private boolean allChecked;//全选
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -69,10 +70,11 @@ public class CartActivity extends BaseActivity {
                 for (CartNode node : cartList) {
                     node.isChecked = isChecked;
                 }
-                allChecked = isChecked;
                 mAdapter.notifyDataSetChanged();
+                refreshAllPrice();
             }
         });
+        refreshAllPrice();
     }
 
     /*
@@ -85,6 +87,21 @@ public class CartActivity extends BaseActivity {
             cartList.add(new CartNode(bean, false));
         }
         mAdapter.notifyDataSetChanged();
+    }
+
+    /*
+    刷新合计金额
+     */
+    private void refreshAllPrice() {
+        String allPrice = "0.00";
+        for (CartNode node : cartList) {
+            if (node.isChecked) {
+                CartBean bean = node.bean;
+                String itemPrice = ArithUtils.mul(bean.getGoodsPriceNew(), String.valueOf(bean.getGoodsNum()));
+                allPrice = ArithUtils.add(allPrice, itemPrice);
+            }
+        }
+        cart_all_price.setText("￥" + allPrice);
     }
 
     @Override
@@ -138,8 +155,8 @@ public class CartActivity extends BaseActivity {
             CartNode node = cartList.get(position);
             viewHolder.item_cart_check.setChecked(node.isChecked);
             viewHolder.item_cart_name.setText(node.bean.getGoodsName());
-            viewHolder.item_cart_newprice.setText(node.bean.getGoodsPriceNew());
-            viewHolder.item_cart_oldprice.setText(node.bean.getGoodsPriceOld());
+            viewHolder.item_cart_newprice.setText("￥" + node.bean.getGoodsPriceNew());
+            viewHolder.item_cart_oldprice.setText("￥" + node.bean.getGoodsPriceOld());
             viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
             viewHolder.item_cart_num.setText(String.valueOf(node.bean.getGoodsNum()));
             viewHolder.item_cart_num_btn.setText(String.valueOf(node.bean.getGoodsNum()));
@@ -186,6 +203,7 @@ public class CartActivity extends BaseActivity {
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                     int position = (int) compoundButton.getTag();
                     cartList.get(position).isChecked = isChecked;
+                    refreshAllPrice();
                     if (isChecked) {
                         for (CartNode node : cartList) {
                             if (!node.isChecked) {

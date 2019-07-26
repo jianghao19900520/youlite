@@ -38,6 +38,7 @@
             android:textSize="16dp" />
 
         <TextView
+            android:id="@+id/cart_all_price"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

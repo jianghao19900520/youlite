@@ -139,7 +139,7 @@ public class GoodsInfoActivity extends BaseActivity {
         int num = 0;
         List<CartBean> all = DataSupport.findAll(CartBean.class);
         for (CartBean bean : all) {
-            num = +bean.getGoodsNum();
+            num += bean.getGoodsNum();
         }
         cart_num_text.isShowZeroNumPoint(false);
         cart_num_text.setZeroRadius(10);

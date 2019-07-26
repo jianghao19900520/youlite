@@ -64,28 +64,24 @@ public class GoodsInfoActivity extends BaseActivity {
                 startActivity(new Intent(mContext, CartActivity.class));
                 break;
             case R.id.add_cart_btn:
-                try {
-                    List<CartBean> all = DataSupport.findAll(CartBean.class);
-                    for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(goodsId)) {
-                            //已经有数据，就数量+1
-                            bean.setGoodsNum(bean.getGoodsNum() + 1);
-                            bean.save();
-                            cartRedpoint();
-                            return;
-                        }
+                List<CartBean> all = DataSupport.findAll(CartBean.class);
+                for (CartBean bean : all) {
+                    if (bean.getGoodsId().equals(goodsId)) {
+                        //已经有数据，就数量+1
+                        bean.setGoodsNum(bean.getGoodsNum() + 1);
+                        bean.save();
+                        cartRedpoint();
+                        return;
                     }
-                    //数据库还没有该条数据，则新增
-                    //CartBean bean = new CartBean(goodsId, 1, "CKD低磷蛋白粉体验装", "￥99.00", "￥199.00");
-                    //bean.save();
-                    CartBean bean = new CartBean(goodsId, 1, "低磷蛋白粉体验装111", "99.00", "199.00");
-                    CartBean bean2 = new CartBean("654321", 2, "低磷蛋白粉体验装222", "99.00", "199.00");
-                    bean.save();
-                    bean2.save();
-                    cartRedpoint();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                //数据库还没有该条数据，则新增
+                //CartBean bean = new CartBean(goodsId, 1, "CKD低磷蛋白粉体验装", "￥99.00", "￥199.00");
+                //bean.save();
+                CartBean bean = new CartBean(goodsId, 1, "低磷蛋白粉体验装111", "99.00", "199.00");
+                CartBean bean2 = new CartBean("654321", 2, "低磷蛋白粉体验装222", "99.00", "199.00");
+                bean.save();
+                bean2.save();
+                cartRedpoint();
                 break;
         }
     }

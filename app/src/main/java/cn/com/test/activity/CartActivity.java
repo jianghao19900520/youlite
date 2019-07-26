@@ -17,8 +17,6 @@ import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
@@ -26,10 +24,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import cn.com.test.R;
-import cn.com.test.adapter.CommAdapter;
-import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
+import cn.com.test.bean.CartNode;
 
 public class CartActivity extends BaseActivity {
 
@@ -41,9 +38,10 @@ public class CartActivity extends BaseActivity {
     @BindView(R.id.cart_check)
     CheckBox cart_check;
 
-    private List<CartBean> cartList;
+    private List<CartNode> cartList;
     private CartAdapter mAdapter;
     private int width;
+    private boolean allChecked;//全选
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -68,7 +66,11 @@ public class CartActivity extends BaseActivity {
         cart_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-
+                for (CartNode node : cartList) {
+                    node.isChecked = isChecked;
+                }
+                allChecked = isChecked;
+                mAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -80,7 +82,7 @@ public class CartActivity extends BaseActivity {
         cartList.clear();
         List<CartBean> all = DataSupport.findAll(CartBean.class);
         for (CartBean bean : all) {
-            cartList.add(bean);
+            cartList.add(new CartNode(bean, false));
         }
         mAdapter.notifyDataSetChanged();
     }
@@ -98,13 +100,13 @@ public class CartActivity extends BaseActivity {
         }
 
         @Override
-        public Object getItem(int i) {
-            return cartList.get(i);
+        public Object getItem(int position) {
+            return cartList.get(position);
         }
 
         @Override
-        public long getItemId(int i) {
-            return i;
+        public long getItemId(int position) {
+            return position;
         }
 
         @Override
@@ -114,6 +116,7 @@ public class CartActivity extends BaseActivity {
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 view = LayoutInflater.from(mContext).inflate(R.layout.item_cart, null);
+                viewHolder.item_cart_check = view.findViewById(R.id.item_cart_check);
                 viewHolder.item_cart_name = view.findViewById(R.id.item_cart_name);
                 viewHolder.item_cart_newprice = view.findViewById(R.id.item_cart_newprice);
                 viewHolder.item_cart_oldprice = view.findViewById(R.id.item_cart_oldprice);
@@ -131,12 +134,15 @@ public class CartActivity extends BaseActivity {
             viewHolder.item_cart_reduce_btn.setTag(position);
             viewHolder.item_cart_plus_btn.setTag(position);
             viewHolder.item_del_btn.setTag(position);
-            viewHolder.item_cart_name.setText(cartList.get(position).getGoodsName());
-            viewHolder.item_cart_newprice.setText(cartList.get(position).getGoodsPriceNew());
-            viewHolder.item_cart_oldprice.setText(cartList.get(position).getGoodsPriceOld());
+            viewHolder.item_cart_check.setTag(position);
+            CartNode node = cartList.get(position);
+            viewHolder.item_cart_check.setChecked(node.isChecked);
+            viewHolder.item_cart_name.setText(node.bean.getGoodsName());
+            viewHolder.item_cart_newprice.setText(node.bean.getGoodsPriceNew());
+            viewHolder.item_cart_oldprice.setText(node.bean.getGoodsPriceOld());
             viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_cart_num.setText(String.valueOf(cartList.get(position).getGoodsNum()));
-            viewHolder.item_cart_num_btn.setText(String.valueOf(cartList.get(position).getGoodsNum()));
+            viewHolder.item_cart_num.setText(String.valueOf(node.bean.getGoodsNum()));
+            viewHolder.item_cart_num_btn.setText(String.valueOf(node.bean.getGoodsNum()));
             //动态设置宽度
             ViewGroup.LayoutParams params = viewHolder.item_cart_content_layout.getLayoutParams();
             params.width = width;
@@ -146,11 +152,11 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量减1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).getGoodsNum() - 1;
+                    int num = cartList.get(position).bean.getGoodsNum() - 1;
                     if (num < 1) num = 1;
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
+                        if (bean.getGoodsId().equals(cartList.get(position).bean.getGoodsId())) {
                             bean.setGoodsNum(num);
                             bean.save();
                         }
@@ -163,16 +169,40 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量加1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).getGoodsNum() + 1;
+                    int num = cartList.get(position).bean.getGoodsNum() + 1;
                     if (num < 1) num = 1;
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
+                        if (bean.getGoodsId().equals(cartList.get(position).bean.getGoodsId())) {
                             bean.setGoodsNum(num);
                             bean.save();
                         }
                     }
                     refreshCart();
+                }
+            });
+            viewHolder.item_cart_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    int position = (int) compoundButton.getTag();
+                    cartList.get(position).isChecked = isChecked;
+                    if (isChecked) {
+                        for (CartNode node : cartList) {
+                            if (!node.isChecked) {
+                                return;
+                            }
+                        }
+                        //全部都是选中
+                        cart_check.setChecked(true);
+                    } else {
+                        for (CartNode node : cartList) {
+                            if (node.isChecked) {
+                                return;
+                            }
+                        }
+                        //全部都是不选中
+                        cart_check.setChecked(false);
+                    }
                 }
             });
             viewHolder.item_del_btn.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +212,7 @@ public class CartActivity extends BaseActivity {
                     int position = (int) view.getTag();
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
+                        if (bean.getGoodsId().equals(cartList.get(position).bean.getGoodsId())) {
                             bean.delete();
                         }
                     }
@@ -193,6 +223,7 @@ public class CartActivity extends BaseActivity {
         }
 
         class ViewHolder {
+            CheckBox item_cart_check;
             TextView item_cart_name;
             TextView item_cart_newprice;
             TextView item_cart_oldprice;

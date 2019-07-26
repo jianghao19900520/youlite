@@ -50,11 +50,18 @@
                     android:textSize="15dp" />
 
                 <TextView
-                    android:id="@+id/goods_price_old"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:text="市场价：￥594.00"
+                    android:text="市场价："
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/goods_price_old"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="￥594.00"
                     android:textColor="#666666"
                     android:textSize="15dp" />
 

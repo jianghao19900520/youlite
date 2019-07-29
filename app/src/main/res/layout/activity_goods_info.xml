@@ -167,6 +167,7 @@
             android:textSize="16dp" />
 
         <TextView
+            android:id="@+id/buy_now_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="#e74868"

@@ -1,6 +1,7 @@
 package cn.com.test.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -14,17 +15,18 @@ import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
@@ -108,6 +110,25 @@ public class CartActivity extends BaseActivity {
             cart_check.setChecked(true);
         } else {
             cart_check.setChecked(false);
+        }
+    }
+
+    @OnClick({R.id.cart_submit_order})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.cart_submit_order:
+                List<CartBean> submitOrderList = new ArrayList();
+                for (CartBean bean : cartList) {
+                    if (bean.isChecked()) {
+                        submitOrderList.add(bean);
+                    }
+                }
+                if (submitOrderList.size() > 0) {
+                    Bundle bundleObject = new Bundle();
+                    bundleObject.putSerializable("cartList", (Serializable) submitOrderList);
+                    startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
+                }
+                break;
         }
     }
 

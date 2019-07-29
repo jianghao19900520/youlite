@@ -24,6 +24,7 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
+import cn.com.test.utils.ArithUtils;
 
 public class ConfirmOrderActivity extends BaseActivity {
 
@@ -33,9 +34,15 @@ public class ConfirmOrderActivity extends BaseActivity {
     TextView submit_address_text;
     @BindView(R.id.goods_list)
     ListView goods_list;
+    @BindView(R.id.goods_money_text)
+    TextView goods_money_text;
+    @BindView(R.id.pay_money_text)
+    TextView pay_money_text;
 
     private List<CartBean> goodsList;
     private GoodsAdapter mAdapter;
+    private String goods_money = "0.00";//商品金额
+    private String freight_money = "0.00";//运费
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -52,6 +59,12 @@ public class ConfirmOrderActivity extends BaseActivity {
         Bundle bundleObject = getIntent().getExtras();
         goodsList = (ArrayList<CartBean>) bundleObject.getSerializable("goodsList");
         if (goodsList == null || goodsList.size() == 0) finish();
+        for (CartBean bean : goodsList) {
+            String itemPrice = ArithUtils.mul(bean.getGoodsPriceNew(), String.valueOf(bean.getGoodsNum()));
+            goods_money = ArithUtils.add(goods_money, itemPrice);
+        }
+        goods_money_text.setText(goods_money);
+        pay_money_text.setText(ArithUtils.add(goods_money, freight_money));
         mAdapter = new GoodsAdapter();
         goods_list.setAdapter(mAdapter);
     }
@@ -144,7 +157,7 @@ public class ConfirmOrderActivity extends BaseActivity {
             viewHolder.item_cart_newprice.setText("￥" + goodsList.get(position).getGoodsPriceNew());
             viewHolder.item_cart_oldprice.setText("￥" + goodsList.get(position).getGoodsPriceOld());
             viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_cart_num.setText("x "+String.valueOf(goodsList.get(position).getGoodsNum()));
+            viewHolder.item_cart_num.setText("x " + String.valueOf(goodsList.get(position).getGoodsNum()));
             viewHolder.item_cart_check.setVisibility(View.GONE);
             viewHolder.item_del_btn.setVisibility(View.GONE);
             viewHolder.item_cart_num_layout.setVisibility(View.GONE);

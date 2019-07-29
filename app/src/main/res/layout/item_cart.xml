@@ -101,6 +101,7 @@
                             android:textSize="16dp" />
 
                         <LinearLayout
+                            android:id="@+id/item_cart_num_layout"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">

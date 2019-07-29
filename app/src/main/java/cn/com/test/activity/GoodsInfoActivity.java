@@ -49,8 +49,8 @@ public class GoodsInfoActivity extends BaseActivity {
 
     private String goodsId;//商品id
     private String goodsName = "CKD低磷蛋白粉体验装";//商品名称
-    private String goodsPriceNew = "￥99.00";//商品现价
-    private String goodsPriceOld = "￥199.00";//商品原价
+    private String goodsPriceNew = "99.00";//商品现价
+    private String goodsPriceOld = "199.00";//商品原价
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -101,7 +101,7 @@ public class GoodsInfoActivity extends BaseActivity {
                     submitOrderList.add(bean3);
                 }
                 Bundle bundleObject = new Bundle();
-                bundleObject.putSerializable("cartList", (Serializable) submitOrderList);
+                bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
                 startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
                 break;
         }

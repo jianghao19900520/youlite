@@ -125,7 +125,7 @@ public class CartActivity extends BaseActivity {
                 }
                 if (submitOrderList.size() > 0) {
                     Bundle bundleObject = new Bundle();
-                    bundleObject.putSerializable("cartList", (Serializable) submitOrderList);
+                    bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
                     startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
                 }
                 break;
@@ -187,7 +187,7 @@ public class CartActivity extends BaseActivity {
             viewHolder.item_cart_newprice.setText("￥" + cartList.get(position).getGoodsPriceNew());
             viewHolder.item_cart_oldprice.setText("￥" + cartList.get(position).getGoodsPriceOld());
             viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_cart_num.setText(String.valueOf(cartList.get(position).getGoodsNum()));
+            viewHolder.item_cart_num.setText("x "+String.valueOf(cartList.get(position).getGoodsNum()));
             viewHolder.item_cart_num_btn.setText(String.valueOf(cartList.get(position).getGoodsNum()));
             //动态设置宽度
             ViewGroup.LayoutParams params = viewHolder.item_cart_content_layout.getLayoutParams();

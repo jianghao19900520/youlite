@@ -75,12 +75,12 @@ public class GoodsInfoActivity extends BaseActivity {
                     }
                 }
                 //数据库还没有该条数据，则新增
-                //CartBean bean = new CartBean(goodsId, 1, "CKD低磷蛋白粉体验装", "￥99.00", "￥199.00");
-                //bean.save();
-                CartBean bean = new CartBean(goodsId, 1, "低磷蛋白粉体验装111", "99.00", "199.00");
-                CartBean bean2 = new CartBean("654321", 2, "低磷蛋白粉体验装222", "99.00", "199.00");
+                CartBean bean = new CartBean(goodsId, 1, "CKD低磷蛋白粉体验装", "￥99.00", "￥199.00");
                 bean.save();
-                bean2.save();
+//                CartBean bean = new CartBean(goodsId, 1, "低磷蛋白粉体验装111", "99.00", "199.00");
+//                CartBean bean2 = new CartBean("654321", 2, "低磷蛋白粉体验装222", "99.00", "199.00");
+//                bean.save();
+//                bean2.save();
                 cartRedpoint();
                 break;
         }

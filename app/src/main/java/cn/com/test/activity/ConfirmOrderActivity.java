@@ -2,7 +2,6 @@ package cn.com.test.activity;
 
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
@@ -13,7 +12,6 @@ import butterknife.BindView;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
-import cn.com.test.utils.ToastUtils;
 
 public class ConfirmOrderActivity extends BaseActivity {
 
@@ -37,10 +35,6 @@ public class ConfirmOrderActivity extends BaseActivity {
         Bundle bundleObject = getIntent().getExtras();
         cartList = (ArrayList<CartBean>) bundleObject.getSerializable("cartList");
         if (cartList == null || cartList.size() == 0) finish();
-        ToastUtils.showShort(cartList.size() + "@@@");
-        for (int index = 0; index < cartList.size(); index++) {
-            System.out.println(cartList.get(index).isChecked());
-        }
     }
 
     @Override

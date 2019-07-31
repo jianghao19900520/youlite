@@ -41,6 +41,10 @@
         <activity
             android:name=".activity.ConfirmOrderActivity"
             android:screenOrientation="portrait" />
+        <!--我的订单-->
+        <activity
+            android:name=".activity.MyOrderActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

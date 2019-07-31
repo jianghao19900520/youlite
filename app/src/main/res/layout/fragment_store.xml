@@ -69,6 +69,7 @@
             android:orientation="horizontal">
 
             <RelativeLayout
+                android:id="@+id/store_my_order_btn"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1">

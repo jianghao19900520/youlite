@@ -34,6 +34,7 @@ import cn.com.test.R;
 import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.GoodsInfoActivity;
 import cn.com.test.activity.HomeActivity;
+import cn.com.test.activity.MyOrderActivity;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseFragment;
@@ -214,11 +215,14 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
         }
     }
 
-    @OnClick({R.id.store_cart_btn})
+    @OnClick({R.id.store_cart_btn, R.id.store_my_order_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.store_cart_btn:
                 startActivity(new Intent(mContext, CartActivity.class));
+                break;
+            case R.id.store_my_order_btn:
+                startActivity(new Intent(mContext, MyOrderActivity.class));
                 break;
         }
     }

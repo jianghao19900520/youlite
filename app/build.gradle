@@ -36,8 +36,9 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.yanzhenjie.nohttp:okhttp:1.1.5'
     implementation 'com.github.gittjy:LoadingDialog:1.0.2'
-    implementation'com.youth.banner:banner:1.4.10'
+    implementation 'com.youth.banner:banner:1.4.10'
     implementation 'org.litepal.android:core:1.6.1'
     implementation 'com.atoliu.redpoint:Redpointlibrary:0.1'
-    implementation 'liji.library.dev:citypickerview:0.+'
+    implementation 'com.contrarywind:Android-PickerView:3.2.6'
+    implementation 'com.alibaba:fastjson:1.1.70.android'
 }

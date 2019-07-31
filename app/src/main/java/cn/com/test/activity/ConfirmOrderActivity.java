@@ -1,6 +1,5 @@
 package cn.com.test.activity;
 
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,13 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.lljjcoder.citypickerview.widget.CityPicker;
+import com.alibaba.fastjson.JSON;
+import com.bigkoo.pickerview.OptionsPickerView;
 import com.yanzhenjie.nohttp.RequestMethod;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +25,11 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.AddressBean;
 import cn.com.test.bean.CartBean;
 import cn.com.test.utils.ArithUtils;
+import cn.com.test.utils.GetAssetsUtils;
+import cn.com.test.utils.ToastUtils;
 
 public class ConfirmOrderActivity extends BaseActivity {
 
@@ -38,6 +43,10 @@ public class ConfirmOrderActivity extends BaseActivity {
     TextView goods_money_text;
     @BindView(R.id.pay_money_text)
     TextView pay_money_text;
+
+    private List<AddressBean> options1Items = new ArrayList<>();//省
+    private ArrayList<ArrayList<String>> options2Items = new ArrayList<>();//市
+    private ArrayList<ArrayList<ArrayList<String>>> options3Items = new ArrayList<>();//区县
 
     private List<CartBean> goodsList;
     private GoodsAdapter mAdapter;
@@ -67,6 +76,7 @@ public class ConfirmOrderActivity extends BaseActivity {
         pay_money_text.setText(ArithUtils.add(goods_money, freight_money));
         mAdapter = new GoodsAdapter();
         goods_list.setAdapter(mAdapter);
+        initAddress();
     }
 
     @Override
@@ -78,43 +88,86 @@ public class ConfirmOrderActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.submit_address_text:
-                selectAddress();
+                ShowPickerView();
                 break;
         }
     }
 
     /*
-    选择地址
+    初始化省市县数据
      */
-    private void selectAddress() {
-        CityPicker cityPicker = new CityPicker.Builder(mContext)
-                .textSize(14)
-                .title("地址选择")
-                .titleBackgroundColor("#FFFFFF")
-                .confirTextColor("#696969")
-                .cancelTextColor("#696969")
-                .province("北京市")
-                .city("北京市")
-                .district("东城区")
-                .textColor(Color.parseColor("#000000"))
-                .provinceCyclic(false)
-                .cityCyclic(false)
-                .districtCyclic(false)
-                .visibleItemsCount(7)
-                .itemPadding(20)
-                .onlyShowProvinceAndCity(false)
-                .build();
-        cityPicker.show();
-        cityPicker.setOnCityItemClickListener(new CityPicker.OnCityItemClickListener() {
+    private void initAddress() {
+        Thread thread = new Thread(new Runnable() {
             @Override
-            public void onSelected(String... citySelected) {
-                String province = citySelected[0];
-                String city = citySelected[1];
-                String district = citySelected[2];
-                String code = citySelected[3];
-                submit_address_text.setText(province.trim() + "-" + city.trim() + "-" + district.trim());
+            public void run() {
+                //在子线程中解析省市区数据
+                String jsonData = new GetAssetsUtils().getJson(mContext, "address.json");
+                ArrayList<AddressBean> detail = new ArrayList<>();
+                try {
+                    JSONArray data = new JSONArray(jsonData);
+                    for (int i = 0; i < data.length(); i++) {
+                        AddressBean entity = JSON.parseObject(data.optJSONObject(i).toString(), AddressBean.class);
+                        detail.add(entity);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToastUtils.showShort("数据解析失败");
+                }
+                //添加省份数据
+                options1Items = detail;
+                for (int i = 0; i < detail.size(); i++) {//遍历省份
+                    ArrayList<String> CityList = new ArrayList<>();//该省的城市列表（第二级）
+                    ArrayList<ArrayList<String>> Province_AreaList = new ArrayList<>();//该省的所有地区列表（第三极）
+
+                    for (int c = 0; c < detail.get(i).getCity().size(); c++) {//遍历该省份的所有城市
+                        String CityName = detail.get(i).getCity().get(c).getName();
+                        CityList.add(CityName);//添加城市
+                        ArrayList<String> City_AreaList = new ArrayList<>();//该城市的所有地区列表
+                        //如果无地区数据，建议添加空字符串，防止数据为null 导致三个选项长度不匹配造成崩溃
+                        if (detail.get(i).getCity().get(c).getArea() == null
+                                || detail.get(i).getCity().get(c).getArea().size() == 0) {
+                            City_AreaList.add("");
+                        } else {
+                            for (int d = 0; d < detail.get(i).getCity().get(c).getArea().size(); d++) {//该城市对应地区所有数据
+                                String AreaName = detail.get(i).getCity().get(c).getArea().get(d);
+                                City_AreaList.add(AreaName);//添加该城市所有地区数据
+                            }
+                        }
+                        Province_AreaList.add(City_AreaList);//添加该省所有地区数据
+                    }
+                    //添加城市数据
+                    options2Items.add(CityList);
+                    //添加地区数据
+                    options3Items.add(Province_AreaList);
+                }
             }
         });
+        thread.start();
+    }
+
+    /*
+    省市县弹框
+     */
+    private void ShowPickerView() {
+        OptionsPickerView pvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                //返回的分别是三个级别的选中位置
+                String tx = options1Items.get(options1).getPickerViewText() +
+                        options2Items.get(options1).get(options2) +
+                        options3Items.get(options1).get(options2).get(options3);
+                ToastUtils.showShort(tx);
+            }
+        })
+                .setTitleText("城市选择")
+                .setDividerColor(mContext.getResources().getColor(R.color.mainColor))
+                .setTextColorCenter(mContext.getResources().getColor(R.color.mainColor))
+                .setContentTextSize(25)
+                .build();
+        //pvOptions.setPicker(options1Items);//一级选择器
+        //pvOptions.setPicker(options1Items, options2Items);//二级选择器
+        pvOptions.setPicker(options1Items, options2Items, options3Items);//三级选择器
+        pvOptions.show();
     }
 
     private class GoodsAdapter extends BaseAdapter {

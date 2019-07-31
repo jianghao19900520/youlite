@@ -76,12 +76,17 @@ public class CartActivity extends BaseActivity {
                 refreshAllPrice();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         refreshCart();
     }
 
     /*
-    刷新列表
-     */
+        刷新列表
+         */
     private void refreshCart() {
         cartList.clear();
         List<CartBean> all = DataSupport.findAll(CartBean.class);
@@ -108,7 +113,8 @@ public class CartActivity extends BaseActivity {
         cart_all_price.setText("￥" + allPrice);
         if (checkNum != 0 && checkNum == cartList.size()) {
             cart_check.setChecked(true);
-        } else {
+        }
+        if (checkNum == 0) {
             cart_check.setChecked(false);
         }
     }
@@ -187,7 +193,7 @@ public class CartActivity extends BaseActivity {
             viewHolder.item_cart_newprice.setText("￥" + cartList.get(position).getGoodsPriceNew());
             viewHolder.item_cart_oldprice.setText("￥" + cartList.get(position).getGoodsPriceOld());
             viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_cart_num.setText("x "+String.valueOf(cartList.get(position).getGoodsNum()));
+            viewHolder.item_cart_num.setText("x " + String.valueOf(cartList.get(position).getGoodsNum()));
             viewHolder.item_cart_num_btn.setText(String.valueOf(cartList.get(position).getGoodsNum()));
             //动态设置宽度
             ViewGroup.LayoutParams params = viewHolder.item_cart_content_layout.getLayoutParams();

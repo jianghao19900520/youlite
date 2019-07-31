@@ -46,7 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="￥360.00"
-                    android:textColor="#e74868"
+                    android:textColor="@color/payColor"
                     android:textSize="15dp" />
 
                 <TextView
@@ -137,7 +137,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
-                app:tlRedPointViewBGColor="#e74868"
+                app:tlRedPointViewBGColor="@color/payColor"
                 app:tlRedPointViewCount="100"
                 app:tlRedPointViewTextColor="#ffffff"
                 app:tlRedPointViewTextSize="10" />
@@ -170,7 +170,7 @@
             android:id="@+id/buy_now_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="#e74868"
+            android:background="@color/payColor"
             android:gravity="center"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"

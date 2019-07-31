@@ -7,6 +7,7 @@
 
     <color name="mainColor">#3ea0e0</color>
     <color name="backgroundColor">#fafafa</color>
+    <color name="payColor">#e74868</color>
     <color name="lineColor">#cccccc</color>
 
 </resources>

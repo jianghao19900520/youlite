@@ -38,7 +38,7 @@
             android:lines="1"
             android:singleLine="true"
             android:text="￥179.00"
-            android:textColor="#e74868"
+            android:textColor="@color/payColor"
             android:textSize="12dp" />
 
         <TextView

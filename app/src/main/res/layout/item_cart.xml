@@ -68,7 +68,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:text=""
-                            android:textColor="#e74868"
+                            android:textColor="@color/payColor"
                             android:textSize="13dp" />
 
                         <TextView
@@ -155,7 +155,7 @@
                 android:id="@+id/item_del_btn"
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
-                android:background="#e74868"
+                android:background="@color/payColor"
                 android:clickable="true"
                 android:gravity="center"
                 android:text="删除"

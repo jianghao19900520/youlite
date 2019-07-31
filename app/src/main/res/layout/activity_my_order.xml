@@ -7,59 +7,140 @@
 
     <include layout="@layout/include_title" />
 
-    <ListView
-        android:id="@+id/cart_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@color/lineColor"
-        android:dividerHeight="1px"
-        android:scrollbars="none" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:gravity="center_vertical"
+        android:layout_height="40dp"
         android:orientation="horizontal">
 
-        <CheckBox
-            android:id="@+id/cart_check"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="合计："
-            android:textColor="#666666"
-            android:textSize="16dp" />
-
-        <TextView
-            android:id="@+id/cart_all_price"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:text="￥100.00"
-            android:textColor="#e74868"
-            android:textSize="16dp" />
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/cart_submit_order"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/order_all_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="全部"
+                android:textColor="@color/mainColor"
+                android:textSize="18dp" />
+
+            <View
+                android:id="@+id/order_all_line"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/mainColor" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="#e74868"
-            android:gravity="center"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="结算"
-            android:textColor="#ffffff"
-            android:textSize="16dp" />
+            android:layout_weight="1">
 
+            <TextView
+                android:id="@+id/order_pay_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="待付款"
+                android:textColor="#333333"
+                android:textSize="18dp" />
+
+            <View
+                android:id="@+id/order_pay_line"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/mainColor"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/order_receive_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="待收货"
+                android:textColor="#333333"
+                android:textSize="18dp" />
+
+            <View
+                android:id="@+id/order_receive_line"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/mainColor"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/order_finish_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="已完成"
+                android:textColor="#333333"
+                android:textSize="18dp" />
+
+            <View
+                android:id="@+id/order_finish_line"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/mainColor"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/order_cancle_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="已取消"
+                android:textColor="#333333"
+                android:textSize="18dp" />
+
+            <View
+                android:id="@+id/order_cancle_line"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/mainColor"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/backgroundColor" />
+
+    <ListView
+        android:id="@+id/order_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

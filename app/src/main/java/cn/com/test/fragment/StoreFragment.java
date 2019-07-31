@@ -85,7 +85,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
         list_title.add("图片二");
         list_title.add("图片三");
         banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
-        banner.setImageLoader(new StoreFragment.MyLoader());
+        banner.setImageLoader(new StoreFragment.BanerImgLoader());
         banner.setBannerAnimation(Transformer.Default);
         banner.setBannerTitles(list_title);
         banner.setDelayTime(3000);
@@ -206,7 +206,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     /**
      * banner加载图片
      */
-    private class MyLoader extends ImageLoader {
+    private class BanerImgLoader extends ImageLoader {
         @Override
         public void displayImage(Context context, Object path, ImageView imageView) {
             Glide.with(context.getApplicationContext())

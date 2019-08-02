@@ -16,7 +16,7 @@ public class OrderDetailActivity extends BaseActivity {
 
     @Override
     public void setContent(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_my_order);
+        setContentView(R.layout.activity_order_detail);
     }
 
     @Override

@@ -40,7 +40,7 @@
                 android:layout_height="24dp"
                 android:layout_marginLeft="20dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_delete2"
+                android:src="@mipmap/ic_delete"
                 android:visibility="gone" />
 
         </LinearLayout>

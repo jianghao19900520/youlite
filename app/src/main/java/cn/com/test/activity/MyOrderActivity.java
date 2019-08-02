@@ -1,7 +1,9 @@
 package cn.com.test.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,6 +53,7 @@ public class MyOrderActivity extends BaseActivity {
     @BindView(R.id.order_list)
     ListView order_list;
 
+    float x1, x2, y1, y2 = 0;//listview里面scrollview的手势监听
     private int orderType = 0;//0=全部 1=待付款 2=待收货 3=已完成 4=已取消
     private List<JSONObject> orderList;
     private List<JSONObject> showList;//根据状态来显示的列表
@@ -81,7 +84,7 @@ public class MyOrderActivity extends BaseActivity {
         showList.addAll(orderList);
         mAdapter = new CommAdapter<JSONObject>(mContext, showList, R.layout.item_my_order) {
             @Override
-            public void convert(CommViewHolder holder, JSONObject item, int position) {
+            public void convert(final CommViewHolder holder, JSONObject item, int position) {
                 try {
                     LinearLayout item_my_order_goods_layout = holder.getView(R.id.item_my_order_goods_layout);
                     TextView left_text = holder.getView(R.id.item_my_order_bottom_left_text);
@@ -154,6 +157,31 @@ public class MyOrderActivity extends BaseActivity {
                             });
                             break;
                     }
+                    holder.getView(R.id.item_my_order_scroll_layout).setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View view, MotionEvent motionEvent) {
+                            if (motionEvent.getAction() == motionEvent.ACTION_DOWN) {
+                                x1 = motionEvent.getX();
+                                y1 = motionEvent.getY();
+                            }
+                            if (motionEvent.getAction() == motionEvent.ACTION_UP) {
+                                x2 = motionEvent.getX();
+                                y2 = motionEvent.getY();
+                                if (x1 == x2 && y1 == y2) {
+                                    //监听scrollview判断手势，如果是点击，则调用itemd的点击事件
+                                    holder.getConvertView().performClick();
+                                }
+                            }
+                            return false;
+                        }
+
+                    });
+                    holder.getConvertView().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity(new Intent(mContext, OrderDetailActivity.class));
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

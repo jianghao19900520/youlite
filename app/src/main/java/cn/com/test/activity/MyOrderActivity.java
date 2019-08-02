@@ -3,6 +3,8 @@ package cn.com.test.activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -81,8 +83,15 @@ public class MyOrderActivity extends BaseActivity {
             @Override
             public void convert(CommViewHolder holder, JSONObject item, int position) {
                 try {
+                    LinearLayout item_my_order_goods_layout = holder.getView(R.id.item_my_order_goods_layout);
                     TextView left_text = holder.getView(R.id.item_my_order_bottom_left_text);
                     TextView right_text = holder.getView(R.id.item_my_order_bottom_right_text);
+                    item_my_order_goods_layout.removeAllViews();
+                    for (int i = 0; i < item.getInt("orderType") * 2; i++) {
+                        ImageView img = new ImageView(mContext);
+                        img.setImageResource(R.mipmap.ic_logo);
+                        item_my_order_goods_layout.addView(img);
+                    }
                     switch (item.getInt("orderType")) {
                         case 1:
                             holder.setText(R.id.item_my_order_status_text, "待付款");

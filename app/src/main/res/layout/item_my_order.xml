@@ -62,17 +62,12 @@
         android:scrollbars="none">
 
         <LinearLayout
+            android:id="@+id/item_my_order_goods_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="10dp"
             android:paddingTop="10dp">
-
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:scaleType="fitXY"
-                android:src="@mipmap/ic_logo" />
 
         </LinearLayout>
 

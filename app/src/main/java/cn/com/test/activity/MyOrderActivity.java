@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import cn.com.test.R;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.utils.ToastUtils;
 
 public class MyOrderActivity extends BaseActivity {
 
@@ -49,6 +51,7 @@ public class MyOrderActivity extends BaseActivity {
 
     private int orderType = 0;//0=全部 1=待付款 2=待收货 3=已完成 4=已取消
     private List<JSONObject> orderList;
+    private List<JSONObject> showList;//根据状态来显示的列表
     private CommAdapter<JSONObject> mAdapter;
 
     @Override
@@ -64,12 +67,85 @@ public class MyOrderActivity extends BaseActivity {
     @Override
     public void init() {
         orderList = new ArrayList<>();
-        mAdapter = new CommAdapter<JSONObject>(mContext, orderList, R.layout.item_my_order) {
+        showList = new ArrayList<>();
+        try {
+            orderList.add(new JSONObject().put("orderType", 1));
+            orderList.add(new JSONObject().put("orderType", 2));
+            orderList.add(new JSONObject().put("orderType", 3));
+            orderList.add(new JSONObject().put("orderType", 4));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        showList.addAll(orderList);
+        mAdapter = new CommAdapter<JSONObject>(mContext, showList, R.layout.item_my_order) {
             @Override
             public void convert(CommViewHolder holder, JSONObject item, int position) {
                 try {
-
-                } catch (Exception e) {
+                    TextView left_text = holder.getView(R.id.item_my_order_bottom_left_text);
+                    TextView right_text = holder.getView(R.id.item_my_order_bottom_right_text);
+                    switch (item.getInt("orderType")) {
+                        case 1:
+                            holder.setText(R.id.item_my_order_status_text, "待付款");
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
+                            left_text.setVisibility(View.GONE);
+                            right_text.setText("支付");
+                            right_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ToastUtils.showShort("支付");
+                                }
+                            });
+                            break;
+                        case 2:
+                            holder.setText(R.id.item_my_order_status_text, "待收货");
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
+                            left_text.setVisibility(View.VISIBLE);
+                            left_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ToastUtils.showShort("查看物流");
+                                }
+                            });
+                            right_text.setText("确认收货");
+                            right_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ToastUtils.showShort("确认收货");
+                                }
+                            });
+                            break;
+                        case 3:
+                            holder.setText(R.id.item_my_order_status_text, "已完成");
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
+                            left_text.setVisibility(View.VISIBLE);
+                            left_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ToastUtils.showShort("查看物流");
+                                }
+                            });
+                            right_text.setText("再次购买");
+                            right_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ToastUtils.showShort("再次购买");
+                                }
+                            });
+                            break;
+                        case 4:
+                            holder.setText(R.id.item_my_order_status_text, "再次购买");
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
+                            left_text.setVisibility(View.GONE);
+                            right_text.setText("再次购买");
+                            right_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ToastUtils.showShort("再次购买");
+                                }
+                            });
+                            break;
+                    }
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -86,6 +162,7 @@ public class MyOrderActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.order_all_text:
+                orderType = 0;
                 order_all_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -96,8 +173,10 @@ public class MyOrderActivity extends BaseActivity {
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
+                refreshListStatus();
                 break;
             case R.id.order_pay_text:
+                orderType = 1;
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -108,8 +187,10 @@ public class MyOrderActivity extends BaseActivity {
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
+                refreshListStatus();
                 break;
             case R.id.order_receive_text:
+                orderType = 2;
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(getResources().getColor(R.color.mainColor));
@@ -120,8 +201,10 @@ public class MyOrderActivity extends BaseActivity {
                 order_receive_line.setVisibility(View.VISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
+                refreshListStatus();
                 break;
             case R.id.order_finish_text:
+                orderType = 3;
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -132,8 +215,10 @@ public class MyOrderActivity extends BaseActivity {
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.VISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
+                refreshListStatus();
                 break;
             case R.id.order_cancle_text:
+                orderType = 4;
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -144,6 +229,72 @@ public class MyOrderActivity extends BaseActivity {
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.VISIBLE);
+                refreshListStatus();
+                break;
+        }
+    }
+
+    /**
+     * 刷新列表状态
+     */
+    private void refreshListStatus() {
+        switch (orderType) {
+            case 0:
+                showList.clear();
+                showList.addAll(orderList);
+                mAdapter.notifyDataSetChanged();
+                break;
+            case 1:
+                showList.clear();
+                for (JSONObject object : orderList) {
+                    try {
+                        if (object.getInt("orderType") == 1) {
+                            showList.add(object);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mAdapter.notifyDataSetChanged();
+                break;
+            case 2:
+                showList.clear();
+                for (JSONObject object : orderList) {
+                    try {
+                        if (object.getInt("orderType") == 2) {
+                            showList.add(object);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mAdapter.notifyDataSetChanged();
+                break;
+            case 3:
+                showList.clear();
+                for (JSONObject object : orderList) {
+                    try {
+                        if (object.getInt("orderType") == 3) {
+                            showList.add(object);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mAdapter.notifyDataSetChanged();
+                break;
+            case 4:
+                showList.clear();
+                for (JSONObject object : orderList) {
+                    try {
+                        if (object.getInt("orderType") == 4) {
+                            showList.add(object);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mAdapter.notifyDataSetChanged();
                 break;
         }
     }

@@ -29,9 +29,13 @@
         <activity
             android:name=".activity.HomeActivity"
             android:screenOrientation="portrait" />
-        <!--商品搜索页-->
+        <!--搜索页-->
         <activity
             android:name=".activity.SearchActivity"
+            android:screenOrientation="portrait" />
+        <!--商品搜索页-->
+        <activity
+            android:name=".activity.SearchGoodsActivity"
             android:screenOrientation="portrait" />
         <!--商品详情页-->
         <activity

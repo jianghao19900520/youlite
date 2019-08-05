@@ -1,10 +1,10 @@
 package cn.com.test.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.RequestMethod;
@@ -15,26 +15,29 @@ import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.utils.ToastUtils;
 
-public class SearchActivity extends BaseActivity {
+public class SearchGoodsActivity extends BaseActivity {
 
     @BindView(R.id.title)
     TextView title;
-    @BindView(R.id.search_content_text)
-    EditText search_content_text;
+    @BindView(R.id.search_goods_gridview)
+    GridView search_goods_gridview;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_search_goods);
     }
 
     @Override
     public void initTitle() {
-        title.setText("搜索");
+        title.setText("商品搜索");
     }
 
     @Override
     public void init() {
-
+        String searchKey = getIntent().getStringExtra("searchKey");
+        if (!TextUtils.isEmpty(searchKey)) {
+            ToastUtils.showShort(searchKey);
+        }
     }
 
     @Override
@@ -42,13 +45,10 @@ public class SearchActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.search_btn})
+    @OnClick({R.id.title})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.search_btn:
-                if (!TextUtils.isEmpty(search_content_text.getText().toString())) {
-                    startActivity(new Intent(mContext, SearchGoodsActivity.class).putExtra("searchKey", search_content_text.getText().toString()));
-                }
+            case R.id.title:
                 break;
         }
     }

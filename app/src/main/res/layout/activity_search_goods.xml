@@ -10,8 +10,11 @@
         android:id="@+id/search_goods_gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="20dp"
-        android:numColumns="2" />
+        android:gravity="center"
+        android:numColumns="2"
+        android:scrollbars="none"
+        android:padding="10dp"
+        android:listSelector="#00000000"/>
 
 
 </LinearLayout>

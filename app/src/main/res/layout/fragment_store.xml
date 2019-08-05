@@ -20,6 +20,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/store_search_layout"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="20dp"

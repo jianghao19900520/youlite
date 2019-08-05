@@ -27,6 +27,7 @@ public class HomeActivity extends BaseActivity {
     ImageView title_back_btn;
     @BindView(R.id.tabs_rg)
     RadioGroup mTabRadioGroup;
+
     private SparseArray<Fragment> mFragmentSparseArray;
 
     @Override

@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <HorizontalScrollView
-        android:id="@+id/item_cart_scroll"
+        android:id="@+id/item_goods_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none">
@@ -17,13 +17,13 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/item_cart_content_layout"
+                android:id="@+id/item_goods_content_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <CheckBox
-                    android:id="@+id/item_cart_check"
+                    android:id="@+id/item_goods_check"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -46,7 +46,7 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/item_cart_name"
+                        android:id="@+id/item_goods_name"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -63,7 +63,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/item_cart_newprice"
+                            android:id="@+id/item_goods_newprice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
@@ -72,7 +72,7 @@
                             android:textSize="13dp" />
 
                         <TextView
-                            android:id="@+id/item_cart_oldprice"
+                            android:id="@+id/item_goods_oldprice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
@@ -91,7 +91,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/item_cart_num"
+                            android:id="@+id/item_goods_num"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -101,13 +101,13 @@
                             android:textSize="16dp" />
 
                         <LinearLayout
-                            android:id="@+id/item_cart_num_layout"
+                            android:id="@+id/item_goods_num_layout"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/item_cart_reduce_btn"
+                                android:id="@+id/item_goods_reduce_btn"
                                 android:layout_width="25dp"
                                 android:layout_height="match_parent"
                                 android:background="#f1f1f1"
@@ -121,7 +121,7 @@
                                 android:background="#ffffff" />
 
                             <TextView
-                                android:id="@+id/item_cart_num_btn"
+                                android:id="@+id/item_goods_num_btn"
                                 android:layout_width="35dp"
                                 android:layout_height="match_parent"
                                 android:background="#e5e5e5"
@@ -135,7 +135,7 @@
                                 android:background="#ffffff" />
 
                             <TextView
-                                android:id="@+id/item_cart_plus_btn"
+                                android:id="@+id/item_goods_plus_btn"
                                 android:layout_width="25dp"
                                 android:layout_height="match_parent"
                                 android:background="#f1f1f1"

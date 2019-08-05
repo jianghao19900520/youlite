@@ -236,38 +236,38 @@ public class ConfirmOrderActivity extends BaseActivity {
             View view = null;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                view = LayoutInflater.from(mContext).inflate(R.layout.item_cart, null);
-                viewHolder.item_cart_check = view.findViewById(R.id.item_cart_check);
-                viewHolder.item_cart_name = view.findViewById(R.id.item_cart_name);
-                viewHolder.item_cart_newprice = view.findViewById(R.id.item_cart_newprice);
-                viewHolder.item_cart_oldprice = view.findViewById(R.id.item_cart_oldprice);
-                viewHolder.item_cart_num = view.findViewById(R.id.item_cart_num);
+                view = LayoutInflater.from(mContext).inflate(R.layout.item_goods, null);
+                viewHolder.item_goods_check = view.findViewById(R.id.item_goods_check);
+                viewHolder.item_goods_name = view.findViewById(R.id.item_goods_name);
+                viewHolder.item_goods_newprice = view.findViewById(R.id.item_goods_newprice);
+                viewHolder.item_goods_oldprice = view.findViewById(R.id.item_goods_oldprice);
+                viewHolder.item_goods_num = view.findViewById(R.id.item_goods_num);
                 viewHolder.item_del_btn = view.findViewById(R.id.item_del_btn);
-                viewHolder.item_cart_num_layout = view.findViewById(R.id.item_cart_num_layout);
+                viewHolder.item_goods_num_layout = view.findViewById(R.id.item_goods_num_layout);
                 view.setTag(viewHolder);
             } else {
                 view = convertView;
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.item_cart_name.setText(goodsList.get(position).getGoodsName());
-            viewHolder.item_cart_newprice.setText("￥" + goodsList.get(position).getGoodsPriceNew());
-            viewHolder.item_cart_oldprice.setText("￥" + goodsList.get(position).getGoodsPriceOld());
-            viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_cart_num.setText("x " + String.valueOf(goodsList.get(position).getGoodsNum()));
-            viewHolder.item_cart_check.setVisibility(View.GONE);
+            viewHolder.item_goods_name.setText(goodsList.get(position).getGoodsName());
+            viewHolder.item_goods_newprice.setText("￥" + goodsList.get(position).getGoodsPriceNew());
+            viewHolder.item_goods_oldprice.setText("￥" + goodsList.get(position).getGoodsPriceOld());
+            viewHolder.item_goods_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
+            viewHolder.item_goods_num.setText("x " + String.valueOf(goodsList.get(position).getGoodsNum()));
+            viewHolder.item_goods_check.setVisibility(View.GONE);
             viewHolder.item_del_btn.setVisibility(View.GONE);
-            viewHolder.item_cart_num_layout.setVisibility(View.GONE);
+            viewHolder.item_goods_num_layout.setVisibility(View.GONE);
             return view;
         }
 
         class ViewHolder {
-            CheckBox item_cart_check;
-            TextView item_cart_name;
-            TextView item_cart_newprice;
-            TextView item_cart_oldprice;
-            TextView item_cart_num;
+            CheckBox item_goods_check;
+            TextView item_goods_name;
+            TextView item_goods_newprice;
+            TextView item_goods_oldprice;
+            TextView item_goods_num;
             TextView item_del_btn;
-            LinearLayout item_cart_num_layout;
+            LinearLayout item_goods_num_layout;
         }
 
     }

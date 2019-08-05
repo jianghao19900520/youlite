@@ -166,40 +166,40 @@ public class CartActivity extends BaseActivity {
             View view = null;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                view = LayoutInflater.from(mContext).inflate(R.layout.item_cart, null);
-                viewHolder.item_cart_scroll = view.findViewById(R.id.item_cart_scroll);
-                viewHolder.item_cart_check = view.findViewById(R.id.item_cart_check);
-                viewHolder.item_cart_name = view.findViewById(R.id.item_cart_name);
-                viewHolder.item_cart_newprice = view.findViewById(R.id.item_cart_newprice);
-                viewHolder.item_cart_oldprice = view.findViewById(R.id.item_cart_oldprice);
-                viewHolder.item_cart_num = view.findViewById(R.id.item_cart_num);
-                viewHolder.item_cart_num_btn = view.findViewById(R.id.item_cart_num_btn);
-                viewHolder.item_cart_content_layout = view.findViewById(R.id.item_cart_content_layout);
-                viewHolder.item_cart_reduce_btn = view.findViewById(R.id.item_cart_reduce_btn);
-                viewHolder.item_cart_plus_btn = view.findViewById(R.id.item_cart_plus_btn);
+                view = LayoutInflater.from(mContext).inflate(R.layout.item_goods, null);
+                viewHolder.item_goods_scroll = view.findViewById(R.id.item_goods_scroll);
+                viewHolder.item_goods_check = view.findViewById(R.id.item_goods_check);
+                viewHolder.item_goods_name = view.findViewById(R.id.item_goods_name);
+                viewHolder.item_goods_newprice = view.findViewById(R.id.item_goods_newprice);
+                viewHolder.item_goods_oldprice = view.findViewById(R.id.item_goods_oldprice);
+                viewHolder.item_goods_num = view.findViewById(R.id.item_goods_num);
+                viewHolder.item_goods_num_btn = view.findViewById(R.id.item_goods_num_btn);
+                viewHolder.item_goods_content_layout = view.findViewById(R.id.item_goods_content_layout);
+                viewHolder.item_goods_reduce_btn = view.findViewById(R.id.item_goods_reduce_btn);
+                viewHolder.item_goods_plus_btn = view.findViewById(R.id.item_goods_plus_btn);
                 viewHolder.item_del_btn = view.findViewById(R.id.item_del_btn);
                 view.setTag(viewHolder);
             } else {
                 view = convertView;
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.item_cart_reduce_btn.setTag(position);
-            viewHolder.item_cart_plus_btn.setTag(position);
+            viewHolder.item_goods_reduce_btn.setTag(position);
+            viewHolder.item_goods_plus_btn.setTag(position);
             viewHolder.item_del_btn.setTag(position);
-            viewHolder.item_cart_check.setTag(position);
-            viewHolder.item_cart_scroll.scrollTo(0, 0);
-            viewHolder.item_cart_check.setChecked(cartList.get(position).isChecked());
-            viewHolder.item_cart_name.setText(cartList.get(position).getGoodsName());
-            viewHolder.item_cart_newprice.setText("￥" + cartList.get(position).getGoodsPriceNew());
-            viewHolder.item_cart_oldprice.setText("￥" + cartList.get(position).getGoodsPriceOld());
-            viewHolder.item_cart_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_cart_num.setText("x " + String.valueOf(cartList.get(position).getGoodsNum()));
-            viewHolder.item_cart_num_btn.setText(String.valueOf(cartList.get(position).getGoodsNum()));
+            viewHolder.item_goods_check.setTag(position);
+            viewHolder.item_goods_scroll.scrollTo(0, 0);
+            viewHolder.item_goods_check.setChecked(cartList.get(position).isChecked());
+            viewHolder.item_goods_name.setText(cartList.get(position).getGoodsName());
+            viewHolder.item_goods_newprice.setText("￥" + cartList.get(position).getGoodsPriceNew());
+            viewHolder.item_goods_oldprice.setText("￥" + cartList.get(position).getGoodsPriceOld());
+            viewHolder.item_goods_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
+            viewHolder.item_goods_num.setText("x " + String.valueOf(cartList.get(position).getGoodsNum()));
+            viewHolder.item_goods_num_btn.setText(String.valueOf(cartList.get(position).getGoodsNum()));
             //动态设置宽度
-            ViewGroup.LayoutParams params = viewHolder.item_cart_content_layout.getLayoutParams();
+            ViewGroup.LayoutParams params = viewHolder.item_goods_content_layout.getLayoutParams();
             params.width = width;
-            viewHolder.item_cart_content_layout.setLayoutParams(params);
-            viewHolder.item_cart_reduce_btn.setOnClickListener(new View.OnClickListener() {
+            viewHolder.item_goods_content_layout.setLayoutParams(params);
+            viewHolder.item_goods_reduce_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //数量减1
@@ -216,7 +216,7 @@ public class CartActivity extends BaseActivity {
                     refreshCart();
                 }
             });
-            viewHolder.item_cart_plus_btn.setOnClickListener(new View.OnClickListener() {
+            viewHolder.item_goods_plus_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //数量加1
@@ -233,7 +233,7 @@ public class CartActivity extends BaseActivity {
                     refreshCart();
                 }
             });
-            viewHolder.item_cart_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            viewHolder.item_goods_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                     int position = (int) compoundButton.getTag();
@@ -278,16 +278,16 @@ public class CartActivity extends BaseActivity {
         }
 
         class ViewHolder {
-            HorizontalScrollView item_cart_scroll;
-            CheckBox item_cart_check;
-            TextView item_cart_name;
-            TextView item_cart_newprice;
-            TextView item_cart_oldprice;
-            TextView item_cart_num;
-            TextView item_cart_num_btn;
-            LinearLayout item_cart_content_layout;
-            TextView item_cart_reduce_btn;
-            TextView item_cart_plus_btn;
+            HorizontalScrollView item_goods_scroll;
+            CheckBox item_goods_check;
+            TextView item_goods_name;
+            TextView item_goods_newprice;
+            TextView item_goods_oldprice;
+            TextView item_goods_num;
+            TextView item_goods_num_btn;
+            LinearLayout item_goods_content_layout;
+            TextView item_goods_reduce_btn;
+            TextView item_goods_plus_btn;
             TextView item_del_btn;
         }
 

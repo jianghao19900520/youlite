@@ -21,7 +21,7 @@ public class OrderDetailActivity extends BaseActivity {
 
     @Override
     public void initTitle() {
-        title.setText("订单订单");
+        title.setText("订单详情");
     }
 
     @Override

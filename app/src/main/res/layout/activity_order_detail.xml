@@ -152,23 +152,6 @@
                 android:textColor="#666666"
                 android:textSize="18dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:text="优惠券 : ￥0.00"
-                android:textColor="#666666"
-                android:textSize="18dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="尿币 : 0尿币"
-                android:textColor="#666666"
-                android:textSize="18dp" />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="30dp"

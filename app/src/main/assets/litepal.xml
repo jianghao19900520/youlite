@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="youlite"/>
-    <version value="1"/>
+    <version value="2"/>
     <list>
         <mapping class="cn.com.test.bean.CartBean"/>
+        <mapping class="cn.com.test.bean.SearchKeyBean"/>
     </list>
 </litepal>

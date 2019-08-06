@@ -1,5 +1,7 @@
 package cn.com.test.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
@@ -71,11 +74,26 @@ public class SearchActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.search_btn})
+    @OnClick({R.id.search_btn, R.id.search_history_clear_text})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.search_btn:
                 search(search_content_text.getText().toString().trim());
+                break;
+            case R.id.search_history_clear_text:
+                if (searchKeyList.size() > 0) {
+                    AlertDialog dialog = new AlertDialog.Builder(this).setTitle("提示")
+                            .setMessage("确定清空历史记录？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    DataSupport.deleteAll(SearchKeyBean.class);
+                                    searchKeyList.clear();
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            }).setNegativeButton("取消", null).create();
+                    dialog.setCanceledOnTouchOutside(false);
+                    dialog.show();
+                }
                 break;
         }
     }

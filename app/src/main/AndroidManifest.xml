@@ -3,7 +3,9 @@
     package="cn.com.test">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
         android:name=".base.BaseApplication"
@@ -57,6 +59,16 @@
         <activity
             android:name=".activity.OrderDetailActivity"
             android:screenOrientation="portrait" />
+        <!--apk安装权限-->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="cn.com.test.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

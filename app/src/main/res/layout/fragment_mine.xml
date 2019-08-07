@@ -63,7 +63,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@mipmap/setting_person" />
+                android:src="@mipmap/mine_person" />
 
             <TextView
                 android:layout_width="0dp"
@@ -127,7 +127,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@mipmap/setting_grade" />
+                android:src="@mipmap/mine_grade" />
 
             <TextView
                 android:layout_width="0dp"
@@ -191,7 +191,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@mipmap/setting_address" />
+                android:src="@mipmap/mine_address" />
 
             <TextView
                 android:layout_width="0dp"

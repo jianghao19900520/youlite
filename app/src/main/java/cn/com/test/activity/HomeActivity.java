@@ -1,13 +1,18 @@
 package cn.com.test.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
@@ -29,6 +34,8 @@ public class HomeActivity extends BaseActivity {
     RadioGroup mTabRadioGroup;
 
     private SparseArray<Fragment> mFragmentSparseArray;
+
+    public static final int EXTERNAL_STORAGE_REQ_CODE = 0;//6.0系统开始需要申请读写权限
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -65,10 +72,30 @@ public class HomeActivity extends BaseActivity {
                 //这里是中间按钮的点击事件
             }
         });
+        requestPermission();
     }
 
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
 
     }
+
+    public void requestPermission() {
+        //判断当前Activity是否已经获得了该权限
+        if (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                //如果App的权限申请曾经被用户拒绝过，就需要在这里跟用户做出解释
+                Toast.makeText(mContext, "请手动在设置中打开读写权限", Toast.LENGTH_SHORT).show();
+            } else {
+                //进行权限请求
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        EXTERNAL_STORAGE_REQ_CODE);
+            }
+        }
+    }
+
 }

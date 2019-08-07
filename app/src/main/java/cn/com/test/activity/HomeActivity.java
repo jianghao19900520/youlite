@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import butterknife.BindView;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
@@ -23,6 +26,7 @@ import cn.com.test.fragment.CheckFragment;
 import cn.com.test.fragment.CircleFragment;
 import cn.com.test.fragment.MineFragment;
 import cn.com.test.fragment.StoreFragment;
+import cn.com.test.utils.ToastUtils;
 
 public class HomeActivity extends BaseActivity {
 
@@ -34,6 +38,7 @@ public class HomeActivity extends BaseActivity {
     RadioGroup mTabRadioGroup;
 
     private SparseArray<Fragment> mFragmentSparseArray;
+    private static boolean mBackKeyPressed = false;//是否按下返回键
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -92,6 +97,22 @@ public class HomeActivity extends BaseActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mBackKeyPressed) {
+            ToastUtils.showShort("再按一次退出程序");
+            mBackKeyPressed = true;
+            title.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mBackKeyPressed = false;
+                }
+            }, 2000);
+        } else {
+            System.exit(0);
         }
     }
 

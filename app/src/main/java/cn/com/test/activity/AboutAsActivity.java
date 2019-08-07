@@ -19,15 +19,11 @@ import com.yanzhenjie.nohttp.download.DownloadQueue;
 import com.yanzhenjie.nohttp.download.DownloadRequest;
 
 import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
-import cn.com.test.bean.CartBean;
 import cn.com.test.utils.ToastUtils;
 
 public class AboutAsActivity extends BaseActivity {
@@ -68,7 +64,7 @@ public class AboutAsActivity extends BaseActivity {
             //8.0及以上系统，且没有获取未知来源权限，需要先申请
             ToastUtils.showLong("请开启安装权限");
             Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-            startActivityForResult(intent, 10012);
+            startActivityForResult(intent, 0);
         } else {
             installAPK();
         }
@@ -81,10 +77,7 @@ public class AboutAsActivity extends BaseActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            Uri contentUri = FileProvider.getUriForFile(
-                    mContext
-                    , "cn.com.test.fileprovider"
-                    , apkFile);
+            Uri contentUri = FileProvider.getUriForFile(mContext, "cn.com.test.fileprovider", apkFile);
             intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
         } else {
             intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
@@ -127,7 +120,7 @@ public class AboutAsActivity extends BaseActivity {
 
             @Override
             public void onProgress(int what, int progress, long fileCount, long speed) {
-                dialog.setMessage("下载" + progress + "%");
+                dialog.setMessage("下载" + progress + "%…");
             }
 
             @Override

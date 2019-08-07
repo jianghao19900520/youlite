@@ -35,8 +35,6 @@ public class HomeActivity extends BaseActivity {
 
     private SparseArray<Fragment> mFragmentSparseArray;
 
-    public static final int EXTERNAL_STORAGE_REQ_CODE = 0;//6.0系统开始需要申请读写权限
-
     @Override
     public void setContent(Bundle savedInstanceState) {
         setContentView(R.layout.activity_home);
@@ -92,8 +90,7 @@ public class HomeActivity extends BaseActivity {
             } else {
                 //进行权限请求
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        EXTERNAL_STORAGE_REQ_CODE);
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
             }
         }
     }

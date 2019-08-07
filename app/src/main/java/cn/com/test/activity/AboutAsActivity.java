@@ -1,5 +1,6 @@
 package cn.com.test.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -18,10 +19,15 @@ import com.yanzhenjie.nohttp.download.DownloadQueue;
 import com.yanzhenjie.nohttp.download.DownloadRequest;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.CartBean;
 import cn.com.test.utils.ToastUtils;
 
 public class AboutAsActivity extends BaseActivity {
@@ -30,8 +36,9 @@ public class AboutAsActivity extends BaseActivity {
     TextView title;
 
     private DownloadRequest downloadRequest;
-    String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download";
-    String filename = "youlite.apk";
+    private String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download";
+    private String filename = "youlite.apk";
+    private ProgressDialog dialog;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -45,46 +52,7 @@ public class AboutAsActivity extends BaseActivity {
 
     @Override
     public void init() {
-        title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                downloadRequest = NoHttp.createDownloadRequest("http://zstore.2025123.com.cn/yuejian.apk", path, filename, false, true);
-                DownloadQueue downloadQueue = new DownloadQueue(1);
-                downloadQueue.add(0, downloadRequest, new DownloadListener() {
-                    @Override
-                    public void onDownloadError(int what, Exception exception) {
 
-                        System.out.println("onDownloadError" + exception);
-                    }
-
-                    @Override
-                    public void onStart(int what, boolean isResume, long rangeSize, Headers responseHeaders, long allCount) {
-
-                        System.out.println("onStart");
-                    }
-
-                    @Override
-                    public void onProgress(int what, int progress, long fileCount, long speed) {
-
-                        System.out.println("onProgress" + progress);
-                    }
-
-                    @Override
-                    public void onFinish(int what, String filePath) {
-
-                        System.out.println("onFinish");
-                        checkPermission();
-                    }
-
-                    @Override
-                    public void onCancel(int what) {
-
-                        System.out.println("onCancel");
-                    }
-                });
-                downloadQueue.start();
-            }
-        });
     }
 
     @Override
@@ -122,6 +90,65 @@ public class AboutAsActivity extends BaseActivity {
             intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
         }
         startActivity(intent);
+    }
+
+    @OnClick({R.id.about_as_check_updata_btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.about_as_check_updata_btn:
+                download();
+                break;
+        }
+    }
+
+    private void download() {
+        downloadRequest = NoHttp.createDownloadRequest("http://zstore.2025123.com.cn/yuejian.apk", path, filename, false, true);
+        DownloadQueue downloadQueue = new DownloadQueue(1);
+        downloadQueue.add(0, downloadRequest, new DownloadListener() {
+            @Override
+            public void onDownloadError(int what, Exception exception) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                    dialog = null;
+                }
+                ToastUtils.showLong("下载失败，请稍后重试");
+            }
+
+            @Override
+            public void onStart(int what, boolean isResume, long rangeSize, Headers responseHeaders, long allCount) {
+                if (dialog == null) {
+                    dialog = ProgressDialog.show(mContext, "提示", "下载中…", true, false, null);
+                } else {
+                    if (!dialog.isShowing()) {
+                        dialog.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onProgress(int what, int progress, long fileCount, long speed) {
+                dialog.setMessage("下载" + progress + "%");
+            }
+
+            @Override
+            public void onFinish(int what, String filePath) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                    dialog = null;
+                }
+                checkPermission();
+            }
+
+            @Override
+            public void onCancel(int what) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                    dialog = null;
+                }
+                ToastUtils.showLong("下载取消");
+            }
+        });
+        downloadQueue.start();
     }
 
 }

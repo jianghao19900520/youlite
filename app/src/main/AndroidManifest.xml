@@ -59,6 +59,10 @@
         <activity
             android:name=".activity.OrderDetailActivity"
             android:screenOrientation="portrait" />
+        <!--关于我们-->
+        <activity
+            android:name=".activity.AboutAsActivity"
+            android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -29,12 +29,6 @@ public class MineFragment extends BaseFragment {
     public void initTitle() {
         HomeActivity activity = (HomeActivity) getActivity();
         activity.title.setText("我的");
-        activity.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(mContext, AboutAsActivity.class));
-            }
-        });
     }
 
     @Override
@@ -47,11 +41,35 @@ public class MineFragment extends BaseFragment {
 
     }
 
-    @OnClick({R.id.mine_head_layout})
+    @OnClick({R.id.mine_head_layout, R.id.mine_person_layout,
+            R.id.mine_page_layout, R.id.mine_grade_layout,
+            R.id.mine_oder_layout, R.id.mine_address_layout,
+            R.id.mine_aboutus_layout, R.id.mine_setting_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.mine_head_layout:
                 ToastUtils.showShort("用户资料");
+                break;
+            case R.id.mine_person_layout:
+                ToastUtils.showShort("家庭成员");
+                break;
+            case R.id.mine_page_layout:
+                ToastUtils.showShort("我的贴子");
+                break;
+            case R.id.mine_grade_layout:
+                ToastUtils.showShort("我的收藏");
+                break;
+            case R.id.mine_oder_layout:
+                ToastUtils.showShort("我的订单");
+                break;
+            case R.id.mine_address_layout:
+                ToastUtils.showShort("地址管理");
+                break;
+            case R.id.mine_aboutus_layout:
+                startActivity(new Intent(mContext, AboutAsActivity.class));
+                break;
+            case R.id.mine_setting_layout:
+                ToastUtils.showShort("设置");
                 break;
         }
     }

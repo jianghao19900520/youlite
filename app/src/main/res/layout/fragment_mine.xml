@@ -52,6 +52,7 @@
             android:background="@color/backgroundColor" />
 
         <LinearLayout
+            android:id="@+id/mine_person_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"
@@ -84,6 +85,7 @@
             android:background="@color/lineColor" />
 
         <LinearLayout
+            android:id="@+id/mine_page_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"
@@ -116,6 +118,7 @@
             android:background="@color/lineColor" />
 
         <LinearLayout
+            android:id="@+id/mine_grade_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"
@@ -148,6 +151,7 @@
             android:background="@color/lineColor" />
 
         <LinearLayout
+            android:id="@+id/mine_oder_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"
@@ -159,7 +163,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@mipmap/mine_indent" />
+                android:src="@mipmap/mine_order" />
 
             <TextView
                 android:layout_width="0dp"
@@ -180,6 +184,7 @@
             android:background="@color/lineColor" />
 
         <LinearLayout
+            android:id="@+id/mine_address_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"
@@ -216,6 +221,7 @@
             android:background="@color/backgroundColor" />
 
         <LinearLayout
+            android:id="@+id/mine_aboutus_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"
@@ -256,6 +262,7 @@
             android:background="@color/lineColor" />
 
         <LinearLayout
+            android:id="@+id/mine_setting_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"

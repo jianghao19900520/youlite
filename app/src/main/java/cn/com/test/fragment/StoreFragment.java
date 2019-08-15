@@ -53,8 +53,8 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     @BindView(R.id.store_hot_list)
     ListViewForScrollView store_hot_list;
 
-    private ArrayList<String> list_path;
-    private ArrayList<String> list_title;
+    private ArrayList<String> banner_path;
+    private ArrayList<String> bannner_title;
     private List<JSONObject> goodsList;
     private CommAdapter<JSONObject> mAdapter;
 
@@ -71,28 +71,28 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
 
     @Override
     public void init() {
-        list_path = new ArrayList<>();
-        list_title = new ArrayList<>();
+        banner_path = new ArrayList<>();
+        bannner_title = new ArrayList<>();
         goodsList = new ArrayList<>();
         goodsList.add(new JSONObject());
         goodsList.add(new JSONObject());
         goodsList.add(new JSONObject());
         goodsList.add(new JSONObject());
         goodsList.add(new JSONObject());
-        list_path.add("http://pic.90sjimg.com/back_pic/00/00/69/40/3d07141c9523530da7b3dca9878413ec.jpg");
-        list_path.add("http://aliyunzixunbucket.oss-cn-beijing.aliyuncs.com/jpg/f8f05342c765bdca7fd92ecf302c6a57.jpg?x-oss-process=image/resize,p_100/auto-orient,1/quality,q_90/format,jpg/watermark,image_eXVuY2VzaGk=,t_100");
-        list_path.add("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg");
-        list_title.add("图片一");
-        list_title.add("图片二");
-        list_title.add("图片三");
+        banner_path.add("http://pic.90sjimg.com/back_pic/00/00/69/40/3d07141c9523530da7b3dca9878413ec.jpg");
+        banner_path.add("http://aliyunzixunbucket.oss-cn-beijing.aliyuncs.com/jpg/f8f05342c765bdca7fd92ecf302c6a57.jpg?x-oss-process=image/resize,p_100/auto-orient,1/quality,q_90/format,jpg/watermark,image_eXVuY2VzaGk=,t_100");
+        banner_path.add("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg");
+        bannner_title.add("图片一");
+        bannner_title.add("图片二");
+        bannner_title.add("图片三");
         banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
         banner.setImageLoader(new StoreFragment.BanerImgLoader());
         banner.setBannerAnimation(Transformer.Default);
-        banner.setBannerTitles(list_title);
+        banner.setBannerTitles(bannner_title);
         banner.setDelayTime(3000);
         banner.isAutoPlay(true);
         banner.setIndicatorGravity(BannerConfig.CENTER);
-        banner.setImages(list_path)
+        banner.setImages(banner_path)
                 .setOnBannerListener(this)
                 .start();
         mAdapter = new CommAdapter<JSONObject>(mContext, goodsList, R.layout.item_store_goods_hot) {

@@ -14,7 +14,7 @@
             android:id="@+id/mine_head_layout"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:background="@color/mainColor"
+            android:background="@mipmap/mine_background"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingLeft="50dp"

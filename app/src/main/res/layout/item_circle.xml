@@ -12,7 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="这是我的检查结果"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="糖尿病本身并不可怕，可怕的是它可以诱发多种严重的并发症。"
         android:textColor="#333333"
         android:textSize="18dp" />
 
@@ -49,6 +51,8 @@
                 android:id="@+id/item_circle_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
                 android:text="匿名用户1"
                 android:textColor="#333333"
                 android:textSize="18dp" />
@@ -63,7 +67,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
@@ -84,17 +88,17 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:src="@mipmap/circle_share" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="1"
+                        android:text="12"
                         android:textColor="#999999"
-                        android:textSize="15dp" />
+                        android:textSize="18dp" />
 
                 </LinearLayout>
 
@@ -104,9 +108,10 @@
                 android:layout_width="1px"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
                 android:background="@color/lineColor" />
-
 
             <RelativeLayout
                 android:layout_width="0dp"
@@ -121,17 +126,17 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:src="@mipmap/circle_postlike" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="1"
+                        android:text="25"
                         android:textColor="#999999"
-                        android:textSize="15dp" />
+                        android:textSize="18dp" />
 
                 </LinearLayout>
 

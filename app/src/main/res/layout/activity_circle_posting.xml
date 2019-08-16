@@ -53,13 +53,18 @@
 
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="200dp"
                 android:background="#ffffff"
                 android:gravity="top"
                 android:hint="请输入内容，不能少于10个字..."
                 android:padding="10dp"
                 android:textColor="#333333"
                 android:textSize="18dp" />
+
+            <cn.com.test.view.ListViewForScrollView
+                android:id="@+id/circle_posting_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:layout_width="match_parent"

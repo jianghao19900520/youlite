@@ -1,6 +1,7 @@
 package cn.com.test.activity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.RequestMethod;
@@ -8,6 +9,7 @@ import com.yanzhenjie.nohttp.RequestMethod;
 import butterknife.BindView;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.utils.ToastUtils;
 
 public class CirclePostingActivity extends BaseActivity {
 

@@ -31,6 +31,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
+import cn.com.test.activity.CirclePostingActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.OrderDetailActivity;
 import cn.com.test.adapter.CommAdapter;
@@ -155,7 +156,7 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
         }
     }
 
-    @OnClick({R.id.new_dynamic_text, R.id.friend_dynamic_text})
+    @OnClick({R.id.new_dynamic_text, R.id.friend_dynamic_text, R.id.circle_posting_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.new_dynamic_text:
@@ -169,6 +170,9 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                 friend_dynamic_text.setTextColor(getResources().getColor(R.color.mainColor));
                 new_dynamic_line.setVisibility(View.INVISIBLE);
                 friend_dynamic_line.setVisibility(View.VISIBLE);
+                break;
+            case R.id.circle_posting_layout:
+                startActivity(new Intent(mContext, CirclePostingActivity.class));
                 break;
         }
     }

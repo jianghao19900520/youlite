@@ -63,6 +63,10 @@
         <activity
             android:name=".activity.AboutAsActivity"
             android:screenOrientation="portrait" />
+        <!--发帖-->
+        <activity
+            android:name=".activity.CirclePostingActivity"
+            android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

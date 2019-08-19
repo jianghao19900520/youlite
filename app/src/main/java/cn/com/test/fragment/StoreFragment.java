@@ -39,8 +39,11 @@ import cn.com.test.activity.SearchActivity;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseFragment;
+import cn.com.test.constant.Constant;
 import cn.com.test.http.BaseCallBack;
+import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 import cn.com.test.view.ListViewForScrollView;
 
@@ -155,30 +158,21 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
-                object.put("pageIndex", "0");
-                object.put("pageSize", "10");
-                object.put("code", "1009000007");
-                object.put("classId", "2vom16jhrfz");
-                object.put("classLevel", "3");
-                object.put("operatorNo", "1009000007");
-                relativeUrl = "product/searchb2c";
+                object.put("paramsMap", new JSONObject().put("limit", 10).put("page", 1));
+                relativeUrl = "test/apiTest";
             }
-            NetHelper.getInstance().request(mContext, relativeUrl, object, method, new BaseCallBack(what, msg) {
+            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
-                public void onSucceed(int what, Response response) {
+                public void onSucceed(int what, JSONObject jsonObject) {
+                    ToastUtils.showShort("onSucceed");
                     try {
-                        JSONObject jsonObject = (JSONObject) response.get();
-                        if (jsonObject.toString().contains("code")) {
-                            int code = jsonObject.getInt("code");
-                            if (code == 0) {
-                                if (what == 1) {
-                                    ToastUtils.showShort("接口请求成功");
-                                }
-                            } else {
-                                ToastUtils.showShort(jsonObject.getString("message"));
+                        int status = jsonObject.getInt("status");
+                        if (status == 0) {
+                            if (what == 1) {
+                                ToastUtils.showShort("接口请求成功");
                             }
                         } else {
-                            ToastUtils.showShort(getString(R.string.error_http));
+                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

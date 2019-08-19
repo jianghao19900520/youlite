@@ -15,6 +15,9 @@ import com.yanzhenjie.nohttp.rest.OnResponseListener;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.Response;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import cn.com.test.R;
 import cn.com.test.utils.LogUtils;
 import cn.com.test.utils.ToastUtils;
@@ -82,8 +85,12 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
     @Override
     public void onSucceed(int what, Response<T> response) {
         if (callback != null) {
-            LogUtils.json(response.get().toString());
-            callback.onSucceed(what, response);
+            try {
+                LogUtils.json(response.get().toString());
+                callback.onSucceed(what, new JSONObject(response.get().toString()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

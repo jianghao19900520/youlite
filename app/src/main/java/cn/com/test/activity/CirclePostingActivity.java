@@ -232,7 +232,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
     //用户未同意权限
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        ToastUtils.showShort("1111111111111");
+
     }
 }
 

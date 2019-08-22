@@ -2,6 +2,7 @@ package cn.com.test.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,8 +12,13 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -65,23 +71,58 @@ public class CirclePostingActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.circle_posting_camera_btn})
+    @OnClick({R.id.circle_posting_camera_btn, R.id.circle_posting_submit_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.circle_posting_camera_btn:
-//                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//                    //未授权，申请授权(从相册选择图片需要读取存储卡的权限)
-//                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RC_CHOOSE_PHOTO);
-//                } else {
-//                    //已授权，获取照片
-//                    choosePhoto();
-//                }
+                showBottomDialog();
+                break;
+            case R.id.circle_posting_submit_btn:
+                for (int i = 0; i < circle_posting_img_layout.getChildCount(); i++) {
+                    ImageView imageView = (ImageView) circle_posting_img_layout.getChildAt(i);
+                    String path = (String) imageView.getTag(R.id.indexTag);//要上传的图片路径
+                }
+                break;
+        }
+    }
+
+    private void showBottomDialog() {
+        final Dialog dialog = new Dialog(this, R.style.DialogTheme);
+        View view = View.inflate(this, R.layout.dialog_custom_layout, null);
+        dialog.setContentView(view);
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.BOTTOM);
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.show();
+        dialog.findViewById(R.id.tv_take_photo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 saveUri = Uri.fromFile(new File(path, System.currentTimeMillis() + ".jpg"));
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, saveUri);
                 startActivityForResult(intent, RC_TAKE_PHOTO);
-                break;
-        }
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.tv_take_pic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    //未授权，申请授权(从相册选择图片需要读取存储卡的权限)
+                    ActivityCompat.requestPermissions(CirclePostingActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RC_CHOOSE_PHOTO);
+                } else {
+                    //已授权，获取照片
+                    choosePhoto();
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.tv_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
     }
 
     /**
@@ -110,9 +151,11 @@ public class CirclePostingActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         switch (requestCode) {
             case RC_CHOOSE_PHOTO:
+                if (data == null) {
+                    return;
+                }
                 Uri uri = data.getData();
                 String filePath = FileUtils.getFilePathByUri(this, uri);
                 if (!TextUtils.isEmpty(filePath)) {
@@ -120,7 +163,7 @@ public class CirclePostingActivity extends BaseActivity {
                     RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
                     Glide.with(mContext).load(filePath).apply(requestOptions).into(imageView);
                     circle_posting_img_layout.addView(imageView);
-                    imageView.setTag(uri);
+                    imageView.setTag(R.id.indexTag, filePath);
                     imageView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(final View view) {
@@ -143,7 +186,7 @@ public class CirclePostingActivity extends BaseActivity {
                 RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
                 Glide.with(mContext).load(FileUtils.getFilePathByUri(this, saveUri)).apply(requestOptions).into(imageView);
                 circle_posting_img_layout.addView(imageView);
-                imageView.setTag(saveUri);
+                imageView.setTag(R.id.indexTag, FileUtils.getFilePathByUri(this, saveUri));
                 imageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(final View view) {

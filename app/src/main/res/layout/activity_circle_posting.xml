@@ -133,6 +133,7 @@
                     android:background="@color/lineColor" />
 
                 <TextView
+                    android:id="@+id/circle_posting_submit_btn"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_margin="50dp"

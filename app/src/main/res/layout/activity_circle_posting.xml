@@ -61,10 +61,13 @@
                 android:textColor="#333333"
                 android:textSize="18dp" />
 
-            <cn.com.test.view.ListViewForScrollView
-                android:id="@+id/circle_posting_listview"
+            <LinearLayout
+                android:id="@+id/circle_posting_img_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:orientation="vertical" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -77,6 +80,7 @@
                     android:layout_height="60dp">
 
                     <ImageView
+                        android:id="@+id/circle_posting_camera_btn"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_alignParentRight="true"

@@ -164,7 +164,6 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
                 public void onSucceed(int what, JSONObject jsonObject) {
-                    ToastUtils.showShort("onSucceed");
                     try {
                         int status = jsonObject.getInt("status");
                         if (status == 0) {

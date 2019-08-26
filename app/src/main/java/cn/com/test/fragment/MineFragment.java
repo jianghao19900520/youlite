@@ -14,6 +14,7 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.activity.AboutAsActivity;
 import cn.com.test.activity.HomeActivity;
+import cn.com.test.activity.LoginActivity;
 import cn.com.test.base.BaseFragment;
 import cn.com.test.utils.ToastUtils;
 
@@ -48,7 +49,7 @@ public class MineFragment extends BaseFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.mine_head_layout:
-                ToastUtils.showShort("用户资料");
+                startActivity(new Intent(mContext, LoginActivity.class));
                 break;
             case R.id.mine_person_layout:
                 ToastUtils.showShort("家庭成员");

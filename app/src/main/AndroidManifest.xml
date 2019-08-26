@@ -28,6 +28,10 @@
         <activity
             android:name=".activity.GuideActivity"
             android:screenOrientation="portrait" />
+        <!--登录页-->
+        <activity
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait" />
         <!--主页-->
         <activity
             android:name=".activity.HomeActivity"

@@ -158,8 +158,9 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
-                object.put("paramsMap", new JSONObject().put("limit", 10).put("page", 1));
-                relativeUrl = "test/apiTest";
+                object.put("limit", 10);
+                object.put("page", 1);
+                relativeUrl = "health/test/apiTest";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override

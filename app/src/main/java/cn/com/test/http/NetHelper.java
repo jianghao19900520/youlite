@@ -46,20 +46,25 @@ public class NetHelper {
         try {
             String url = getAbsoluteUrl(relativeUrl);
             Request<String> request = NoHttp.createStringRequest(url, method);
+            JSONObject json = new JSONObject();
+            json.put("paramsMap", params);
             if (method == RequestMethod.POST) {
-                Iterator iterator = params.keys();
+                Iterator iterator = json.keys();
                 while (iterator.hasNext()) {
                     String key = (String) iterator.next();
-                    request.add(key, params.getString(key));
+                    request.add(key, json.getString(key));
                 }
-                LogUtils.i("post url------->", url);
+                LogUtils.i("http url post------->", url);
+            }
+            if (method == RequestMethod.GET) {
+                LogUtils.i("http url get------->", url);
             }
             String token = SPUtils.getInstance().getString(Constant.token);
             if (!TextUtils.isEmpty(token)) {
                 request.addHeader("token", token);
-                LogUtils.i("token------->        " + token);
+                LogUtils.i("http token------->        " + token);
             }
-            LogUtils.json("params", params.toString());
+            LogUtils.json("http json------->        ", json.toString());
             mQueue.add(what, request, new HttpResponseListener<String>(context, listener, msg));
         } catch (JSONException e) {
             e.printStackTrace();

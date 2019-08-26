@@ -82,9 +82,9 @@ public class GoodsInfoActivity extends BaseActivity {
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(goodsId)) {
+                        if (bean.getGoodsNo().equals(goodsId)) {
                             //已经有数据，就数量+1
-                            bean.setGoodsNum(bean.getGoodsNum() + 1);
+                            bean.setNum(bean.getNum() + 1);
                             bean.save();
                             cartRedpoint();
                             return;
@@ -102,7 +102,7 @@ public class GoodsInfoActivity extends BaseActivity {
                     //先检查该商品是否已经添加到购物车
                     List<CartBean> all2 = DataSupport.findAll(CartBean.class);
                     for (CartBean bean2 : all2) {
-                        if (bean2.getGoodsId().equals(goodsId)) {
+                        if (bean2.getGoodsNo().equals(goodsId)) {
                             //有的话就直接拿来用
                             submitOrderList.add(bean2);
                         }
@@ -221,7 +221,7 @@ public class GoodsInfoActivity extends BaseActivity {
         int num = 0;
         List<CartBean> all = DataSupport.findAll(CartBean.class);
         for (CartBean bean : all) {
-            num += bean.getGoodsNum();
+            num += bean.getNum();
         }
         cart_num_text.isShowZeroNumPoint(false);
         cart_num_text.setZeroRadius(10);

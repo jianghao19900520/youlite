@@ -5,29 +5,32 @@ import org.litepal.crud.DataSupport;
 
 import java.io.Serializable;
 
-public class CartBean extends DataSupport implements Serializable{
+public class CartBean extends DataSupport implements Serializable {
 
-    private String goodsId;//商品id
+    private String goodsNo;//商品id
     private String goodsName;//商品名称
-    private int goodsNum;//商品数量
-    private String goodsPriceNew;//商品现价
-    private String goodsPriceOld;//商品原价
+    private int num;//商品数量
+    private String newPrice;//商品现价
+    private String oldPrice;//商品原价
     private boolean isChecked = false;//是否被选中
 
-    public CartBean(String goodsId, int goodsNum, String goodsName, String goodsPriceNew, String goodsPriceOld) {
-        this.goodsId = goodsId;
-        this.goodsNum = goodsNum;
+    public CartBean() {
+    }
+
+    public CartBean(String goodsNo, int num, String goodsName, String newPrice, String oldPrice) {
+        this.goodsNo = goodsNo;
+        this.num = num;
         this.goodsName = goodsName;
-        this.goodsPriceNew = goodsPriceNew;
-        this.goodsPriceOld = goodsPriceOld;
+        this.newPrice = newPrice;
+        this.oldPrice = oldPrice;
     }
 
-    public String getGoodsId() {
-        return goodsId;
+    public String getGoodsNo() {
+        return goodsNo;
     }
 
-    public void setGoodsId(String goodsId) {
-        this.goodsId = goodsId;
+    public void setGoodsNo(String goodsNo) {
+        this.goodsNo = goodsNo;
     }
 
     public String getGoodsName() {
@@ -38,28 +41,28 @@ public class CartBean extends DataSupport implements Serializable{
         this.goodsName = goodsName;
     }
 
-    public int getGoodsNum() {
-        return goodsNum;
+    public int getNum() {
+        return num;
     }
 
-    public void setGoodsNum(int goodsNum) {
-        this.goodsNum = goodsNum;
+    public void setNum(int num) {
+        this.num = num;
     }
 
-    public String getGoodsPriceNew() {
-        return goodsPriceNew;
+    public String getNewPrice() {
+        return newPrice;
     }
 
-    public void setGoodsPriceNew(String goodsPriceNew) {
-        this.goodsPriceNew = goodsPriceNew;
+    public void setNewPrice(String newPrice) {
+        this.newPrice = newPrice;
     }
 
-    public String getGoodsPriceOld() {
-        return goodsPriceOld;
+    public String getOldPrice() {
+        return oldPrice;
     }
 
-    public void setGoodsPriceOld(String goodsPriceOld) {
-        this.goodsPriceOld = goodsPriceOld;
+    public void setOldPrice(String oldPrice) {
+        this.oldPrice = oldPrice;
     }
 
     public boolean isChecked() {

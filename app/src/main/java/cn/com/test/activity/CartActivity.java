@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
@@ -35,6 +36,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.AddressBean;
 import cn.com.test.bean.CartBean;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
@@ -85,22 +87,21 @@ public class CartActivity extends BaseActivity {
                 refreshAllPrice();
             }
         });
-        loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        refreshCart();
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
     }
 
     /*
         刷新列表
          */
-    private void refreshCart() {
+    private void refreshCart(JSONArray carList) throws JSONException {
         cartList.clear();
-        List<CartBean> all = DataSupport.findAll(CartBean.class);
-        for (CartBean bean : all) {
+        for (int i = 0; i < carList.length(); i++) {
+            CartBean bean = JSON.parseObject(carList.getJSONObject(i).toString(), CartBean.class);
             cartList.add(bean);
         }
         mAdapter.notifyDataSetChanged();
@@ -115,7 +116,7 @@ public class CartActivity extends BaseActivity {
         int checkNum = 0;
         for (CartBean bean : cartList) {
             if (bean.isChecked()) {
-                String itemPrice = ArithUtils.mul(bean.getGoodsPriceNew(), String.valueOf(bean.getGoodsNum()));
+                String itemPrice = ArithUtils.mul(bean.getNewPrice(), String.valueOf(bean.getNum()));
                 allPrice = ArithUtils.add(allPrice, itemPrice);
                 checkNum += 1;
             }
@@ -167,6 +168,8 @@ public class CartActivity extends BaseActivity {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
+                                JSONArray carList = result.getJSONArray("carList");
+                                refreshCart(carList);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -234,11 +237,11 @@ public class CartActivity extends BaseActivity {
             viewHolder.item_goods_scroll.scrollTo(0, 0);
             viewHolder.item_goods_check.setChecked(cartList.get(position).isChecked());
             viewHolder.item_goods_name.setText(cartList.get(position).getGoodsName());
-            viewHolder.item_goods_newprice.setText("￥" + cartList.get(position).getGoodsPriceNew());
-            viewHolder.item_goods_oldprice.setText("￥" + cartList.get(position).getGoodsPriceOld());
+            viewHolder.item_goods_newprice.setText("￥" + cartList.get(position).getNewPrice());
+            viewHolder.item_goods_oldprice.setText("￥" + cartList.get(position).getOldPrice());
             viewHolder.item_goods_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_goods_num.setText("x " + String.valueOf(cartList.get(position).getGoodsNum()));
-            viewHolder.item_goods_num_btn.setText(String.valueOf(cartList.get(position).getGoodsNum()));
+            viewHolder.item_goods_num.setText("x " + String.valueOf(cartList.get(position).getNum()));
+            viewHolder.item_goods_num_btn.setText(String.valueOf(cartList.get(position).getNum()));
             //动态设置宽度
             ViewGroup.LayoutParams params = viewHolder.item_goods_content_layout.getLayoutParams();
             params.width = width;
@@ -248,16 +251,16 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量减1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).getGoodsNum() - 1;
+                    int num = cartList.get(position).getNum() - 1;
                     if (num < 1) num = 1;
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
-                            bean.setGoodsNum(num);
+                        if (bean.getGoodsNo().equals(cartList.get(position).getGoodsNo())) {
+                            bean.setNum(num);
                             bean.save();
                         }
                     }
-                    refreshCart();
+                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
                 }
             });
             viewHolder.item_goods_plus_btn.setOnClickListener(new View.OnClickListener() {
@@ -265,16 +268,16 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量加1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).getGoodsNum() + 1;
+                    int num = cartList.get(position).getNum() + 1;
                     if (num < 1) num = 1;
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
-                            bean.setGoodsNum(num);
+                        if (bean.getGoodsNo().equals(cartList.get(position).getGoodsNo())) {
+                            bean.setNum(num);
                             bean.save();
                         }
                     }
-                    refreshCart();
+                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
                 }
             });
             viewHolder.item_goods_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -311,11 +314,11 @@ public class CartActivity extends BaseActivity {
                     int position = (int) view.getTag();
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
-                        if (bean.getGoodsId().equals(cartList.get(position).getGoodsId())) {
+                        if (bean.getGoodsNo().equals(cartList.get(position).getGoodsNo())) {
                             bean.delete();
                         }
                     }
-                    refreshCart();
+                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
                 }
             });
             return view;

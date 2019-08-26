@@ -78,7 +78,7 @@ public class ConfirmOrderActivity extends BaseActivity {
         goodsList = (ArrayList<CartBean>) bundleObject.getSerializable("goodsList");
         if (goodsList == null || goodsList.size() == 0) finish();
         for (CartBean bean : goodsList) {
-            String itemPrice = ArithUtils.mul(bean.getGoodsPriceNew(), String.valueOf(bean.getGoodsNum()));
+            String itemPrice = ArithUtils.mul(bean.getNewPrice(), String.valueOf(bean.getNum()));
             goods_money = ArithUtils.add(goods_money, itemPrice);
         }
         goods_money_text.setText(goods_money);
@@ -124,7 +124,7 @@ public class ConfirmOrderActivity extends BaseActivity {
                         List<CartBean> all = DataSupport.findAll(CartBean.class);
                         for (CartBean bean : goodsList) {
                             for (CartBean bean2 : all) {
-                                if (bean.getGoodsId().equals(bean2.getGoodsId())) {
+                                if (bean.getGoodsNo().equals(bean2.getGoodsNo())) {
                                     //删除该条商品的数据库数据
                                     bean2.delete();
                                 }
@@ -250,10 +250,10 @@ public class ConfirmOrderActivity extends BaseActivity {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             viewHolder.item_goods_name.setText(goodsList.get(position).getGoodsName());
-            viewHolder.item_goods_newprice.setText("￥" + goodsList.get(position).getGoodsPriceNew());
-            viewHolder.item_goods_oldprice.setText("￥" + goodsList.get(position).getGoodsPriceOld());
+            viewHolder.item_goods_newprice.setText("￥" + goodsList.get(position).getNewPrice());
+            viewHolder.item_goods_oldprice.setText("￥" + goodsList.get(position).getOldPrice());
             viewHolder.item_goods_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-            viewHolder.item_goods_num.setText("x " + String.valueOf(goodsList.get(position).getGoodsNum()));
+            viewHolder.item_goods_num.setText("x " + String.valueOf(goodsList.get(position).getNum()));
             viewHolder.item_goods_check.setVisibility(View.GONE);
             viewHolder.item_del_btn.setVisibility(View.GONE);
             viewHolder.item_goods_num_layout.setVisibility(View.GONE);

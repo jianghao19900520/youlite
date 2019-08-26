@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,8 @@ import cn.com.test.view.ListViewForScrollView;
 
 public class StoreFragment extends BaseFragment implements OnBannerListener {
 
+    @BindView(R.id.store_scroll_view)
+    ScrollView store_scroll_view;
     @BindView(R.id.banner)
     Banner banner;
     @BindView(R.id.store_new_layout)
@@ -92,11 +95,10 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
                         @Override
                         public void onClick(View view) {
                             try {
-                                ToastUtils.showShort(item.getString("goodsNo"));
+                                startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", item.getString("goodsNo")));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-//                    startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", "123456"));
                         }
                     });
                 } catch (Exception e) {
@@ -109,7 +111,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     }
 
     /**
-     * @param what 1.获取热销商品数据
+     * @param what 1.商城首页数据
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -133,6 +135,12 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
                                 setBanner(bannerList);
                                 setNewGoodsList(newGoodsList);
                                 setHotGoodsList(hotGoodsList);
+                                store_scroll_view.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        store_scroll_view.scrollTo(0, 0);
+                                    }
+                                }, 200);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -212,11 +220,10 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
                 @Override
                 public void onClick(View view) {
                     try {
-                        ToastUtils.showShort(newGoodsObject.getString("goodsNo"));
+                        startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", newGoodsObject.getString("goodsNo")));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-//                    startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", "123456"));
                 }
             });
             store_new_layout.addView(view);

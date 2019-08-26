@@ -40,7 +40,7 @@
             android:gravity="center_vertical"
             android:text="￥99.00"
             android:textColor="@color/payColor"
-            android:textSize="13dp" />
+            android:textSize="14dp" />
 
         <TextView
             android:id="@+id/item_store_oldprice"

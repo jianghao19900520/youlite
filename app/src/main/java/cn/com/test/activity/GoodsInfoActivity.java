@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.atoliu.redpoint.TLRedPointView;
 import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +29,10 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
+import cn.com.test.constant.Constant;
+import cn.com.test.http.HttpListener;
+import cn.com.test.http.NetHelper;
+import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 
 public class GoodsInfoActivity extends BaseActivity {
@@ -131,9 +136,49 @@ public class GoodsInfoActivity extends BaseActivity {
         cartRedpoint();
     }
 
+    /**
+     * @param what 1.密码登录
+     */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
+        try {
+            final JSONObject object = new JSONObject();
+            String relativeUrl = "";
+            if (what == 1) {
+                object.put("goodsNo", goodsId);
+                relativeUrl = "health/goodsInfo";
+            }
+            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
+                @Override
+                public void onSucceed(int what, JSONObject jsonObject) {
+                    try {
+                        int status = jsonObject.getInt("status");
+                        if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
+                            if (what == 1) {
+                                String token = result.getString("token");
+                                if (!TextUtils.isEmpty(token)) {
+                                    SPUtils.getInstance().put(Constant.token, token);
+                                    finish();
+                                }
+                            }
+                        } else {
+                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ToastUtils.showShort(getString(R.string.error_http));
+                    }
+                }
 
+                @Override
+                public void onFailed(int what, Response response) {
+                    ToastUtils.showShort(getString(R.string.error_http));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /*

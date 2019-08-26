@@ -13,12 +13,18 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.Serializable;
@@ -30,7 +36,10 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.CartBean;
+import cn.com.test.http.HttpListener;
+import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ArithUtils;
+import cn.com.test.utils.ToastUtils;
 
 public class CartActivity extends BaseActivity {
 
@@ -76,6 +85,7 @@ public class CartActivity extends BaseActivity {
                 refreshAllPrice();
             }
         });
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
     }
 
     @Override
@@ -138,9 +148,43 @@ public class CartActivity extends BaseActivity {
         }
     }
 
+    /**
+     * @param what 1.获取购物车列表
+     */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
+        try {
+            final JSONObject object = new JSONObject();
+            String relativeUrl = "";
+            if (what == 1) {
+                relativeUrl = "health/cartList";
+            }
+            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
+                @Override
+                public void onSucceed(int what, JSONObject jsonObject) {
+                    try {
+                        int status = jsonObject.getInt("status");
+                        if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
+                            if (what == 1) {
+                            }
+                        } else {
+                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ToastUtils.showShort(getString(R.string.error_http));
+                    }
+                }
 
+                @Override
+                public void onFailed(int what, Response response) {
+                    ToastUtils.showShort(getString(R.string.error_http));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private class CartAdapter extends BaseAdapter {

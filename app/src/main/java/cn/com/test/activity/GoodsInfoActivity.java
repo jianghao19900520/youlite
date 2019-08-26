@@ -78,6 +78,7 @@ public class GoodsInfoActivity extends BaseActivity {
                 }
                 break;
             case R.id.add_cart_btn:
+                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
                     List<CartBean> all = DataSupport.findAll(CartBean.class);
                     for (CartBean bean : all) {
@@ -137,7 +138,7 @@ public class GoodsInfoActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取商品详情
+     * @param what 1.获取商品详情 2.添加到购物车
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -147,6 +148,10 @@ public class GoodsInfoActivity extends BaseActivity {
             if (what == 1) {
                 object.put("goodsNo", goodsId);
                 relativeUrl = "health/goodsInfo";
+            } else if (what == 2) {
+                object.put("goodsNo", goodsId);
+                object.put("num", 1);
+                relativeUrl = "health/addCart";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override

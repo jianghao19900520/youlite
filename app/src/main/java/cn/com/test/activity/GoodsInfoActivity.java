@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
@@ -53,9 +54,9 @@ public class GoodsInfoActivity extends BaseActivity {
     TLRedPointView cart_num_text;
 
     private String goodsId;//商品id
-    private String goodsName = "CKD低磷蛋白粉体验装";//商品名称
-    private String goodsPriceNew = "99.00";//商品现价
-    private String goodsPriceOld = "199.00";//商品原价
+    private String goodsName = "";//商品名称
+    private String goodsPriceNew = "0.00";//商品现价
+    private String goodsPriceOld = "0.00";//商品原价
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -85,10 +86,8 @@ public class GoodsInfoActivity extends BaseActivity {
                     }
                 }
                 //数据库还没有该条数据，则新增
-                //CartBean bean = new CartBean(goodsId, 1, "CKD低磷蛋白粉体验装", "￥99.00", "￥199.00");
-                //bean.save();
-                new CartBean(goodsId, 1, "低磷蛋白粉体验装111", "99.00", "199.00").save();
-                new CartBean("654321", 2, "低磷蛋白粉体验装222", "39.00", "79.00").save();
+                CartBean bean = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
+                bean.save();
                 cartRedpoint();
                 break;
             case R.id.buy_now_btn:
@@ -121,13 +120,7 @@ public class GoodsInfoActivity extends BaseActivity {
             finish();
         }
         setViewHeightByWidth(goods_main_img);
-        Glide.with(mContext).load("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg").into(goods_main_img);
-        goods_price_old.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        for (int i = 0; i < 5; i++) {
-            ImageView iv = new ImageView(mContext);
-            Glide.with(mContext).load("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg").into(iv);
-            goods_info_imgs.addView(iv);
-        }
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
     @Override
@@ -137,7 +130,7 @@ public class GoodsInfoActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.密码登录
+     * @param what 1.获取商品详情
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -156,10 +149,19 @@ public class GoodsInfoActivity extends BaseActivity {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
-                                String token = result.getString("token");
-                                if (!TextUtils.isEmpty(token)) {
-                                    SPUtils.getInstance().put(Constant.token, token);
-                                    finish();
+                                Glide.with(mContext).load(result.getString("toLoad")).into(goods_main_img);
+                                goodsName = result.getString("goodsName");//商品名称
+                                goodsPriceNew = result.getString("newPrice");//商品现价
+                                goodsPriceOld = result.getString("oldPrice");//商品原价
+                                goods_name.setText(goodsName);
+                                goods_price_new.setText(goodsPriceNew);
+                                goods_price_old.setText(goodsPriceOld);
+                                goods_price_old.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
+                                JSONArray picList = result.getJSONArray("picList");
+                                for (int i = 0; i < picList.length(); i++) {
+                                    ImageView iv = new ImageView(mContext);
+                                    Glide.with(mContext).load(picList.getJSONObject(i).getString("upload")).into(iv);
+                                    goods_info_imgs.addView(iv);
                                 }
                             }
                         } else {

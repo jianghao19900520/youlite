@@ -6,6 +6,7 @@
     android:orientation="horizontal">
 
     <ImageView
+        android:id="@+id/goods_img"
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:layout_marginBottom="10dp"
@@ -22,6 +23,7 @@
         android:padding="10dp">
 
         <TextView
+            android:id="@+id/goods_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -31,6 +33,7 @@
             android:textSize="16dp" />
 
         <TextView
+            android:id="@+id/item_store_newprice"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -40,7 +43,7 @@
             android:textSize="13dp" />
 
         <TextView
-            android:id="@+id/item_store_hot_oldprice"
+            android:id="@+id/item_store_oldprice"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"

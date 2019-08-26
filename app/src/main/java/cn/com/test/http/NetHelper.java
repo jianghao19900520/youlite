@@ -55,6 +55,7 @@ public class NetHelper {
                     request.add(key, json.getString(key));
                 }
                 LogUtils.i("http url post------->", url);
+                LogUtils.json("http json------->        ", json.toString());
             }
             if (method == RequestMethod.GET) {
                 LogUtils.i("http url get------->", url);
@@ -64,7 +65,6 @@ public class NetHelper {
                 request.addHeader("token", token);
                 LogUtils.i("http token------->        " + token);
             }
-            LogUtils.json("http json------->        ", json.toString());
             mQueue.add(what, request, new HttpResponseListener<String>(context, listener, msg));
         } catch (JSONException e) {
             e.printStackTrace();

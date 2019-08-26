@@ -61,8 +61,9 @@ public class LoginActivity extends BaseActivity {
                     try {
                         int status = jsonObject.getInt("status");
                         if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
-                                String token = jsonObject.getJSONObject("result").getString("token");
+                                String token = result.getString("token");
                                 if (!TextUtils.isEmpty(token)) {
                                     SPUtils.getInstance().put(Constant.token, token);
                                     finish();

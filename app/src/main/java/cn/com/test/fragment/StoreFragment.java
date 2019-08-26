@@ -22,6 +22,7 @@ import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
 import com.youth.banner.loader.ImageLoader;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -77,37 +78,25 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
         banner_path = new ArrayList<>();
         bannner_title = new ArrayList<>();
         goodsList = new ArrayList<>();
-        goodsList.add(new JSONObject());
-        goodsList.add(new JSONObject());
-        goodsList.add(new JSONObject());
-        goodsList.add(new JSONObject());
-        goodsList.add(new JSONObject());
-        banner_path.add("http://pic.90sjimg.com/back_pic/00/00/69/40/3d07141c9523530da7b3dca9878413ec.jpg");
-        banner_path.add("http://aliyunzixunbucket.oss-cn-beijing.aliyuncs.com/jpg/f8f05342c765bdca7fd92ecf302c6a57.jpg?x-oss-process=image/resize,p_100/auto-orient,1/quality,q_90/format,jpg/watermark,image_eXVuY2VzaGk=,t_100");
-        banner_path.add("http://pic.90sjimg.com/back_pic/00/00/69/40/531ac7b7f8b61276f1ad2dd0dd02921b.jpg");
-        bannner_title.add("图片一");
-        bannner_title.add("图片二");
-        bannner_title.add("图片三");
-        banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
-        banner.setImageLoader(new StoreFragment.BanerImgLoader());
-        banner.setBannerAnimation(Transformer.Default);
-        banner.setBannerTitles(bannner_title);
-        banner.setDelayTime(3000);
-        banner.isAutoPlay(true);
-        banner.setIndicatorGravity(BannerConfig.CENTER);
-        banner.setImages(banner_path)
-                .setOnBannerListener(this)
-                .start();
         mAdapter = new CommAdapter<JSONObject>(mContext, goodsList, R.layout.item_store_goods_hot) {
             @Override
-            public void convert(CommViewHolder holder, JSONObject item, int position) {
+            public void convert(CommViewHolder holder, final JSONObject item, int position) {
                 try {
-                    TextView oldPrice = holder.getView(R.id.item_store_hot_oldprice);
+                    holder.setImageByUrl(R.id.goods_img, item.getString("upload"));//商品图片
+                    holder.setText(R.id.goods_name, item.getString("goodsName"));//商品名称
+                    holder.setText(R.id.item_store_newprice, item.getString("newPrice"));//商品现价
+                    TextView oldPrice = holder.getView(R.id.item_store_oldprice);//商品原价
+                    oldPrice.setText(item.getString("oldPrice"));
                     oldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
                     holder.getConvertView().setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", "123456"));
+                            try {
+                                ToastUtils.showShort(item.getString("goodsNo"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+//                    startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", "123456"));
                         }
                     });
                 } catch (Exception e) {
@@ -116,37 +105,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             }
         };
         store_hot_list.setAdapter(mAdapter);
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
-        TextView oldPrice = view.findViewById(R.id.item_store_new_oldprice);
-        oldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        store_new_layout.addView(view);
-        View view2 = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
-        TextView oldPrice2 = view2.findViewById(R.id.item_store_new_oldprice);
-        oldPrice2.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        store_new_layout.addView(view2);
-        View view3 = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
-        TextView oldPrice3 = view3.findViewById(R.id.item_store_new_oldprice);
-        oldPrice3.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        store_new_layout.addView(view3);
-        View view4 = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
-        TextView oldPrice4 = view4.findViewById(R.id.item_store_new_oldprice);
-        oldPrice4.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        store_new_layout.addView(view4);
-        View view5 = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
-        TextView oldPrice5 = view5.findViewById(R.id.item_store_new_oldprice);
-        oldPrice5.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        store_new_layout.addView(view5);
-        View view6 = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
-        TextView oldPrice6 = view6.findViewById(R.id.item_store_new_oldprice);
-        oldPrice6.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-        store_new_layout.addView(view6);
-        store_new_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", "123456"));
-            }
-        });
-        loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
     }
 
     /**
@@ -158,9 +117,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
-                object.put("limit", 10);
-                object.put("page", 1);
-                relativeUrl = "health/test/apiTest";
+                relativeUrl = "health/storeInfo";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -168,8 +125,14 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
                     try {
                         int status = jsonObject.getInt("status");
                         if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
-                                ToastUtils.showShort("接口请求成功");
+                                JSONArray bannerList = result.getJSONArray("bannerList");//banner
+                                JSONArray newGoodsList = result.getJSONArray("newGoodsList");//新品上架
+                                JSONArray hotGoodsList = result.getJSONArray("hotGoodsList");//热销商品
+                                setBanner(bannerList);
+                                setNewGoodsList(newGoodsList);
+                                setHotGoodsList(hotGoodsList);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -191,6 +154,27 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     }
 
     /**
+     * banner
+     */
+    public void setBanner(JSONArray bannerList) throws JSONException {
+        for (int i = 0; i < bannerList.length(); i++) {
+            JSONObject bannerObject = bannerList.getJSONObject(i);
+            banner_path.add(bannerObject.getString("upload"));
+            bannner_title.add(bannerObject.getString("title"));
+        }
+        banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
+        banner.setImageLoader(new StoreFragment.BanerImgLoader());
+        banner.setBannerAnimation(Transformer.Default);
+        banner.setBannerTitles(bannner_title);
+        banner.setDelayTime(3000);
+        banner.isAutoPlay(true);
+        banner.setIndicatorGravity(BannerConfig.CENTER);
+        banner.setImages(banner_path)
+                .setOnBannerListener(this)
+                .start();
+    }
+
+    /**
      * banner轮播监听
      */
     @Override
@@ -204,9 +188,48 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     private class BanerImgLoader extends ImageLoader {
         @Override
         public void displayImage(Context context, Object path, ImageView imageView) {
-            Glide.with(context.getApplicationContext())
-                    .load((String) path)
-                    .into(imageView);
+            Glide.with(mContext).load((String) path).into(imageView);
+        }
+    }
+
+    /**
+     * 新品上架
+     */
+    public void setNewGoodsList(JSONArray newGoodsList) throws JSONException {
+        for (int i = 0; i < newGoodsList.length(); i++) {
+            final JSONObject newGoodsObject = newGoodsList.getJSONObject(i);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
+            ImageView goods_img = view.findViewById(R.id.goods_img);
+            Glide.with(mContext).load(newGoodsObject.getString("upload")).into(goods_img);//商品图片
+            TextView goods_name = view.findViewById(R.id.goods_name);
+            goods_name.setText(newGoodsObject.getString("goodsName"));//商品名称
+            TextView newPrice = view.findViewById(R.id.item_store_newprice);
+            newPrice.setText(newGoodsObject.getString("newPrice"));//商品现价
+            TextView oldPrice = view.findViewById(R.id.item_store_oldprice);
+            oldPrice.setText(newGoodsObject.getString("oldPrice"));//商品原价
+            oldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        ToastUtils.showShort(newGoodsObject.getString("goodsNo"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+//                    startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", "123456"));
+                }
+            });
+            store_new_layout.addView(view);
+        }
+    }
+
+    /**
+     * 热销商品
+     */
+    public void setHotGoodsList(JSONArray newGoodsList) throws JSONException {
+        for (int i = 0; i < newGoodsList.length(); i++) {
+            goodsList.add(newGoodsList.getJSONObject(i));
+            mAdapter.notifyDataSetChanged();
         }
     }
 

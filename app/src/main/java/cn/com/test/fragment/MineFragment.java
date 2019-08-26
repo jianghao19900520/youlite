@@ -71,8 +71,8 @@ public class MineFragment extends BaseFragment {
                     try {
                         int status = jsonObject.getInt("status");
                         if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
-                                JSONObject result = jsonObject.getJSONObject("result");
                                 String userNo = result.getString("userNo");
                                 if (TextUtils.isEmpty(userNo)) {
                                     user_name.setText("匿名用户");

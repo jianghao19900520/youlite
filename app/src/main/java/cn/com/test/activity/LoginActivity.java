@@ -43,7 +43,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取热销商品数据
+     * @param what 1.密码登录
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -91,7 +91,7 @@ public class LoginActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.login_btn:
-                loadData(1, null, "123", RequestMethod.POST);
+                loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                 break;
         }
     }

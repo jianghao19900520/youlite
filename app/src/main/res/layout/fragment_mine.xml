@@ -26,6 +26,7 @@
                 android:src="@mipmap/ic_head" />
 
             <TextView
+                android:id="@+id/user_name"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

@@ -33,6 +33,7 @@ import cn.com.test.bean.CartBean;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 
@@ -72,43 +73,49 @@ public class GoodsInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.goods_info_cart_btn:
-                startActivity(new Intent(mContext, CartActivity.class));
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    startActivity(new Intent(mContext, CartActivity.class));
+                }
                 break;
             case R.id.add_cart_btn:
-                List<CartBean> all = DataSupport.findAll(CartBean.class);
-                for (CartBean bean : all) {
-                    if (bean.getGoodsId().equals(goodsId)) {
-                        //已经有数据，就数量+1
-                        bean.setGoodsNum(bean.getGoodsNum() + 1);
-                        bean.save();
-                        cartRedpoint();
-                        return;
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    List<CartBean> all = DataSupport.findAll(CartBean.class);
+                    for (CartBean bean : all) {
+                        if (bean.getGoodsId().equals(goodsId)) {
+                            //已经有数据，就数量+1
+                            bean.setGoodsNum(bean.getGoodsNum() + 1);
+                            bean.save();
+                            cartRedpoint();
+                            return;
+                        }
                     }
+                    //数据库还没有该条数据，则新增
+                    CartBean bean = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
+                    bean.save();
+                    cartRedpoint();
                 }
-                //数据库还没有该条数据，则新增
-                CartBean bean = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
-                bean.save();
-                cartRedpoint();
                 break;
             case R.id.buy_now_btn:
-                List<CartBean> submitOrderList = new ArrayList();
-                //先检查该商品是否已经添加到购物车
-                List<CartBean> all2 = DataSupport.findAll(CartBean.class);
-                for (CartBean bean2 : all2) {
-                    if (bean2.getGoodsId().equals(goodsId)) {
-                        //有的话就直接拿来用
-                        submitOrderList.add(bean2);
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    List<CartBean> submitOrderList = new ArrayList();
+                    //先检查该商品是否已经添加到购物车
+                    List<CartBean> all2 = DataSupport.findAll(CartBean.class);
+                    for (CartBean bean2 : all2) {
+                        if (bean2.getGoodsId().equals(goodsId)) {
+                            //有的话就直接拿来用
+                            submitOrderList.add(bean2);
+                        }
                     }
+                    if (submitOrderList.size() == 0) {
+                        //没有的话就新建一个，同时也添加到购物车
+                        CartBean bean3 = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
+                        bean3.save();
+                        submitOrderList.add(bean3);
+                    }
+                    Bundle bundleObject = new Bundle();
+                    bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
+                    startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
                 }
-                if (submitOrderList.size() == 0) {
-                    //没有的话就新建一个，同时也添加到购物车
-                    CartBean bean3 = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
-                    bean3.save();
-                    submitOrderList.add(bean3);
-                }
-                Bundle bundleObject = new Bundle();
-                bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
-                startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
                 break;
         }
     }

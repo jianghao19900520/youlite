@@ -26,6 +26,7 @@ import cn.com.test.base.BaseFragment;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 
@@ -47,10 +48,10 @@ public class MineFragment extends BaseFragment {
 
     @Override
     public void init() {
-        if (TextUtils.isEmpty(SPUtils.getInstance().getString(Constant.token))) {
-            user_name.setText("用户未登录");
-        } else {
+        if (LoginUtils.getInstance().isLogin()) {
             loadData(1, null, "", RequestMethod.GET);
+        } else {
+            user_name.setText("用户未登录");
         }
     }
 

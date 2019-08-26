@@ -45,6 +45,7 @@ import cn.com.test.constant.Constant;
 import cn.com.test.http.BaseCallBack;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 import cn.com.test.view.ListViewForScrollView;
@@ -244,10 +245,14 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.store_cart_btn:
-                startActivity(new Intent(mContext, CartActivity.class));
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    startActivity(new Intent(mContext, CartActivity.class));
+                }
                 break;
             case R.id.store_my_order_btn:
-                startActivity(new Intent(mContext, MyOrderActivity.class));
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    startActivity(new Intent(mContext, MyOrderActivity.class));
+                }
                 break;
             case R.id.store_search_layout:
                 startActivity(new Intent(mContext, SearchActivity.class));

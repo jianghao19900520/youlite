@@ -118,21 +118,21 @@ public class ConfirmOrderActivity extends BaseActivity {
                 }
                 ToastUtils.showShort("订单提交成功");
                 //删除选中的购物车数据
-                submit_address_text.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<CartBean> all = DataSupport.findAll(CartBean.class);
-                        for (CartBean bean : goodsList) {
-                            for (CartBean bean2 : all) {
-                                if (bean.getGoodsNo().equals(bean2.getGoodsNo())) {
-                                    //删除该条商品的数据库数据
-                                    bean2.delete();
-                                }
-                            }
-                        }
-                        finish();
-                    }
-                }, 1000);
+//                submit_address_text.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        List<CartBean> all = DataSupport.findAll(CartBean.class);
+//                        for (CartBean bean : goodsList) {
+//                            for (CartBean bean2 : all) {
+//                                if (bean.getGoodsNo().equals(bean2.getGoodsNo())) {
+//                                    //删除该条商品的数据库数据
+//                                    bean2.delete();
+//                                }
+//                            }
+//                        }
+//                        finish();
+//                    }
+//                }, 1000);
                 break;
         }
     }

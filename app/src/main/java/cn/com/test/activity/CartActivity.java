@@ -150,7 +150,7 @@ public class CartActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取购物车列表
+     * @param what 1.获取购物车列表 2商品数量+1 3商品数量-1
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -159,6 +159,14 @@ public class CartActivity extends BaseActivity {
             String relativeUrl = "";
             if (what == 1) {
                 relativeUrl = "health/cartList";
+            } else if (what == 2) {
+                object.put("goodsNo", value[0]);
+                object.put("num", 1);
+                relativeUrl = "health/addCart";
+            } else if (what == 3) {
+                object.put("goodsNo", value[0]);
+                object.put("num", -1);
+                relativeUrl = "health/addCart";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -167,7 +175,7 @@ public class CartActivity extends BaseActivity {
                         int status = jsonObject.getInt("status");
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
-                            if (what == 1) {
+                            if (what == 1 || what == 2 || what == 3) {
                                 JSONArray carList = result.getJSONArray("carList");
                                 refreshCart(carList);
                             }
@@ -251,16 +259,7 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量减1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).getNum() - 1;
-                    if (num < 1) num = 1;
-                    List<CartBean> all = DataSupport.findAll(CartBean.class);
-                    for (CartBean bean : all) {
-                        if (bean.getGoodsNo().equals(cartList.get(position).getGoodsNo())) {
-                            bean.setNum(num);
-                            bean.save();
-                        }
-                    }
-                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+                    loadData(3, new String[]{cartList.get(position).getGoodsNo()}, getString(R.string.string_loading), RequestMethod.POST);
                 }
             });
             viewHolder.item_goods_plus_btn.setOnClickListener(new View.OnClickListener() {
@@ -268,16 +267,7 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //数量加1
                     int position = (int) view.getTag();
-                    int num = cartList.get(position).getNum() + 1;
-                    if (num < 1) num = 1;
-                    List<CartBean> all = DataSupport.findAll(CartBean.class);
-                    for (CartBean bean : all) {
-                        if (bean.getGoodsNo().equals(cartList.get(position).getGoodsNo())) {
-                            bean.setNum(num);
-                            bean.save();
-                        }
-                    }
-                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+                    loadData(2, new String[]{cartList.get(position).getGoodsNo()}, getString(R.string.string_loading), RequestMethod.POST);
                 }
             });
             viewHolder.item_goods_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -286,7 +276,6 @@ public class CartActivity extends BaseActivity {
                     int position = (int) compoundButton.getTag();
                     CartBean bean = cartList.get(position);
                     bean.setChecked(isChecked);
-                    bean.save();
                     refreshAllPrice();
                     if (isChecked) {
                         for (CartBean node : cartList) {
@@ -312,13 +301,7 @@ public class CartActivity extends BaseActivity {
                 public void onClick(View view) {
                     //删除
                     int position = (int) view.getTag();
-                    List<CartBean> all = DataSupport.findAll(CartBean.class);
-                    for (CartBean bean : all) {
-                        if (bean.getGoodsNo().equals(cartList.get(position).getGoodsNo())) {
-                            bean.delete();
-                        }
-                    }
-                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+
                 }
             });
             return view;

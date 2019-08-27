@@ -1,11 +1,8 @@
 package cn.com.test.bean;
 
-import org.json.JSONObject;
-import org.litepal.crud.DataSupport;
-
 import java.io.Serializable;
 
-public class CartBean extends DataSupport implements Serializable {
+public class CartBean implements Serializable {
 
     private String goodsNo;//商品id
     private String goodsName;//商品名称

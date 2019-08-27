@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".base.BaseApplication"
@@ -71,6 +71,14 @@
         <!--发帖-->
         <activity
             android:name=".activity.CirclePostingActivity"
+            android:screenOrientation="portrait" />
+        <!--地址管理-->
+        <activity
+            android:name=".activity.AddressManageActivity"
+            android:screenOrientation="portrait" />
+        <!--添加地址-->
+        <activity
+            android:name=".activity.AddressAddActivity"
             android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider

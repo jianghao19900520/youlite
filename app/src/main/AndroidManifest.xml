@@ -76,9 +76,9 @@
         <activity
             android:name=".activity.AddressManageActivity"
             android:screenOrientation="portrait" />
-        <!--添加地址-->
+        <!--地址编辑-->
         <activity
-            android:name=".activity.AddressAddActivity"
+            android:name=".activity.AddressEditActivity"
             android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider

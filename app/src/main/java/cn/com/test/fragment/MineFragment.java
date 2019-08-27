@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.activity.AboutAsActivity;
+import cn.com.test.activity.AddressManageActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.LoginActivity;
 import cn.com.test.base.BaseFragment;
@@ -123,7 +124,7 @@ public class MineFragment extends BaseFragment {
                 ToastUtils.showShort("我的订单");
                 break;
             case R.id.mine_address_layout:
-                ToastUtils.showShort("地址管理");
+                startActivity(new Intent(mContext, AddressManageActivity.class));
                 break;
             case R.id.mine_aboutus_layout:
                 startActivity(new Intent(mContext, AboutAsActivity.class));

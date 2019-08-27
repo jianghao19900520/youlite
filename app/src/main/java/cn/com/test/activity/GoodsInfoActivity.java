@@ -79,7 +79,7 @@ public class GoodsInfoActivity extends BaseActivity {
                 break;
             case R.id.add_cart_btn:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+                    loadData(3, null, getString(R.string.string_loading), RequestMethod.POST);
                 }
                 break;
             case R.id.buy_now_btn:
@@ -120,11 +120,11 @@ public class GoodsInfoActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        cartRedpoint();
+        loadData(2, null, "", RequestMethod.GET);
     }
 
     /**
-     * @param what 1.获取商品详情 2.添加到购物车
+     * @param what 1.获取商品详情 2.获取购物车列表 3.添加到购物车
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -135,6 +135,8 @@ public class GoodsInfoActivity extends BaseActivity {
                 object.put("goodsNo", goodsId);
                 relativeUrl = "health/goodsInfo";
             } else if (what == 2) {
+                relativeUrl = "health/cartList";
+            } else if (what == 3) {
                 object.put("goodsNo", goodsId);
                 object.put("num", 1);
                 relativeUrl = "health/addCart";
@@ -161,6 +163,8 @@ public class GoodsInfoActivity extends BaseActivity {
                                     Glide.with(mContext).load(picList.getJSONObject(i).getString("upload")).into(iv);
                                     goods_info_imgs.addView(iv);
                                 }
+                            } else if (what == 2 || what == 3) {
+                                cartRedpoint(result.getJSONArray("carList"));
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -203,11 +207,10 @@ public class GoodsInfoActivity extends BaseActivity {
     /*
     更新购物车红点
      */
-    public void cartRedpoint() {
+    public void cartRedpoint(JSONArray carList) throws JSONException {
         int num = 0;
-        List<CartBean> all = DataSupport.findAll(CartBean.class);
-        for (CartBean bean : all) {
-            num += bean.getNum();
+        for (int i = 0; i < carList.length(); i++) {
+            num += carList.getJSONObject(i).getInt("num");
         }
         cart_num_text.isShowZeroNumPoint(false);
         cart_num_text.setZeroRadius(10);

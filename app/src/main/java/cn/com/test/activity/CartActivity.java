@@ -150,7 +150,7 @@ public class CartActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取购物车列表 2商品数量+1 3商品数量-1
+     * @param what 1.获取购物车列表 2.商品数量+1 3.商品数量-1 4.删除商品
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -167,6 +167,9 @@ public class CartActivity extends BaseActivity {
                 object.put("goodsNo", value[0]);
                 object.put("num", -1);
                 relativeUrl = "health/addCart";
+            } else if (what == 4) {
+                object.put("goodsNoList", new JSONArray().put(new JSONObject().put("goodsNo", value[0])));
+                relativeUrl = "health/delCart";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -175,7 +178,7 @@ public class CartActivity extends BaseActivity {
                         int status = jsonObject.getInt("status");
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
-                            if (what == 1 || what == 2 || what == 3) {
+                            if (what == 1 || what == 2 || what == 3 || what == 4) {
                                 JSONArray carList = result.getJSONArray("carList");
                                 refreshCart(carList);
                             }
@@ -258,16 +261,21 @@ public class CartActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     //数量减1
-                    int position = (int) view.getTag();
-                    loadData(3, new String[]{cartList.get(position).getGoodsNo()}, getString(R.string.string_loading), RequestMethod.POST);
+                    loadData(3, new String[]{cartList.get((int) view.getTag()).getGoodsNo()}, getString(R.string.string_loading), RequestMethod.POST);
                 }
             });
             viewHolder.item_goods_plus_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //数量加1
-                    int position = (int) view.getTag();
-                    loadData(2, new String[]{cartList.get(position).getGoodsNo()}, getString(R.string.string_loading), RequestMethod.POST);
+                    loadData(2, new String[]{cartList.get((int) view.getTag()).getGoodsNo()}, getString(R.string.string_loading), RequestMethod.POST);
+                }
+            });
+            viewHolder.item_del_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //删除
+                    loadData(4, new String[]{cartList.get((int) view.getTag()).getGoodsNo()}, getString(R.string.string_loading), RequestMethod.POST);
                 }
             });
             viewHolder.item_goods_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -294,14 +302,6 @@ public class CartActivity extends BaseActivity {
                         //全部都是不选中
                         cart_check.setChecked(false);
                     }
-                }
-            });
-            viewHolder.item_del_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //删除
-                    int position = (int) view.getTag();
-
                 }
             });
             return view;

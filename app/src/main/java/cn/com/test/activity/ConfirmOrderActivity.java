@@ -16,9 +16,11 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSON;
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
@@ -30,6 +32,8 @@ import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.AddressBean;
 import cn.com.test.bean.CartBean;
+import cn.com.test.http.HttpListener;
+import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ArithUtils;
 import cn.com.test.utils.GetAssetsUtils;
 import cn.com.test.utils.ToastUtils;
@@ -86,11 +90,50 @@ public class ConfirmOrderActivity extends BaseActivity {
         mAdapter = new GoodsAdapter();
         goods_list.setAdapter(mAdapter);
         initAddress();
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
     }
 
+    /**
+     * @param what 1.获取默认收货地址
+     */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
+        try {
+            final JSONObject object = new JSONObject();
+            String relativeUrl = "";
+            if (what == 1) {
+                relativeUrl = "health/addressDefault";
+            }
+            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
+                @Override
+                public void onSucceed(int what, JSONObject jsonObject) {
+                    try {
+                        int status = jsonObject.getInt("status");
+                        if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
+                            if (what == 1) {
+                                submit_name_text.setText(result.getString("linkMan"));
+                                submit_number_text.setText(result.getString("linkPhone"));
+                                submit_address_text.setText(result.getString("province") + result.getString("city") + result.getString("area"));
+                                submit_detailed_address_text.setText(result.getString("address"));
+                            }
+                        } else {
+                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ToastUtils.showShort(getString(R.string.error_http));
+                    }
+                }
 
+                @Override
+                public void onFailed(int what, Response response) {
+                    ToastUtils.showShort(getString(R.string.error_http));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick({R.id.submit_address_text, R.id.submit_order_btn})
@@ -117,22 +160,6 @@ public class ConfirmOrderActivity extends BaseActivity {
                     return;
                 }
                 ToastUtils.showShort("订单提交成功");
-                //删除选中的购物车数据
-//                submit_address_text.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        List<CartBean> all = DataSupport.findAll(CartBean.class);
-//                        for (CartBean bean : goodsList) {
-//                            for (CartBean bean2 : all) {
-//                                if (bean.getGoodsNo().equals(bean2.getGoodsNo())) {
-//                                    //删除该条商品的数据库数据
-//                                    bean2.delete();
-//                                }
-//                            }
-//                        }
-//                        finish();
-//                    }
-//                }, 1000);
                 break;
         }
     }

@@ -107,7 +107,7 @@
                 android:textSize="15dp" />
 
             <TextView
-                android:id="@+id/address_simple"
+                android:id="@+id/address_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ellipsize="end"
@@ -141,7 +141,7 @@
                 android:textSize="15dp" />
 
             <EditText
-                android:id="@+id/address_detailed"
+                android:id="@+id/address_detailed_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"

@@ -96,8 +96,8 @@ public class CartActivity extends BaseActivity {
     }
 
     /*
-        刷新列表
-         */
+    刷新列表
+     */
     private void refreshCart(JSONArray carList) throws JSONException {
         cartList.clear();
         for (int i = 0; i < carList.length(); i++) {

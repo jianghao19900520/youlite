@@ -19,6 +19,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/submit_address_layout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp">
 

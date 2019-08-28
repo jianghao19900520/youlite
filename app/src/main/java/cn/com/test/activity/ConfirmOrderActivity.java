@@ -1,5 +1,6 @@
 package cn.com.test.activity;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -65,6 +66,7 @@ public class ConfirmOrderActivity extends BaseActivity {
     private GoodsAdapter mAdapter;
     private String goods_money = "0.00";//商品金额
     private String freight_money = "0.00";//运费
+    private String addressId = "";//收货地址id
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -94,7 +96,7 @@ public class ConfirmOrderActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取默认收货地址
+     * @param what 1.获取默认收货地址 2提交下单
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -103,6 +105,20 @@ public class ConfirmOrderActivity extends BaseActivity {
             String relativeUrl = "";
             if (what == 1) {
                 relativeUrl = "health/addressDefault";
+            } else if (what == 2) {
+                object.put("addressId", addressId);
+                JSONArray array = new JSONArray();
+                for (CartBean bean : goodsList) {
+                    JSONObject goods = new JSONObject();
+                    goods.put("goodsNo", bean.getGoodsNo());
+                    goods.put("num", bean.getNum());
+                    array.put(goods);
+                }
+                object.put("detail", array);
+                object.put("type", "00");//00-邮寄 01-货到付款
+                object.put("postFee", "00");//邮费
+                object.put("remark", "");//备注
+                relativeUrl = "health/applyOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -112,10 +128,13 @@ public class ConfirmOrderActivity extends BaseActivity {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
+                                addressId = result.getString("id");
                                 submit_name_text.setText(result.getString("linkMan"));
                                 submit_number_text.setText(result.getString("linkPhone"));
                                 submit_address_text.setText(result.getString("province") + result.getString("city") + result.getString("area"));
                                 submit_detailed_address_text.setText(result.getString("address"));
+                            } else if (what == 2) {
+                                ToastUtils.showShort("订单提交成功");
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -136,7 +155,7 @@ public class ConfirmOrderActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.submit_address_text, R.id.submit_order_btn})
+    @OnClick({R.id.submit_address_text, R.id.submit_order_btn, R.id.submit_address_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.submit_address_text:
@@ -159,7 +178,10 @@ public class ConfirmOrderActivity extends BaseActivity {
                     ToastUtils.showShort("详细地址不能为空");
                     return;
                 }
-                ToastUtils.showShort("订单提交成功");
+                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+                break;
+            case R.id.submit_address_layout:
+                startActivity(new Intent(mContext, AddressManageActivity.class));
                 break;
         }
     }

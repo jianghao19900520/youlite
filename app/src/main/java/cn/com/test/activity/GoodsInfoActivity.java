@@ -84,24 +84,12 @@ public class GoodsInfoActivity extends BaseActivity {
                 break;
             case R.id.buy_now_btn:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-//                    List<CartBean> submitOrderList = new ArrayList();
-//                    //先检查该商品是否已经添加到购物车
-//                    List<CartBean> all2 = DataSupport.findAll(CartBean.class);
-//                    for (CartBean bean2 : all2) {
-//                        if (bean2.getGoodsNo().equals(goodsId)) {
-//                            //有的话就直接拿来用
-//                            submitOrderList.add(bean2);
-//                        }
-//                    }
-//                    if (submitOrderList.size() == 0) {
-//                        //没有的话就新建一个，同时也添加到购物车
-//                        CartBean bean3 = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
-//                        bean3.save();
-//                        submitOrderList.add(bean3);
-//                    }
-//                    Bundle bundleObject = new Bundle();
-//                    bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
-//                    startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
+                    List<CartBean> submitOrderList = new ArrayList();
+                    CartBean bean = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
+                    submitOrderList.add(bean);
+                    Bundle bundleObject = new Bundle();
+                    bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
+                    startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
                 }
                 break;
         }

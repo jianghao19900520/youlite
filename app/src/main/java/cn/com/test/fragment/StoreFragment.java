@@ -63,6 +63,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
 
     private ArrayList<String> banner_path;
     private ArrayList<String> bannner_title;
+    private ArrayList<String> bannner_goodsId;
     private List<JSONObject> goodsList;
     private CommAdapter<JSONObject> mAdapter;
 
@@ -81,6 +82,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     public void init() {
         banner_path = new ArrayList<>();
         bannner_title = new ArrayList<>();
+        bannner_goodsId = new ArrayList<>();
         goodsList = new ArrayList<>();
         mAdapter = new CommAdapter<JSONObject>(mContext, goodsList, R.layout.item_store_goods_hot) {
             @Override
@@ -170,6 +172,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             JSONObject bannerObject = bannerList.getJSONObject(i);
             banner_path.add(bannerObject.getString("upload"));
             bannner_title.add(bannerObject.getString("title"));
+            bannner_goodsId.add(bannerObject.getString("goodsNo"));
         }
         banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
         banner.setImageLoader(new StoreFragment.BanerImgLoader());
@@ -188,7 +191,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
      */
     @Override
     public void OnBannerClick(int position) {
-        Toast.makeText(mContext, "你点了第" + (position + 1) + "张轮播图", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(mContext, GoodsInfoActivity.class).putExtra("goodsId", bannner_goodsId.get(position)));
     }
 
     /**

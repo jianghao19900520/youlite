@@ -1,5 +1,7 @@
 package cn.com.test.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import com.yanzhenjie.nohttp.rest.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.crud.DataSupport;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.base.BaseApplication;
 import cn.com.test.bean.CartBean;
+import cn.com.test.bean.SearchKeyBean;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
@@ -115,7 +119,23 @@ public class MyOrderActivity extends BaseActivity {
                             right_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    ToastUtils.showShort("支付");
+                                    try {
+                                        AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
+                                                .setMessage("确定支付" + item.getString("totalAmount") + "元?").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        try {
+                                                            loadData(2, new String[]{item.getString("orderNo"), item.getString("totalAmount")}, getString(R.string.string_loading), RequestMethod.POST);
+                                                        } catch (JSONException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                }).setNegativeButton("取消", null).create();
+                                        dialog.setCanceledOnTouchOutside(false);
+                                        dialog.show();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
                             break;
@@ -212,7 +232,7 @@ public class MyOrderActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单列表
+     * @param what 1.获取订单列表 2支付订单
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -223,6 +243,11 @@ public class MyOrderActivity extends BaseActivity {
                 object.put("page", 0);
                 object.put("limit", 10);
                 relativeUrl = "health/userOrderList";
+            } else if (what == 2) {
+                object.put("orderNo", value[0]);
+                object.put("amount", value[1]);
+                object.put("channel", 03);//03-支付宝 06-微信
+                relativeUrl = "health/payOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override

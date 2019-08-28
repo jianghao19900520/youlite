@@ -86,7 +86,7 @@ public class MyOrderActivity extends BaseActivity {
         showList = new ArrayList<>();
         mAdapter = new CommAdapter<JSONObject>(mContext, showList, R.layout.item_my_order) {
             @Override
-            public void convert(final CommViewHolder holder, JSONObject item, int position) {
+            public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
                     LinearLayout item_my_order_goods_layout = holder.getView(R.id.item_my_order_goods_layout);
                     TextView left_text = holder.getView(R.id.item_my_order_bottom_left_text);
@@ -190,7 +190,11 @@ public class MyOrderActivity extends BaseActivity {
                     holder.getConvertView().setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            startActivity(new Intent(mContext, OrderDetailActivity.class));
+                            try {
+                                startActivity(new Intent(mContext, OrderDetailActivity.class).putExtra("orderNo", item.getString("orderNo")));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 } catch (JSONException e) {

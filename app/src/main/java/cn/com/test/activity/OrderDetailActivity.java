@@ -2,6 +2,7 @@ package cn.com.test.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +31,11 @@ import cn.com.test.R;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.CartBean;
 import cn.com.test.bean.SearchKeyBean;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.ArithUtils;
 import cn.com.test.utils.ToastUtils;
 import cn.com.test.view.ListViewForScrollView;
 
@@ -53,12 +57,18 @@ public class OrderDetailActivity extends BaseActivity {
     TextView order_total_money_text;
     @BindView(R.id.order_postfee_text)
     TextView order_postfee_text;
+    @BindView(R.id.order_pay_money_title)
+    TextView order_pay_money_title;
     @BindView(R.id.order_pay_money_text)
     TextView order_pay_money_text;
+    @BindView(R.id.order_buy_btn)
+    TextView order_buy_btn;
 
     private List<JSONObject> goodsList;
     private CommAdapter<JSONObject> mAdapter;
     private String orderNo;
+    private String stt;//00=全部 01=待付款 02=待收货 03=已完成 04=已取消
+    private String totalAmount;//支付金额
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -108,7 +118,7 @@ public class OrderDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单详情
+     * @param what 1.获取订单详情 2删除订单 3支付订单
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -121,6 +131,11 @@ public class OrderDetailActivity extends BaseActivity {
             } else if (what == 2) {
                 object.put("orderNoList", new JSONArray().put(new JSONObject().put("orderNo", orderNo)));
                 relativeUrl = "health/delOrder";
+            } else if (what == 3) {
+                object.put("orderNo", orderNo);
+                object.put("amount", totalAmount);
+                object.put("channel", 03);//03-支付宝 06-微信
+                relativeUrl = "health/payOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -133,6 +148,8 @@ public class OrderDetailActivity extends BaseActivity {
                                 setOrderDetail(result);
                             } else if (what == 2) {
                                 finish();
+                            } else if (what == 3) {
+                                loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -160,11 +177,38 @@ public class OrderDetailActivity extends BaseActivity {
                 loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 break;
             case R.id.order_buy_btn:
-                break;
+                if (stt.equals("01")) {
+                    AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
+                            .setMessage("确定支付?").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    loadData(3, null, getString(R.string.string_loading), RequestMethod.POST);
+                                }
+                            }).setNegativeButton("取消", null).create();
+                    dialog.setCanceledOnTouchOutside(false);
+                    dialog.show();
+                } else if (stt.equals("02")) {
+                    ToastUtils.showShort("确认收货");
+                } else {
+                    List<CartBean> submitOrderList = new ArrayList();
+                    for (JSONObject object : goodsList) {
+                        CartBean bean = null;
+                        try {
+                            bean = new CartBean(object.getString("goodsNo"), object.getInt("num"), object.getString("goodsName"), object.getString("unitPrice"), object.getString("unitPrice"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        submitOrderList.add(bean);
+                    }
+                    Bundle bundleObject = new Bundle();
+                    bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
+                    startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
+                }
         }
     }
 
     private void setOrderDetail(JSONObject result) throws JSONException {
+        stt = result.getString("stt");
         address_name.setText(result.getString("linkMan") + "  " + result.getString("linkPhone"));
         address_text.setText(result.getString("address"));
         order_no_text.setText("订单编号 : " + result.getString("orderNo"));
@@ -172,7 +216,22 @@ public class OrderDetailActivity extends BaseActivity {
         order_time_text.setText("下单时间 : " + createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
         order_total_money_text.setText("商品总额 : ￥" + result.getString("totalAmount"));
         order_postfee_text.setText("运费 : ￥" + result.getString("postFee"));
-        order_pay_money_text.setText("￥" + result.getString("payAmount"));
+        if (stt.equals("01")) {
+            order_pay_money_title.setText("待付款 : ");
+            totalAmount = ArithUtils.add(result.getString("totalAmount"), result.getString("postFee"));
+            order_pay_money_text.setText("￥" + totalAmount);
+            order_buy_btn.setText("支付");
+        } else if (stt.equals("02")) {
+            order_pay_money_title.setText("实付款 : ");
+            totalAmount = result.getString("payAmount");
+            order_pay_money_text.setText("￥" + totalAmount);
+            order_buy_btn.setText("确认收货");
+        } else {
+            order_pay_money_title.setText("实付款 : ");
+            totalAmount = result.getString("payAmount");
+            order_pay_money_text.setText("￥" + totalAmount);
+            order_buy_btn.setText("再次购买");
+        }
         goodsList.clear();
         JSONArray array = result.getJSONArray("detailList");
         for (int i = 0; i < array.length(); i++) {

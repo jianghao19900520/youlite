@@ -258,6 +258,8 @@ public class MyOrderActivity extends BaseActivity {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
                                 setOrderList(result.getJSONArray("list"));
+                            } else if (what == 2) {
+                                loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));

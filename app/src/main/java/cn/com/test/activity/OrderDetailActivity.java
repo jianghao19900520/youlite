@@ -1,5 +1,7 @@
 package cn.com.test.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,15 +18,18 @@ import com.yanzhenjie.nohttp.rest.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.SearchKeyBean;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
@@ -113,6 +118,9 @@ public class OrderDetailActivity extends BaseActivity {
             if (what == 1) {
                 object.put("orderNo", orderNo);
                 relativeUrl = "health/orderDetail";
+            } else if (what == 2) {
+                object.put("orderNoList", new JSONArray().put(new JSONObject().put("orderNo", orderNo)));
+                relativeUrl = "health/delOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -123,6 +131,8 @@ public class OrderDetailActivity extends BaseActivity {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
                                 setOrderDetail(result);
+                            } else if (what == 2) {
+                                finish();
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -140,6 +150,17 @@ public class OrderDetailActivity extends BaseActivity {
             });
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @OnClick({R.id.order_delete_btn, R.id.order_buy_btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.order_delete_btn:
+                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+                break;
+            case R.id.order_buy_btn:
+                break;
         }
     }
 

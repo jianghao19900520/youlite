@@ -10,12 +10,19 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,6 +31,10 @@ import cn.com.test.R;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.base.BaseApplication;
+import cn.com.test.bean.CartBean;
+import cn.com.test.http.HttpListener;
+import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
 
 public class MyOrderActivity extends BaseActivity {
@@ -54,7 +65,7 @@ public class MyOrderActivity extends BaseActivity {
     ListView order_list;
 
     float x1, x2, y1, y2 = 0;//listview里面scrollview的手势监听
-    private int orderType = 0;//0=全部 1=待付款 2=待收货 3=已完成 4=已取消
+    private String orderType = "00";//00=全部 01=待付款 02=待收货 03=已完成 04=已取消
     private List<JSONObject> orderList;
     private List<JSONObject> showList;//根据状态来显示的列表
     private CommAdapter<JSONObject> mAdapter;
@@ -73,15 +84,6 @@ public class MyOrderActivity extends BaseActivity {
     public void init() {
         orderList = new ArrayList<>();
         showList = new ArrayList<>();
-        try {
-            orderList.add(new JSONObject().put("orderType", 1));
-            orderList.add(new JSONObject().put("orderType", 2));
-            orderList.add(new JSONObject().put("orderType", 3));
-            orderList.add(new JSONObject().put("orderType", 4));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        showList.addAll(orderList);
         mAdapter = new CommAdapter<JSONObject>(mContext, showList, R.layout.item_my_order) {
             @Override
             public void convert(final CommViewHolder holder, JSONObject item, int position) {
@@ -89,14 +91,23 @@ public class MyOrderActivity extends BaseActivity {
                     LinearLayout item_my_order_goods_layout = holder.getView(R.id.item_my_order_goods_layout);
                     TextView left_text = holder.getView(R.id.item_my_order_bottom_left_text);
                     TextView right_text = holder.getView(R.id.item_my_order_bottom_right_text);
+                    String createTime = item.getString("createTime");
+                    holder.setText(R.id.order_time_text, "下单时间：" + createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
+                    JSONArray goodsList = item.getJSONArray("detailList");
+                    holder.setText(R.id.order_total_text, "共" + goodsList.length() + "件商品 付款金额：￥" + item.getString("totalAmount"));
                     item_my_order_goods_layout.removeAllViews();
-                    for (int i = 0; i < item.getInt("orderType") * 2; i++) {
+                    for (int i = 0; i < goodsList.length(); i++) {
                         ImageView img = new ImageView(mContext);
-                        img.setImageResource(R.mipmap.ic_logo);
+                        RequestOptions options = new RequestOptions()
+                                .override(96, 96)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL);
+                        Glide.with(mContext).setDefaultRequestOptions(options)
+                                .load(goodsList.getJSONObject(i).getString("toLoad"))
+                                .into(img);
                         item_my_order_goods_layout.addView(img);
                     }
-                    switch (item.getInt("orderType")) {
-                        case 1:
+                    switch (item.getString("stt")) {
+                        case "01":
                             holder.setText(R.id.item_my_order_status_text, "待付款");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
                             left_text.setVisibility(View.GONE);
@@ -108,7 +119,7 @@ public class MyOrderActivity extends BaseActivity {
                                 }
                             });
                             break;
-                        case 2:
+                        case "02":
                             holder.setText(R.id.item_my_order_status_text, "待收货");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
                             left_text.setVisibility(View.VISIBLE);
@@ -126,7 +137,7 @@ public class MyOrderActivity extends BaseActivity {
                                 }
                             });
                             break;
-                        case 3:
+                        case "03":
                             holder.setText(R.id.item_my_order_status_text, "已完成");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
                             left_text.setVisibility(View.VISIBLE);
@@ -144,7 +155,7 @@ public class MyOrderActivity extends BaseActivity {
                                 }
                             });
                             break;
-                        case 4:
+                        case "04":
                             holder.setText(R.id.item_my_order_status_text, "再次购买");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
                             left_text.setVisibility(View.GONE);
@@ -191,15 +202,58 @@ public class MyOrderActivity extends BaseActivity {
     }
 
     @Override
-    public void loadData(int what, String[] value, String msg, RequestMethod method) {
+    public void onResume() {
+        super.onResume();
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+    }
 
+    /**
+     * @param what 1.获取订单列表
+     */
+    @Override
+    public void loadData(int what, String[] value, String msg, RequestMethod method) {
+        try {
+            final JSONObject object = new JSONObject();
+            String relativeUrl = "";
+            if (what == 1) {
+                object.put("page", 0);
+                object.put("limit", 10);
+                relativeUrl = "health/userOrderList";
+            }
+            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
+                @Override
+                public void onSucceed(int what, JSONObject jsonObject) {
+                    try {
+                        int status = jsonObject.getInt("status");
+                        if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
+                            if (what == 1) {
+                                setOrderList(result.getJSONArray("list"));
+                            }
+                        } else {
+                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ToastUtils.showShort(getString(R.string.error_http));
+                    }
+                }
+
+                @Override
+                public void onFailed(int what, Response response) {
+                    ToastUtils.showShort(getString(R.string.error_http));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick({R.id.order_all_text, R.id.order_pay_text, R.id.order_receive_text, R.id.order_finish_text, R.id.order_cancle_text})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.order_all_text:
-                orderType = 0;
+                orderType = "00";
                 order_all_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -213,7 +267,7 @@ public class MyOrderActivity extends BaseActivity {
                 refreshListStatus();
                 break;
             case R.id.order_pay_text:
-                orderType = 1;
+                orderType = "01";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -227,7 +281,7 @@ public class MyOrderActivity extends BaseActivity {
                 refreshListStatus();
                 break;
             case R.id.order_receive_text:
-                orderType = 2;
+                orderType = "02";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(getResources().getColor(R.color.mainColor));
@@ -241,7 +295,7 @@ public class MyOrderActivity extends BaseActivity {
                 refreshListStatus();
                 break;
             case R.id.order_finish_text:
-                orderType = 3;
+                orderType = "03";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -255,7 +309,7 @@ public class MyOrderActivity extends BaseActivity {
                 refreshListStatus();
                 break;
             case R.id.order_cancle_text:
-                orderType = 4;
+                orderType = "04";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -271,21 +325,29 @@ public class MyOrderActivity extends BaseActivity {
         }
     }
 
+    private void setOrderList(JSONArray array) throws JSONException {
+        orderList.clear();
+        for (int i = 0; i < array.length(); i++) {
+            orderList.add(array.getJSONObject(i));
+        }
+        refreshListStatus();
+    }
+
     /**
      * 刷新列表状态
      */
     private void refreshListStatus() {
         switch (orderType) {
-            case 0:
+            case "00":
                 showList.clear();
                 showList.addAll(orderList);
                 mAdapter.notifyDataSetChanged();
                 break;
-            case 1:
+            case "01":
                 showList.clear();
                 for (JSONObject object : orderList) {
                     try {
-                        if (object.getInt("orderType") == 1) {
+                        if (object.getString("stt").equals("01")) {
                             showList.add(object);
                         }
                     } catch (JSONException e) {
@@ -294,11 +356,11 @@ public class MyOrderActivity extends BaseActivity {
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
-            case 2:
+            case "02":
                 showList.clear();
                 for (JSONObject object : orderList) {
                     try {
-                        if (object.getInt("orderType") == 2) {
+                        if (object.getString("stt").equals("02")) {
                             showList.add(object);
                         }
                     } catch (JSONException e) {
@@ -307,11 +369,11 @@ public class MyOrderActivity extends BaseActivity {
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
-            case 3:
+            case "03":
                 showList.clear();
                 for (JSONObject object : orderList) {
                     try {
-                        if (object.getInt("orderType") == 3) {
+                        if (object.getString("stt").equals("03")) {
                             showList.add(object);
                         }
                     } catch (JSONException e) {
@@ -320,11 +382,11 @@ public class MyOrderActivity extends BaseActivity {
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
-            case 4:
+            case "04":
                 showList.clear();
                 for (JSONObject object : orderList) {
                     try {
-                        if (object.getInt("orderType") == 4) {
+                        if (object.getString("stt").equals("04")) {
                             showList.add(object);
                         }
                     } catch (JSONException e) {

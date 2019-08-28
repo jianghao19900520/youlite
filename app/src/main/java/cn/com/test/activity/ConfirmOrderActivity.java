@@ -135,6 +135,7 @@ public class ConfirmOrderActivity extends BaseActivity {
                                 submit_detailed_address_text.setText(result.getString("address"));
                             } else if (what == 2) {
                                 ToastUtils.showShort("订单提交成功");
+                                finish();
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));

@@ -33,6 +33,7 @@
                 android:background="@color/lineColor" />
 
             <TextView
+                android:id="@+id/address_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -42,6 +43,7 @@
                 android:textSize="16dp" />
 
             <TextView
+                android:id="@+id/address_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -112,15 +114,21 @@
                 android:background="@color/lineColor" />
 
             <TextView
+                android:id="@+id/order_no_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:lines="1"
                 android:paddingLeft="20dp"
+                android:singleLine="true"
                 android:text="订单编号 : 123456789"
                 android:textColor="#666666"
                 android:textSize="18dp" />
 
             <TextView
+                android:id="@+id/order_time_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -136,6 +144,7 @@
                 android:background="@color/lineColor" />
 
             <TextView
+                android:id="@+id/order_total_money_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -145,6 +154,7 @@
                 android:textSize="18dp" />
 
             <TextView
+                android:id="@+id/order_postfee_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
@@ -184,6 +194,7 @@
                 android:textSize="16dp" />
 
             <TextView
+                android:id="@+id/order_pay_money_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"

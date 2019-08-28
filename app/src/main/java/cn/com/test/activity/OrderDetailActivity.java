@@ -33,6 +33,20 @@ public class OrderDetailActivity extends BaseActivity {
     TextView title;
     @BindView(R.id.order_detail_listview)
     ListViewForScrollView order_detail_listview;
+    @BindView(R.id.address_name)
+    TextView address_name;
+    @BindView(R.id.address_text)
+    TextView address_text;
+    @BindView(R.id.order_no_text)
+    TextView order_no_text;
+    @BindView(R.id.order_time_text)
+    TextView order_time_text;
+    @BindView(R.id.order_total_money_text)
+    TextView order_total_money_text;
+    @BindView(R.id.order_postfee_text)
+    TextView order_postfee_text;
+    @BindView(R.id.order_pay_money_text)
+    TextView order_pay_money_text;
 
     private List<JSONObject> goodsList;
     private CommAdapter<JSONObject> mAdapter;
@@ -100,7 +114,7 @@ public class OrderDetailActivity extends BaseActivity {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
-                                ToastUtils.showShort(getString(R.string.string_loading));
+                                setOrderDetail(result);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -119,6 +133,17 @@ public class OrderDetailActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void setOrderDetail(JSONObject result) throws JSONException {
+        address_name.setText(result.getString("linkMan") + "  " + result.getString("linkPhone"));
+        address_text.setText(result.getString("address"));
+        order_no_text.setText("订单编号 : " + result.getString("orderNo"));
+        String createTime = result.getString("createTime");
+        order_time_text.setText("下单时间 : " + createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
+        order_total_money_text.setText("商品总额 : ￥" + result.getString("totalAmount"));
+        order_postfee_text.setText("运费 : ￥" + result.getString("postFee"));
+        order_pay_money_text.setText("￥" + result.getString("payAmount"));
     }
 
 }

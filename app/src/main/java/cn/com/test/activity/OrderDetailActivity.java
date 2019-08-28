@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,25 +72,30 @@ public class OrderDetailActivity extends BaseActivity {
             finish();
         }
         goodsList = new ArrayList<>();
-        goodsList.add(new JSONObject());
         mAdapter = new CommAdapter<JSONObject>(mContext, goodsList, R.layout.item_goods) {
             @Override
             public void convert(final CommViewHolder holder, JSONObject item, int position) {
-                CheckBox item_goods_check = holder.getView(R.id.item_goods_check);
-                TextView item_goods_name = holder.getView(R.id.item_goods_name);
-                TextView item_goods_newprice = holder.getView(R.id.item_goods_newprice);
-                TextView item_goods_oldprice = holder.getView(R.id.item_goods_oldprice);
-                TextView item_goods_num = holder.getView(R.id.item_goods_num);
-                TextView item_del_btn = holder.getView(R.id.item_del_btn);
-                LinearLayout item_goods_num_layout = holder.getView(R.id.item_goods_num_layout);
-                item_goods_name.setText("6盒尿14项6条装");
-                item_goods_newprice.setText("￥360.00");
-                item_goods_oldprice.setText("￥540.00");
-                item_goods_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
-                item_goods_num.setText("x 3");
-                item_goods_check.setVisibility(View.GONE);
-                item_del_btn.setVisibility(View.GONE);
-                item_goods_num_layout.setVisibility(View.GONE);
+                try {
+                    CheckBox item_goods_check = holder.getView(R.id.item_goods_check);
+                    ImageView item_goods_img = holder.getView(R.id.item_goods_img);
+                    TextView item_goods_name = holder.getView(R.id.item_goods_name);
+                    TextView item_goods_newprice = holder.getView(R.id.item_goods_newprice);
+                    TextView item_goods_oldprice = holder.getView(R.id.item_goods_oldprice);
+                    TextView item_goods_num = holder.getView(R.id.item_goods_num);
+                    TextView item_del_btn = holder.getView(R.id.item_del_btn);
+                    LinearLayout item_goods_num_layout = holder.getView(R.id.item_goods_num_layout);
+                    item_goods_name.setText(item.getString("goodsName"));
+                    item_goods_newprice.setText("￥" + item.getString("unitPrice"));
+                    item_goods_oldprice.setText("");
+                    item_goods_oldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);//中划线
+                    item_goods_num.setText("x " + item.getString("num"));
+                    Glide.with(mContext).load(item.getString("toLoad")).into(item_goods_img);
+                    item_goods_check.setVisibility(View.GONE);
+                    item_del_btn.setVisibility(View.GONE);
+                    item_goods_num_layout.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         };
         order_detail_listview.setAdapter(mAdapter);
@@ -144,6 +152,12 @@ public class OrderDetailActivity extends BaseActivity {
         order_total_money_text.setText("商品总额 : ￥" + result.getString("totalAmount"));
         order_postfee_text.setText("运费 : ￥" + result.getString("postFee"));
         order_pay_money_text.setText("￥" + result.getString("payAmount"));
+        goodsList.clear();
+        JSONArray array = result.getJSONArray("detailList");
+        for (int i = 0; i < array.length(); i++) {
+            goodsList.add(array.getJSONObject(i));
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
 }

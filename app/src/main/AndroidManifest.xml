@@ -80,6 +80,10 @@
         <activity
             android:name=".activity.AddressEditActivity"
             android:screenOrientation="portrait" />
+        <!--用户注册-->
+        <activity
+            android:name=".activity.RegisterUserActivity"
+            android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

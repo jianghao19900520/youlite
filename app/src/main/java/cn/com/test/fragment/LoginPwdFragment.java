@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
@@ -13,6 +14,7 @@ import com.yanzhenjie.nohttp.rest.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseFragment;
@@ -24,6 +26,10 @@ import cn.com.test.utils.ToastUtils;
 
 public class LoginPwdFragment extends BaseFragment {
 
+    @BindView(R.id.login_phone_text)
+    TextView login_phone_text;
+    @BindView(R.id.login_pwd_text)
+    TextView login_pwd_text;
 
     @Override
     public View setContent(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,8 +55,8 @@ public class LoginPwdFragment extends BaseFragment {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
-                object.put("phone", "13267019050");
-                object.put("password", "123456");
+                object.put("phone", login_phone_text.getText().toString().trim());
+                object.put("password", login_pwd_text.getText().toString().trim());
                 object.put("type", "0");//0-密码登录 1-验证码登录
                 relativeUrl = "health/login";
             }
@@ -91,6 +97,14 @@ public class LoginPwdFragment extends BaseFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.login_btn:
+                if (TextUtils.isEmpty(login_phone_text.getText().toString().trim())) {
+                    ToastUtils.showShort("手机号不能为空");
+                    return;
+                }
+                if (TextUtils.isEmpty(login_pwd_text.getText().toString().trim())) {
+                    ToastUtils.showShort("密码不能为空");
+                    return;
+                }
                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                 break;
         }

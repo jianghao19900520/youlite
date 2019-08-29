@@ -52,7 +52,8 @@ public class LoginActivity extends BaseActivity {
         title_right_text_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(mContext, GoodsInfoActivity.class));
+                startActivity(new Intent(mContext, RegisterUserActivity.class));
+                finish();
             }
         });
     }
@@ -66,51 +67,9 @@ public class LoginActivity extends BaseActivity {
                 .commit();
     }
 
-    /**
-     * @param what 1.密码登录
-     */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
-        try {
-            final JSONObject object = new JSONObject();
-            String relativeUrl = "";
-            if (what == 1) {
-                object.put("phone", "13267019050");
-                object.put("password", "123456");
-                object.put("type", "0");//0-密码登录 1-验证码登录
-                relativeUrl = "health/login";
-            }
-            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
-                @Override
-                public void onSucceed(int what, JSONObject jsonObject) {
-                    try {
-                        int status = jsonObject.getInt("status");
-                        if (status == 0) {
-                            JSONObject result = jsonObject.getJSONObject("result");
-                            if (what == 1) {
-                                String token = result.getString("token");
-                                if (!TextUtils.isEmpty(token)) {
-                                    SPUtils.getInstance().put(Constant.token, token);
-                                    finish();
-                                }
-                            }
-                        } else {
-                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        ToastUtils.showShort(getString(R.string.error_http));
-                    }
-                }
 
-                @Override
-                public void onFailed(int what, Response response) {
-                    ToastUtils.showShort(getString(R.string.error_http));
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @OnClick({R.id.code_login_btn, R.id.pwd_login_btn})

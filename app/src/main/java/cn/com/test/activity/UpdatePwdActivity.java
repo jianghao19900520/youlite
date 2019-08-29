@@ -17,10 +17,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
-import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
-import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 
 public class UpdatePwdActivity extends BaseActivity {
@@ -40,7 +38,7 @@ public class UpdatePwdActivity extends BaseActivity {
 
     @Override
     public void setContent(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_find_pwd);
+        setContentView(R.layout.activity_update_pwd);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.com.test.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
+import cn.com.test.activity.UpdatePwdActivity;
 import cn.com.test.base.BaseFragment;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
@@ -93,7 +95,7 @@ public class LoginPwdFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.login_btn})
+    @OnClick({R.id.login_btn, R.id.forget_pwd_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.login_btn:
@@ -106,6 +108,9 @@ public class LoginPwdFragment extends BaseFragment {
                     return;
                 }
                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+                break;
+            case R.id.forget_pwd_btn:
+                startActivity(new Intent(mContext, UpdatePwdActivity.class));
                 break;
         }
     }

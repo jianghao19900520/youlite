@@ -23,7 +23,7 @@ import cn.com.test.http.NetHelper;
 import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 
-public class RegisterUserActivity extends BaseActivity {
+public class UpdatePwdActivity extends BaseActivity {
 
     @BindView(R.id.title)
     TextView title;
@@ -40,12 +40,12 @@ public class RegisterUserActivity extends BaseActivity {
 
     @Override
     public void setContent(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_register_user);
+        setContentView(R.layout.activity_find_pwd);
     }
 
     @Override
     public void initTitle() {
-        title.setText("新用户注册");
+        title.setText("忘记密码");
     }
 
     @Override
@@ -72,13 +72,16 @@ public class RegisterUserActivity extends BaseActivity {
             String relativeUrl = "";
             if (what == 1) {
                 object.put("phone", register_phone_text.getText().toString().trim());
-                object.put("type", "01");//01-注册 02-登录 03-找回密码
+                object.put("type", "03");//01-注册 02-登录 03-找回密码
                 relativeUrl = "health/sendSmsCode";
             } else if (what == 2) {
                 object.put("phone", register_phone_text.getText().toString().trim());
-                object.put("password", register_pwd_text.getText().toString().trim());
                 object.put("authCode", register_code_text.getText().toString().trim());
-                relativeUrl = "health/register";
+                relativeUrl = "health/findPassswdVerifyCode";
+            } else if (what == 3) {
+                object.put("phone", register_phone_text.getText().toString().trim());
+                object.put("password", register_pwd_text.getText().toString().trim());
+                relativeUrl = "health/findPassswdSet";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -86,8 +89,8 @@ public class RegisterUserActivity extends BaseActivity {
                     try {
                         int status = jsonObject.getInt("status");
                         if (status == 0) {
-                            JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
+                                JSONObject result = jsonObject.getJSONObject("result");
                                 register_code_text.setText(result.getString("authCode"));
                                 if (timer == null) {
                                     timer = new CountDownTimer(60 * 1000, 1000) {
@@ -109,11 +112,10 @@ public class RegisterUserActivity extends BaseActivity {
                                     }.start();
                                 }
                             } else if (what == 2) {
-                                String token = result.getString("token");
-                                if (!TextUtils.isEmpty(token)) {
-                                    SPUtils.getInstance().put(Constant.token, token);
-                                    finish();
-                                }
+                                loadData(3, null, getString(R.string.string_loading), RequestMethod.POST);
+                            } else if (what == 3) {
+                                ToastUtils.showShort("修改密码成功");
+                                finish();
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -149,12 +151,12 @@ public class RegisterUserActivity extends BaseActivity {
                     ToastUtils.showShort("手机号不能为空");
                     return;
                 }
-                if (TextUtils.isEmpty(register_pwd_text.getText().toString().trim())) {
-                    ToastUtils.showShort("密码不能为空");
-                    return;
-                }
                 if (TextUtils.isEmpty(register_code_text.getText().toString().trim())) {
                     ToastUtils.showShort("验证码不能为空");
+                    return;
+                }
+                if (TextUtils.isEmpty(register_pwd_text.getText().toString().trim())) {
+                    ToastUtils.showShort("新密码不能为空");
                     return;
                 }
                 loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);

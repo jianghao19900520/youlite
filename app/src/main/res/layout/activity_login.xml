@@ -30,7 +30,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="密码登录"
-            android:textColor="@color/mainColor"
+            android:textColor="#666666"
             android:textSize="18dp" />
 
     </LinearLayout>

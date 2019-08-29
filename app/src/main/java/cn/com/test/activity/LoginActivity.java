@@ -1,6 +1,7 @@
 package cn.com.test.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -30,6 +31,10 @@ public class LoginActivity extends BaseActivity {
     TextView title;
     @BindView(R.id.title_right_text_btn)
     TextView title_right_text_btn;
+    @BindView(R.id.code_login_btn)
+    TextView code_login_btn;
+    @BindView(R.id.pwd_login_btn)
+    TextView pwd_login_btn;
 
     private LoginCodeFragment codeFragment;
     private LoginPwdFragment pwdFragment;
@@ -112,11 +117,15 @@ public class LoginActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.code_login_btn:
+                code_login_btn.setTextColor(Color.parseColor("#3ea0e0"));
+                pwd_login_btn.setTextColor(Color.parseColor("#666666"));
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.login_fragment_layout, codeFragment, "fragment")
                         .commit();
                 break;
             case R.id.pwd_login_btn:
+                code_login_btn.setTextColor(Color.parseColor("#666666"));
+                pwd_login_btn.setTextColor(Color.parseColor("#3ea0e0"));
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.login_fragment_layout, pwdFragment, "fragment")
                         .commit();

@@ -23,6 +23,7 @@ import cn.com.test.activity.AboutAsActivity;
 import cn.com.test.activity.AddressManageActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.LoginActivity;
+import cn.com.test.activity.SettingActivity;
 import cn.com.test.base.BaseFragment;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
@@ -127,10 +128,11 @@ public class MineFragment extends BaseFragment {
                 startActivity(new Intent(mContext, AddressManageActivity.class));
                 break;
             case R.id.mine_aboutus_layout:
-                startActivity(new Intent(mContext, AboutAsActivity.class));
+//                startActivity(new Intent(mContext, AboutAsActivity.class));
+                SPUtils.getInstance().put(Constant.token, "123");
                 break;
             case R.id.mine_setting_layout:
-                ToastUtils.showShort("设置");
+                startActivity(new Intent(mContext, SettingActivity.class));
                 break;
         }
     }

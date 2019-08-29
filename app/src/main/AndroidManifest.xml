@@ -88,6 +88,10 @@
         <activity
             android:name=".activity.UpdatePwdActivity"
             android:screenOrientation="portrait" />
+        <!--设置-->
+        <activity
+            android:name=".activity.SettingActivity"
+            android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

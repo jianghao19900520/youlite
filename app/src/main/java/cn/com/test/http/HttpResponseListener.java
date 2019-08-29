@@ -2,6 +2,7 @@ package cn.com.test.http;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 
 import com.android.tu.loadingdialog.LoadingDailog;
@@ -19,7 +20,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.com.test.R;
+import cn.com.test.activity.LoginActivity;
+import cn.com.test.constant.Constant;
 import cn.com.test.utils.LogUtils;
+import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 
 public class HttpResponseListener<T> implements OnResponseListener<T> {
@@ -87,7 +91,14 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
         if (callback != null) {
             try {
                 LogUtils.json(response.get().toString());
-                callback.onSucceed(what, new JSONObject(response.get().toString()));
+                JSONObject object = new JSONObject(response.get().toString());
+                callback.onSucceed(what, object);
+                String status = object.getString("status");
+                if (status.equals("0003")) {
+                    //token失效
+                    SPUtils.getInstance().put(Constant.token, "");
+                    mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

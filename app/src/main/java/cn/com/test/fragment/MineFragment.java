@@ -128,8 +128,7 @@ public class MineFragment extends BaseFragment {
                 startActivity(new Intent(mContext, AddressManageActivity.class));
                 break;
             case R.id.mine_aboutus_layout:
-//                startActivity(new Intent(mContext, AboutAsActivity.class));
-                SPUtils.getInstance().put(Constant.token, "123");
+                startActivity(new Intent(mContext, AboutAsActivity.class));
                 break;
             case R.id.mine_setting_layout:
                 startActivity(new Intent(mContext, SettingActivity.class));

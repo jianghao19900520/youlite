@@ -43,7 +43,7 @@ public class UpdatePwdActivity extends BaseActivity {
 
     @Override
     public void initTitle() {
-        title.setText("忘记密码");
+        title.setText("修改密码");
     }
 
     @Override
@@ -112,7 +112,7 @@ public class UpdatePwdActivity extends BaseActivity {
                             } else if (what == 2) {
                                 loadData(3, null, getString(R.string.string_loading), RequestMethod.POST);
                             } else if (what == 3) {
-                                ToastUtils.showShort("修改密码成功");
+                                ToastUtils.showShort("密码修改成功");
                                 finish();
                             }
                         } else {

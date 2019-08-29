@@ -88,7 +88,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             @Override
             public void convert(CommViewHolder holder, final JSONObject item, int position) {
                 try {
-                    holder.setImageByUrl(R.id.goods_img, item.getString("upload"));//商品图片
+                    holder.setImageByUrl(R.id.goods_img, item.getString("toload"));//商品图片
                     holder.setText(R.id.goods_name, item.getString("goodsName"));//商品名称
                     holder.setText(R.id.item_store_newprice, item.getString("newPrice"));//商品现价
                     TextView oldPrice = holder.getView(R.id.item_store_oldprice);//商品原价
@@ -170,7 +170,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
     public void setBanner(JSONArray bannerList) throws JSONException {
         for (int i = 0; i < bannerList.length(); i++) {
             JSONObject bannerObject = bannerList.getJSONObject(i);
-            banner_path.add(bannerObject.getString("upload"));
+            banner_path.add(bannerObject.getString("toload"));
             bannner_title.add(bannerObject.getString("title"));
             bannner_goodsId.add(bannerObject.getString("goodsNo"));
         }
@@ -212,7 +212,7 @@ public class StoreFragment extends BaseFragment implements OnBannerListener {
             final JSONObject newGoodsObject = newGoodsList.getJSONObject(i);
             View view = LayoutInflater.from(mContext).inflate(R.layout.item_store_goods_new, null);
             ImageView goods_img = view.findViewById(R.id.goods_img);
-            Glide.with(mContext).load(newGoodsObject.getString("upload")).into(goods_img);//商品图片
+            Glide.with(mContext).load(newGoodsObject.getString("toload")).into(goods_img);//商品图片
             TextView goods_name = view.findViewById(R.id.goods_name);
             goods_name.setText(newGoodsObject.getString("goodsName"));//商品名称
             TextView newPrice = view.findViewById(R.id.item_store_newprice);

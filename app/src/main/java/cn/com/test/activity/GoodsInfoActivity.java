@@ -148,7 +148,7 @@ public class GoodsInfoActivity extends BaseActivity {
                                 JSONArray picList = result.getJSONArray("picList");
                                 for (int i = 0; i < picList.length(); i++) {
                                     ImageView iv = new ImageView(mContext);
-                                    Glide.with(mContext).load(picList.getJSONObject(i).getString("upload")).into(iv);
+                                    Glide.with(mContext).load(picList.getJSONObject(i).getString("toload")).into(iv);
                                     goods_info_imgs.addView(iv);
                                 }
                             } else if (what == 2 || what == 3) {

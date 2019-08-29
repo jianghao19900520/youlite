@@ -25,14 +25,14 @@ public class UpdatePwdActivity extends BaseActivity {
 
     @BindView(R.id.title)
     TextView title;
-    @BindView(R.id.register_phone_text)
-    TextView register_phone_text;
-    @BindView(R.id.register_pwd_text)
-    TextView register_pwd_text;
-    @BindView(R.id.register_code_text)
-    TextView register_code_text;
-    @BindView(R.id.register_code_btn)
-    TextView register_code_btn;
+    @BindView(R.id.update_phone_text)
+    TextView update_phone_text;
+    @BindView(R.id.update_pwd_text)
+    TextView update_pwd_text;
+    @BindView(R.id.update_code_text)
+    TextView update_code_text;
+    @BindView(R.id.update_code_btn)
+    TextView update_code_btn;
 
     private CountDownTimer timer;
 
@@ -61,7 +61,7 @@ public class UpdatePwdActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取短信验证码 2.注册
+     * @param what 1.获取短信验证码 2.校验短信验证码 3.提交新密码
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -69,16 +69,16 @@ public class UpdatePwdActivity extends BaseActivity {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
-                object.put("phone", register_phone_text.getText().toString().trim());
+                object.put("phone", update_phone_text.getText().toString().trim());
                 object.put("type", "03");//01-注册 02-登录 03-找回密码
                 relativeUrl = "health/sendSmsCode";
             } else if (what == 2) {
-                object.put("phone", register_phone_text.getText().toString().trim());
-                object.put("authCode", register_code_text.getText().toString().trim());
+                object.put("phone", update_phone_text.getText().toString().trim());
+                object.put("authCode", update_code_text.getText().toString().trim());
                 relativeUrl = "health/findPassswdVerifyCode";
             } else if (what == 3) {
-                object.put("phone", register_phone_text.getText().toString().trim());
-                object.put("password", register_pwd_text.getText().toString().trim());
+                object.put("phone", update_phone_text.getText().toString().trim());
+                object.put("password", update_pwd_text.getText().toString().trim());
                 relativeUrl = "health/findPassswdSet";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
@@ -89,21 +89,21 @@ public class UpdatePwdActivity extends BaseActivity {
                         if (status == 0) {
                             if (what == 1) {
                                 JSONObject result = jsonObject.getJSONObject("result");
-                                register_code_text.setText(result.getString("authCode"));
+                                update_code_text.setText(result.getString("authCode"));
                                 if (timer == null) {
                                     timer = new CountDownTimer(60 * 1000, 1000) {
                                         @Override
                                         public void onTick(long millisUntilFinished) {
-                                            register_code_btn.setEnabled(false);
-                                            register_code_btn.setBackgroundColor(Color.parseColor("#d8d8d8"));
-                                            register_code_btn.setText(millisUntilFinished / 1000 + "s");
+                                            update_code_btn.setEnabled(false);
+                                            update_code_btn.setBackgroundColor(Color.parseColor("#d8d8d8"));
+                                            update_code_btn.setText(millisUntilFinished / 1000 + "s");
                                         }
 
                                         @Override
                                         public void onFinish() {
-                                            register_code_btn.setEnabled(true);
-                                            register_code_btn.setBackgroundColor(Color.parseColor("#3ea0e0"));
-                                            register_code_btn.setText("获取验证码");
+                                            update_code_btn.setEnabled(true);
+                                            update_code_btn.setBackgroundColor(Color.parseColor("#3ea0e0"));
+                                            update_code_btn.setText("获取验证码");
                                             timer.cancel();
                                             timer = null;
                                         }
@@ -134,26 +134,26 @@ public class UpdatePwdActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.register_code_btn, R.id.register_btn})
+    @OnClick({R.id.update_code_btn, R.id.update_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.register_code_btn:
-                if (TextUtils.isEmpty(register_phone_text.getText().toString().trim())) {
+            case R.id.update_code_btn:
+                if (TextUtils.isEmpty(update_phone_text.getText().toString().trim())) {
                     ToastUtils.showShort("手机号不能为空");
                     return;
                 }
                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                 break;
-            case R.id.register_btn:
-                if (TextUtils.isEmpty(register_phone_text.getText().toString().trim())) {
+            case R.id.update_btn:
+                if (TextUtils.isEmpty(update_phone_text.getText().toString().trim())) {
                     ToastUtils.showShort("手机号不能为空");
                     return;
                 }
-                if (TextUtils.isEmpty(register_code_text.getText().toString().trim())) {
+                if (TextUtils.isEmpty(update_code_text.getText().toString().trim())) {
                     ToastUtils.showShort("验证码不能为空");
                     return;
                 }
-                if (TextUtils.isEmpty(register_pwd_text.getText().toString().trim())) {
+                if (TextUtils.isEmpty(update_pwd_text.getText().toString().trim())) {
                     ToastUtils.showShort("新密码不能为空");
                     return;
                 }

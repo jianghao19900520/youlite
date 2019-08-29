@@ -30,7 +30,7 @@
                 android:textSize="15dp" />
 
             <EditText
-                android:id="@+id/register_phone_text"
+                android:id="@+id/update_phone_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
@@ -66,7 +66,7 @@
                 android:textSize="15dp" />
 
             <EditText
-                android:id="@+id/register_code_text"
+                android:id="@+id/update_code_text"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
@@ -78,7 +78,7 @@
                 android:textSize="15dp" />
 
             <TextView
-                android:id="@+id/register_code_btn"
+                android:id="@+id/update_code_btn"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:background="@color/mainColor"
@@ -113,7 +113,7 @@
                 android:textSize="15dp" />
 
             <EditText
-                android:id="@+id/register_pwd_text"
+                android:id="@+id/update_pwd_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
@@ -132,7 +132,7 @@
             android:background="@color/lineColor" />
 
         <TextView
-            android:id="@+id/register_btn"
+            android:id="@+id/update_btn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="40dp"

@@ -10,12 +10,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.bigkoo.pickerview.OptionsPickerView;
+import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
@@ -288,6 +290,7 @@ public class ConfirmOrderActivity extends BaseActivity {
                 viewHolder = new ViewHolder();
                 view = LayoutInflater.from(mContext).inflate(R.layout.item_goods, null);
                 viewHolder.item_goods_check = view.findViewById(R.id.item_goods_check);
+                viewHolder.item_goods_img = view.findViewById(R.id.item_goods_img);
                 viewHolder.item_goods_name = view.findViewById(R.id.item_goods_name);
                 viewHolder.item_goods_newprice = view.findViewById(R.id.item_goods_newprice);
                 viewHolder.item_goods_oldprice = view.findViewById(R.id.item_goods_oldprice);
@@ -299,6 +302,7 @@ public class ConfirmOrderActivity extends BaseActivity {
                 view = convertView;
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+            Glide.with(mContext).load(goodsList.get(position).getToLoad()).into(viewHolder.item_goods_img);
             viewHolder.item_goods_name.setText(goodsList.get(position).getGoodsName());
             viewHolder.item_goods_newprice.setText("￥" + goodsList.get(position).getNewPrice());
             viewHolder.item_goods_oldprice.setText("￥" + goodsList.get(position).getOldPrice());
@@ -312,6 +316,7 @@ public class ConfirmOrderActivity extends BaseActivity {
 
         class ViewHolder {
             CheckBox item_goods_check;
+            ImageView item_goods_img;
             TextView item_goods_name;
             TextView item_goods_newprice;
             TextView item_goods_oldprice;

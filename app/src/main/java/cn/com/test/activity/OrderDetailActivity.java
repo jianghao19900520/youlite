@@ -220,7 +220,7 @@ public class OrderDetailActivity extends BaseActivity {
                     for (JSONObject object : goodsList) {
                         CartBean bean = null;
                         try {
-                            bean = new CartBean(object.getString("goodsNo"), object.getInt("num"), object.getString("goodsName"), object.getString("unitPrice"), object.getString("unitPrice"));
+                            bean = new CartBean(object.getString("goodsNo"), object.getInt("num"), object.getString("goodsName"), object.getString("unitPrice"), object.getString("unitPrice"), object.getString("toLoad"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -248,7 +248,7 @@ public class OrderDetailActivity extends BaseActivity {
             totalAmount = ArithUtils.add(result.getString("totalAmount"), result.getString("postFee"));
             order_pay_money_text.setText("￥" + totalAmount);
             order_left_btn.setText("取消订单");
-            order_right_btn.setText("支付");
+            order_right_btn.setText("支付订单");
         } else if (stt.equals("02")) {
             order_pay_money_title.setText("实付款 : ");
             totalAmount = result.getString("payAmount");

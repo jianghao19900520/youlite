@@ -116,7 +116,7 @@ public class MyOrderActivity extends BaseActivity {
                             holder.setText(R.id.item_my_order_status_text, "待付款");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
                             left_text.setVisibility(View.GONE);
-                            right_text.setText("支付");
+                            right_text.setText("支付订单");
                             right_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -167,7 +167,7 @@ public class MyOrderActivity extends BaseActivity {
                         case "00":
                             // TODO: 2019/8/30  
                             holder.setText(R.id.item_my_order_status_text, "已完成");
-                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
                             left_text.setVisibility(View.VISIBLE);
                             left_text.setText("删除订单");
                             left_text.setOnClickListener(new View.OnClickListener() {
@@ -263,7 +263,7 @@ public class MyOrderActivity extends BaseActivity {
                 JSONObject goods = detailList.getJSONObject(i);
                 CartBean bean = null;
                 try {
-                    bean = new CartBean(goods.getString("goodsNo"), goods.getInt("num"), goods.getString("goodsName"), goods.getString("unitPrice"), goods.getString("unitPrice"));
+                    bean = new CartBean(goods.getString("goodsNo"), goods.getInt("num"), goods.getString("goodsName"), goods.getString("unitPrice"), goods.getString("unitPrice"), goods.getString("toLoad"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

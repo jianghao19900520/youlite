@@ -55,6 +55,7 @@ public class GoodsInfoActivity extends BaseActivity {
     TLRedPointView cart_num_text;
 
     private String goodsId;//商品id
+    private String toLoad;//商品图片
     private String goodsName = "";//商品名称
     private String goodsPriceNew = "0.00";//商品现价
     private String goodsPriceOld = "0.00";//商品原价
@@ -85,7 +86,7 @@ public class GoodsInfoActivity extends BaseActivity {
             case R.id.buy_now_btn:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
                     List<CartBean> submitOrderList = new ArrayList();
-                    CartBean bean = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld);
+                    CartBean bean = new CartBean(goodsId, 1, goodsName, goodsPriceNew, goodsPriceOld, toLoad);
                     submitOrderList.add(bean);
                     Bundle bundleObject = new Bundle();
                     bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
@@ -139,6 +140,7 @@ public class GoodsInfoActivity extends BaseActivity {
                             if (what == 1) {
                                 Glide.with(mContext).load(result.getString("toLoad")).into(goods_main_img);
                                 goodsName = result.getString("goodsName");//商品名称
+                                toLoad = result.getString("toLoad");//商品图片
                                 goodsPriceNew = result.getString("newPrice");//商品现价
                                 goodsPriceOld = result.getString("oldPrice");//商品原价
                                 goods_name.setText(goodsName);

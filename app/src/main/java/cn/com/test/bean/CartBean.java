@@ -9,17 +9,19 @@ public class CartBean implements Serializable {
     private int num;//商品数量
     private String newPrice;//商品现价
     private String oldPrice;//商品原价
+    private String toLoad;//商品图片
     private boolean isChecked = false;//是否被选中
 
     public CartBean() {
     }
 
-    public CartBean(String goodsNo, int num, String goodsName, String newPrice, String oldPrice) {
+    public CartBean(String goodsNo, int num, String goodsName, String newPrice, String oldPrice, String toLoad) {
         this.goodsNo = goodsNo;
         this.num = num;
         this.goodsName = goodsName;
         this.newPrice = newPrice;
         this.oldPrice = oldPrice;
+        this.toLoad = toLoad;
     }
 
     public String getGoodsNo() {
@@ -60,6 +62,14 @@ public class CartBean implements Serializable {
 
     public void setOldPrice(String oldPrice) {
         this.oldPrice = oldPrice;
+    }
+
+    public String getToLoad() {
+        return toLoad;
+    }
+
+    public void setToLoad(String toLoad) {
+        this.toLoad = toLoad;
     }
 
     public boolean isChecked() {

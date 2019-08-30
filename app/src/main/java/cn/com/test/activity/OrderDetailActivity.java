@@ -120,7 +120,7 @@ public class OrderDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单详情 2删除订单 3支付订单 4取消订单 5确认收货 6确认收货(后台)
+     * @param what 1.获取订单详情 2删除订单 3支付订单 4取消订单 5确认收货
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -144,12 +144,6 @@ public class OrderDetailActivity extends BaseActivity {
             } else if (what == 5) {
                 object.put("orderNo", orderNo);
                 relativeUrl = "health/receiveOrder";
-            } else if (what == 6) {
-                // TODO: 2019/8/30 临时后台通过发货
-                object.put("orderNo", orderNo);
-                object.put("expressCompany", "测试快递");
-                object.put("expressNo", "123456");
-                relativeUrl = "health/sendOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -165,8 +159,6 @@ public class OrderDetailActivity extends BaseActivity {
                             } else if (what == 3 || what == 4 || what == 5) {
                                 //刷新订单
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
-                            } else if (what == 6) {
-                                loadData(5, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -196,7 +188,7 @@ public class OrderDetailActivity extends BaseActivity {
                     loadData(4, null, getString(R.string.string_loading), RequestMethod.POST);
                 } else if (stt.equals("03")) {
                     //确认收货
-                    loadData(6, null, getString(R.string.string_loading), RequestMethod.POST);
+                    loadData(5, null, getString(R.string.string_loading), RequestMethod.POST);
                 } else {
                     //删除订单
                     loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);

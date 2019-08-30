@@ -49,6 +49,11 @@ public class SettingActivity extends BaseActivity {
             String relativeUrl = "";
             if (what == 1) {
                 relativeUrl = "health/logout";
+            } else if (what == 2) {
+                object.put("orderNo", "201908300000000019");
+                object.put("expressCompany", "测试快递");
+                object.put("expressNo", "123456");
+                relativeUrl = "health/sendOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -92,7 +97,8 @@ public class SettingActivity extends BaseActivity {
                 break;
             case R.id.setting_logout_layout:
                 if (LoginUtils.getInstance().isLogin()) {
-                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+                    loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+                    //loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
                 }else{
                     ToastUtils.showShort("用户未登录");
                 }

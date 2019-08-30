@@ -25,7 +25,7 @@
                 android:gravity="center"
                 android:text="全部"
                 android:textColor="@color/mainColor"
-                android:textSize="18dp" />
+                android:textSize="16dp" />
 
             <View
                 android:id="@+id/order_all_line"
@@ -48,10 +48,34 @@
                 android:gravity="center"
                 android:text="待付款"
                 android:textColor="#333333"
-                android:textSize="18dp" />
+                android:textSize="16dp" />
 
             <View
                 android:id="@+id/order_pay_line"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/mainColor"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/order_send_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="待发货"
+                android:textColor="#333333"
+                android:textSize="16dp" />
+
+            <View
+                android:id="@+id/order_send_line"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:layout_alignParentBottom="true"
@@ -72,7 +96,7 @@
                 android:gravity="center"
                 android:text="待收货"
                 android:textColor="#333333"
-                android:textSize="18dp" />
+                android:textSize="16dp" />
 
             <View
                 android:id="@+id/order_receive_line"
@@ -96,7 +120,7 @@
                 android:gravity="center"
                 android:text="已完成"
                 android:textColor="#333333"
-                android:textSize="18dp" />
+                android:textSize="16dp" />
 
             <View
                 android:id="@+id/order_finish_line"
@@ -120,7 +144,7 @@
                 android:gravity="center"
                 android:text="已取消"
                 android:textColor="#333333"
-                android:textSize="18dp" />
+                android:textSize="16dp" />
 
             <View
                 android:id="@+id/order_cancle_line"

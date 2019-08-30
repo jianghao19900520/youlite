@@ -54,6 +54,10 @@ public class MyOrderActivity extends BaseActivity {
     TextView order_pay_text;
     @BindView(R.id.order_pay_line)
     View order_pay_line;
+    @BindView(R.id.order_send_text)
+    TextView order_send_text;
+    @BindView(R.id.order_send_line)
+    View order_send_line;
     @BindView(R.id.order_receive_text)
     TextView order_receive_text;
     @BindView(R.id.order_receive_line)
@@ -70,7 +74,7 @@ public class MyOrderActivity extends BaseActivity {
     ListView order_list;
 
     float x1, x2, y1, y2 = 0;//listview里面scrollview的手势监听
-    private String orderType = "";//00=已完成 01=待付款 02=待发货(客户端不用管) 03=待收货 04=已取消
+    private String orderType = "";//00=已完成 01=待付款 02=待发货 03=待收货 04=已取消
     private List<JSONObject> orderList;
     private CommAdapter<JSONObject> mAdapter;
 
@@ -110,6 +114,29 @@ public class MyOrderActivity extends BaseActivity {
                         item_my_order_goods_layout.addView(img);
                     }
                     switch (item.getString("stt")) {
+                        case "00":
+                            holder.setText(R.id.item_my_order_status_text, "已完成");
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
+                            left_text.setVisibility(View.VISIBLE);
+                            left_text.setText("删除订单");
+                            left_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    try {
+                                        loadData(4, new String[]{item.getString("orderNo")}, getString(R.string.string_loading), RequestMethod.POST);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            right_text.setText("再次购买");
+                            right_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    buyAgain(item);
+                                }
+                            });
+                            break;
                         case "01":
                             holder.setText(R.id.item_my_order_status_text, "待付款");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
@@ -138,10 +165,26 @@ public class MyOrderActivity extends BaseActivity {
                                 }
                             });
                             break;
+                        case "02":
+                            holder.setText(R.id.item_my_order_status_text, "待发货");
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
+                            left_text.setVisibility(View.GONE);
+                            right_text.setText("订单发货");
+                            right_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    //确认收货
+                                    try {
+                                        loadData(5, new String[]{item.getString("orderNo")}, getString(R.string.string_loading), RequestMethod.POST);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            break;
                         case "03":
                             holder.setText(R.id.item_my_order_status_text, "待收货");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
-                            left_text.setVisibility(View.VISIBLE);
                             left_text.setVisibility(View.GONE);
                             left_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -162,32 +205,10 @@ public class MyOrderActivity extends BaseActivity {
                                 }
                             });
                             break;
-                        case "00":
-                            holder.setText(R.id.item_my_order_status_text, "已完成");
-                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
-                            left_text.setVisibility(View.VISIBLE);
-                            left_text.setText("删除订单");
-                            left_text.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        loadData(4, new String[]{item.getString("orderNo")}, getString(R.string.string_loading), RequestMethod.POST);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                            right_text.setText("再次购买");
-                            right_text.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    buyAgain(item);
-                                }
-                            });
-                            break;
                         case "04":
                             holder.setText(R.id.item_my_order_status_text, "已取消");
-                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
+                            holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
+                            left_text.setVisibility(View.VISIBLE);
                             left_text.setText("删除订单");
                             left_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -276,7 +297,7 @@ public class MyOrderActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单列表 2支付订单 3确认收货 4删除订单
+     * @param what 1.获取订单列表 2支付订单 3确认收货 4删除订单 5订单发货
      */
     @Override
     public void loadData(int what, final String[] value, String msg, RequestMethod method) {
@@ -299,6 +320,11 @@ public class MyOrderActivity extends BaseActivity {
             } else if (what == 4) {
                 object.put("orderNoList", new JSONArray().put(new JSONObject().put("orderNo", value[0])));
                 relativeUrl = "health/delOrder";
+            } else if (what == 5) {
+                object.put("orderNo", value[0]);
+                object.put("expressCompany", "测试快递");
+                object.put("expressNo", "123456");
+                relativeUrl = "health/sendOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -309,7 +335,7 @@ public class MyOrderActivity extends BaseActivity {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
                                 setOrderList(result.getJSONArray("list"));
-                            } else if (what == 2 || what == 3 || what == 4) {
+                            } else if (what == 2 || what == 3 || what == 4 || what == 5) {
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
@@ -331,18 +357,20 @@ public class MyOrderActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.order_all_text, R.id.order_pay_text, R.id.order_receive_text, R.id.order_finish_text, R.id.order_cancle_text})
+    @OnClick({R.id.order_all_text, R.id.order_pay_text, R.id.order_send_text, R.id.order_receive_text, R.id.order_finish_text, R.id.order_cancle_text})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.order_all_text:
                 orderType = "";
                 order_all_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
+                order_send_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
                 order_finish_text.setTextColor(Color.parseColor("#333333"));
                 order_cancle_text.setTextColor(Color.parseColor("#333333"));
                 order_all_line.setVisibility(View.VISIBLE);
                 order_pay_line.setVisibility(View.INVISIBLE);
+                order_send_line.setVisibility(View.INVISIBLE);
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
@@ -352,11 +380,29 @@ public class MyOrderActivity extends BaseActivity {
                 orderType = "01";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(getResources().getColor(R.color.mainColor));
+                order_send_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
                 order_finish_text.setTextColor(Color.parseColor("#333333"));
                 order_cancle_text.setTextColor(Color.parseColor("#333333"));
                 order_all_line.setVisibility(View.INVISIBLE);
                 order_pay_line.setVisibility(View.VISIBLE);
+                order_send_line.setVisibility(View.INVISIBLE);
+                order_receive_line.setVisibility(View.INVISIBLE);
+                order_finish_line.setVisibility(View.INVISIBLE);
+                order_cancle_line.setVisibility(View.INVISIBLE);
+                loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+                break;
+            case R.id.order_send_text:
+                orderType = "02";
+                order_all_text.setTextColor(Color.parseColor("#333333"));
+                order_pay_text.setTextColor(Color.parseColor("#333333"));
+                order_send_text.setTextColor(getResources().getColor(R.color.mainColor));
+                order_receive_text.setTextColor(Color.parseColor("#333333"));
+                order_finish_text.setTextColor(Color.parseColor("#333333"));
+                order_cancle_text.setTextColor(Color.parseColor("#333333"));
+                order_all_line.setVisibility(View.INVISIBLE);
+                order_pay_line.setVisibility(View.INVISIBLE);
+                order_send_line.setVisibility(View.VISIBLE);
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
@@ -366,11 +412,13 @@ public class MyOrderActivity extends BaseActivity {
                 orderType = "03";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
+                order_send_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_finish_text.setTextColor(Color.parseColor("#333333"));
                 order_cancle_text.setTextColor(Color.parseColor("#333333"));
                 order_all_line.setVisibility(View.INVISIBLE);
                 order_pay_line.setVisibility(View.INVISIBLE);
+                order_send_line.setVisibility(View.INVISIBLE);
                 order_receive_line.setVisibility(View.VISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
@@ -380,11 +428,13 @@ public class MyOrderActivity extends BaseActivity {
                 orderType = "00";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
+                order_send_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
                 order_finish_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_cancle_text.setTextColor(Color.parseColor("#333333"));
                 order_all_line.setVisibility(View.INVISIBLE);
                 order_pay_line.setVisibility(View.INVISIBLE);
+                order_send_line.setVisibility(View.INVISIBLE);
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.VISIBLE);
                 order_cancle_line.setVisibility(View.INVISIBLE);
@@ -394,11 +444,13 @@ public class MyOrderActivity extends BaseActivity {
                 orderType = "04";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
+                order_send_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
                 order_finish_text.setTextColor(Color.parseColor("#333333"));
                 order_cancle_text.setTextColor(getResources().getColor(R.color.mainColor));
                 order_all_line.setVisibility(View.INVISIBLE);
                 order_pay_line.setVisibility(View.INVISIBLE);
+                order_send_line.setVisibility(View.INVISIBLE);
                 order_receive_line.setVisibility(View.INVISIBLE);
                 order_finish_line.setVisibility(View.INVISIBLE);
                 order_cancle_line.setVisibility(View.VISIBLE);

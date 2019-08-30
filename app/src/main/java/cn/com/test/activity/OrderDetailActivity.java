@@ -3,6 +3,7 @@ package cn.com.test.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -69,7 +70,7 @@ public class OrderDetailActivity extends BaseActivity {
     private List<JSONObject> goodsList;
     private CommAdapter<JSONObject> mAdapter;
     private String orderNo;
-    private String stt;//00=已完成 01=待付款 02=待发货(客户端不用管) 03=待收货 04=已取消
+    private String stt = "";//00=已完成 01=待付款 02=待发货 03=待收货 04=已取消
     private String totalAmount;//支付金额
 
     @Override
@@ -120,7 +121,7 @@ public class OrderDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单详情 2删除订单 3支付订单 4取消订单 5确认收货
+     * @param what 1.获取订单详情 2删除订单 3支付订单 4取消订单 5确认收货 6确认发货
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -144,6 +145,11 @@ public class OrderDetailActivity extends BaseActivity {
             } else if (what == 5) {
                 object.put("orderNo", orderNo);
                 relativeUrl = "health/receiveOrder";
+            } else if (what == 6) {
+                object.put("orderNo", orderNo);
+                object.put("expressCompany", "测试快递");
+                object.put("expressNo", "123456");
+                relativeUrl = "health/sendOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -156,7 +162,7 @@ public class OrderDetailActivity extends BaseActivity {
                                 setOrderDetail(result);
                             } else if (what == 2) {
                                 finish();
-                            } else if (what == 3 || what == 4 || what == 5) {
+                            } else if (what == 3 || what == 4 || what == 5 || what == 6) {
                                 //刷新订单
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
@@ -186,9 +192,6 @@ public class OrderDetailActivity extends BaseActivity {
                 if (stt.equals("01")) {
                     //取消订单
                     loadData(4, null, getString(R.string.string_loading), RequestMethod.POST);
-                } else if (stt.equals("03")) {
-                    //确认收货
-                    loadData(5, null, getString(R.string.string_loading), RequestMethod.POST);
                 } else {
                     //删除订单
                     loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
@@ -206,6 +209,12 @@ public class OrderDetailActivity extends BaseActivity {
                             }).setNegativeButton("取消", null).create();
                     dialog.setCanceledOnTouchOutside(false);
                     dialog.show();
+                } else if (stt.equals("02")) {
+                    //确认发货
+                    loadData(6, null, getString(R.string.string_loading), RequestMethod.POST);
+                } else if (stt.equals("03")) {
+                    //确认收货
+                    loadData(5, null, getString(R.string.string_loading), RequestMethod.POST);
                 } else {
                     //再次购买
                     List<CartBean> submitOrderList = new ArrayList();
@@ -241,12 +250,18 @@ public class OrderDetailActivity extends BaseActivity {
             order_pay_money_text.setText("￥" + totalAmount);
             order_left_btn.setText("取消订单");
             order_right_btn.setText("支付订单");
+        } else if (stt.equals("02")) {
+            order_pay_money_title.setText("实付款 : ");
+            totalAmount = result.getString("payAmount");
+            order_pay_money_text.setText("￥" + totalAmount);
+            order_left_btn.setVisibility(View.GONE);
+            order_right_btn.setText("确认发货");
         } else if (stt.equals("03")) {
             order_pay_money_title.setText("实付款 : ");
             totalAmount = result.getString("payAmount");
             order_pay_money_text.setText("￥" + totalAmount);
-            order_left_btn.setText("确认收货");
-            order_right_btn.setText("再次购买");
+            order_left_btn.setVisibility(View.GONE);
+            order_right_btn.setText("确认收货");
         } else if (stt.equals("00")) {
             order_pay_money_title.setText("实付款 : ");
             totalAmount = result.getString("payAmount");

@@ -297,7 +297,7 @@ public class MyOrderActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单列表 2支付订单 3确认收货 4删除订单 5订单发货
+     * @param what 1.获取订单列表 2支付订单 3确认收货 4删除订单 5确认发货
      */
     @Override
     public void loadData(int what, final String[] value, String msg, RequestMethod method) {

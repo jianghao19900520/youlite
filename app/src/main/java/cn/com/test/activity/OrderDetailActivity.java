@@ -69,7 +69,7 @@ public class OrderDetailActivity extends BaseActivity {
     private List<JSONObject> goodsList;
     private CommAdapter<JSONObject> mAdapter;
     private String orderNo;
-    private String stt;//00=全部 01=待付款 02=待收货 03=已完成 04=已取消
+    private String stt;//00=已完成 01=待付款 02=待发货(客户端不用管) 03=待收货 04=已取消
     private String totalAmount;//支付金额
 
     @Override
@@ -194,7 +194,7 @@ public class OrderDetailActivity extends BaseActivity {
                 if (stt.equals("01")) {
                     //取消订单
                     loadData(4, null, getString(R.string.string_loading), RequestMethod.POST);
-                } else if (stt.equals("02")) {
+                } else if (stt.equals("03")) {
                     //确认收货
                     loadData(6, null, getString(R.string.string_loading), RequestMethod.POST);
                 } else {
@@ -236,7 +236,6 @@ public class OrderDetailActivity extends BaseActivity {
 
     private void setOrderDetail(JSONObject result) throws JSONException {
         stt = result.getString("stt");
-        if (stt.equals("00")) stt = "03";// TODO: 2019/8/30  和接口定义的不一样，所以临时这么处理一下
         address_name.setText(result.getString("linkMan") + "  " + result.getString("linkPhone"));
         address_text.setText(result.getString("address"));
         order_no_text.setText("订单编号 : " + result.getString("orderNo"));
@@ -250,13 +249,13 @@ public class OrderDetailActivity extends BaseActivity {
             order_pay_money_text.setText("￥" + totalAmount);
             order_left_btn.setText("取消订单");
             order_right_btn.setText("支付订单");
-        } else if (stt.equals("02")) {
+        } else if (stt.equals("03")) {
             order_pay_money_title.setText("实付款 : ");
             totalAmount = result.getString("payAmount");
             order_pay_money_text.setText("￥" + totalAmount);
             order_left_btn.setText("确认收货");
             order_right_btn.setText("再次购买");
-        } else if (stt.equals("03")) {
+        } else if (stt.equals("00")) {
             order_pay_money_title.setText("实付款 : ");
             totalAmount = result.getString("payAmount");
             order_pay_money_text.setText("￥" + totalAmount);

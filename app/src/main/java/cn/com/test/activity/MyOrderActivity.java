@@ -70,7 +70,7 @@ public class MyOrderActivity extends BaseActivity {
     ListView order_list;
 
     float x1, x2, y1, y2 = 0;//listview里面scrollview的手势监听
-    private String orderType = "00";//00=全部 01=待付款 02=待收货 03=已完成 04=已取消
+    private String orderType = "";//00=已完成 01=待付款 02=待发货(客户端不用管) 03=待收货 04=已取消
     private List<JSONObject> orderList;
     private List<JSONObject> showList;//根据状态来显示的列表
     private CommAdapter<JSONObject> mAdapter;
@@ -140,7 +140,7 @@ public class MyOrderActivity extends BaseActivity {
                                 }
                             });
                             break;
-                        case "02":
+                        case "03":
                             holder.setText(R.id.item_my_order_status_text, "待收货");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
                             left_text.setVisibility(View.VISIBLE);
@@ -165,7 +165,6 @@ public class MyOrderActivity extends BaseActivity {
                             });
                             break;
                         case "00":
-                            // TODO: 2019/8/30  
                             holder.setText(R.id.item_my_order_status_text, "已完成");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
                             left_text.setVisibility(View.VISIBLE);
@@ -373,7 +372,7 @@ public class MyOrderActivity extends BaseActivity {
                 refreshListStatus();
                 break;
             case R.id.order_receive_text:
-                orderType = "02";
+                orderType = "03";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(getResources().getColor(R.color.mainColor));
@@ -387,7 +386,7 @@ public class MyOrderActivity extends BaseActivity {
                 refreshListStatus();
                 break;
             case R.id.order_finish_text:
-                orderType = "03";
+                orderType = "00";
                 order_all_text.setTextColor(Color.parseColor("#333333"));
                 order_pay_text.setTextColor(Color.parseColor("#333333"));
                 order_receive_text.setTextColor(Color.parseColor("#333333"));
@@ -430,11 +429,6 @@ public class MyOrderActivity extends BaseActivity {
      */
     private void refreshListStatus() {
         switch (orderType) {
-            case "00":
-                showList.clear();
-                showList.addAll(orderList);
-                mAdapter.notifyDataSetChanged();
-                break;
             case "01":
                 showList.clear();
                 for (JSONObject object : orderList) {
@@ -448,11 +442,11 @@ public class MyOrderActivity extends BaseActivity {
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
-            case "02":
+            case "03":
                 showList.clear();
                 for (JSONObject object : orderList) {
                     try {
-                        if (object.getString("stt").equals("02")) {
+                        if (object.getString("stt").equals("03")) {
                             showList.add(object);
                         }
                     } catch (JSONException e) {
@@ -461,12 +455,11 @@ public class MyOrderActivity extends BaseActivity {
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
-            case "03":
+            case "00":
                 showList.clear();
                 for (JSONObject object : orderList) {
                     try {
                         if (object.getString("stt").equals("00")) {
-                            // TODO: 2019/8/30  
                             showList.add(object);
                         }
                     } catch (JSONException e) {

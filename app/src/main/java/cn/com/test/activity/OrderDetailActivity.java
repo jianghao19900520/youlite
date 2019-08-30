@@ -120,7 +120,7 @@ public class OrderDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单详情 2删除订单 3支付订单 4取消订单 5确认收货
+     * @param what 1.获取订单详情 2删除订单 3支付订单 4取消订单 5确认收货 6确认收货(后台)
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -145,6 +145,7 @@ public class OrderDetailActivity extends BaseActivity {
                 object.put("orderNo", orderNo);
                 relativeUrl = "health/receiveOrder";
             } else if (what == 6) {
+                // TODO: 2019/8/30 临时后台通过发货
                 object.put("orderNo", orderNo);
                 object.put("expressCompany", "测试快递");
                 object.put("expressNo", "123456");

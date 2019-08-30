@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -143,6 +144,7 @@ public class MyOrderActivity extends BaseActivity {
                             holder.setText(R.id.item_my_order_status_text, "待收货");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.GONE);
                             left_text.setVisibility(View.VISIBLE);
+                            left_text.setVisibility(View.GONE);
                             left_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -153,7 +155,12 @@ public class MyOrderActivity extends BaseActivity {
                             right_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    ToastUtils.showShort("确认收货");
+                                    //确认收货
+                                    try {
+                                        loadData(4, new String[]{item.getString("orderNo")}, getString(R.string.string_loading), RequestMethod.POST);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
                             break;
@@ -162,29 +169,44 @@ public class MyOrderActivity extends BaseActivity {
                             holder.setText(R.id.item_my_order_status_text, "已完成");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
                             left_text.setVisibility(View.VISIBLE);
+                            left_text.setText("删除订单");
                             left_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    ToastUtils.showShort("查看物流");
+                                    try {
+                                        loadData(5, new String[]{item.getString("orderNo")}, getString(R.string.string_loading), RequestMethod.POST);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             });
                             right_text.setText("再次购买");
                             right_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    ToastUtils.showShort("再次购买");
+                                    buyAgain(item);
                                 }
                             });
                             break;
                         case "04":
                             holder.setText(R.id.item_my_order_status_text, "再次购买");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
-                            left_text.setVisibility(View.GONE);
+                            left_text.setText("删除订单");
+                            left_text.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    try {
+                                        loadData(5, new String[]{item.getString("orderNo")}, getString(R.string.string_loading), RequestMethod.POST);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                             right_text.setText("再次购买");
                             right_text.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    ToastUtils.showShort("再次购买");
+                                    buyAgain(item);
                                 }
                             });
                             break;
@@ -232,11 +254,35 @@ public class MyOrderActivity extends BaseActivity {
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
+    private void buyAgain(JSONObject item) {
+        //再次购买
+        try {
+            List<CartBean> submitOrderList = new ArrayList();
+            JSONArray detailList = item.getJSONArray("detailList");
+            for (int i = 0; i < detailList.length(); i++) {
+                JSONObject goods = detailList.getJSONObject(i);
+                CartBean bean = null;
+                try {
+                    bean = new CartBean(goods.getString("goodsNo"), goods.getInt("num"), goods.getString("goodsName"), goods.getString("unitPrice"), goods.getString("unitPrice"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                submitOrderList.add(bean);
+            }
+            Bundle bundleObject = new Bundle();
+            bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
+            startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
-     * @param what 1.获取订单列表 2支付订单
+     * @param what 1.获取订单列表 2支付订单 3确认收货 4确认收货(后台) 5删除订单
      */
     @Override
-    public void loadData(int what, String[] value, String msg, RequestMethod method) {
+    public void loadData(int what, final String[] value, String msg, RequestMethod method) {
         try {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
@@ -249,6 +295,18 @@ public class MyOrderActivity extends BaseActivity {
                 object.put("amount", value[1]);
                 object.put("channel", 03);//03-支付宝 06-微信
                 relativeUrl = "health/payOrder";
+            } else if (what == 3) {
+                object.put("orderNo", value[0]);
+                relativeUrl = "health/receiveOrder";
+            } else if (what == 4) {
+                // TODO: 2019/8/30 临时后台通过发货
+                object.put("orderNo", value[0]);
+                object.put("expressCompany", "测试快递");
+                object.put("expressNo", "123456");
+                relativeUrl = "health/sendOrder";
+            } else if (what == 5) {
+                object.put("orderNoList", new JSONArray().put(new JSONObject().put("orderNo", value[0])));
+                relativeUrl = "health/delOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -259,8 +317,10 @@ public class MyOrderActivity extends BaseActivity {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
                                 setOrderList(result.getJSONArray("list"));
-                            } else if (what == 2) {
+                            } else if (what == 2 || what == 3 || what == 5) {
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+                            } else if (what == 4) {
+                                loadData(3, value, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));

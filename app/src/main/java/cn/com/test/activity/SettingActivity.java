@@ -93,6 +93,8 @@ public class SettingActivity extends BaseActivity {
             case R.id.setting_logout_layout:
                 if (LoginUtils.getInstance().isLogin()) {
                     loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+                }else{
+                    ToastUtils.showShort("用户未登录");
                 }
                 break;
         }

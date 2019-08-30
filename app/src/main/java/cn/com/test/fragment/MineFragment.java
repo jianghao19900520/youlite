@@ -51,6 +51,12 @@ public class MineFragment extends BaseFragment {
 
     @Override
     public void init() {
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (LoginUtils.getInstance().isLogin()) {
             loadData(1, null, "", RequestMethod.GET);
         } else {
@@ -141,9 +147,7 @@ public class MineFragment extends BaseFragment {
                 }
                 break;
             case R.id.mine_aboutus_layout:
-                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    startActivity(new Intent(mContext, AboutAsActivity.class));
-                }
+                startActivity(new Intent(mContext, AboutAsActivity.class));
                 break;
             case R.id.mine_setting_layout:
                 startActivity(new Intent(mContext, SettingActivity.class));

@@ -1,5 +1,7 @@
 package cn.com.test.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -98,7 +100,7 @@ public class ConfirmOrderActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取默认收货地址 2提交下单
+     * @param what 1.获取默认收货地址 2提交下单 3支付订单
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -121,6 +123,11 @@ public class ConfirmOrderActivity extends BaseActivity {
                 object.put("postFee", "00");//邮费
                 object.put("remark", "");//备注
                 relativeUrl = "health/applyOrder";
+            } else if (what == 3) {
+                object.put("orderNo", value[0]);
+                object.put("amount", value[1]);
+                object.put("channel", 03);//03-支付宝 06-微信
+                relativeUrl = "health/payOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -136,7 +143,24 @@ public class ConfirmOrderActivity extends BaseActivity {
                                 submit_address_text.setText(result.getString("province") + result.getString("city") + result.getString("area"));
                                 submit_detailed_address_text.setText(result.getString("address"));
                             } else if (what == 2) {
-                                ToastUtils.showShort("订单提交成功");
+                                //支付
+                                final String orderNo = result.getString("orderNo");
+                                final String totalAmount = result.getString("totalAmount");
+                                AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
+                                        .setMessage("订单提交成功，确定支付?").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                loadData(3, new String[]{orderNo, totalAmount}, getString(R.string.string_loading), RequestMethod.POST);
+                                            }
+                                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                finish();
+                                            }
+                                        }).create();
+                                dialog.setCanceledOnTouchOutside(false);
+                                dialog.show();
+                            } else if (what == 3) {
                                 finish();
                             }
                         } else {

@@ -229,6 +229,7 @@ public class OrderDetailActivity extends BaseActivity {
                     Bundle bundleObject = new Bundle();
                     bundleObject.putSerializable("goodsList", (Serializable) submitOrderList);
                     startActivity(new Intent(mContext, ConfirmOrderActivity.class).putExtras(bundleObject));
+                    finish();
                 }
         }
     }

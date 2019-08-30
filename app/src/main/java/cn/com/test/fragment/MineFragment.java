@@ -25,6 +25,7 @@ import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.LoginActivity;
 import cn.com.test.activity.SettingActivity;
+import cn.com.test.activity.UserInfoActivity;
 import cn.com.test.base.BaseFragment;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
@@ -84,10 +85,13 @@ public class MineFragment extends BaseFragment {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
                                 String userNo = result.getString("userNo");
-                                if (TextUtils.isEmpty(userNo)) {
+                                String nickName = result.getString("nickName");
+                                if (TextUtils.isEmpty(nickName)) {
                                     user_name.setText("匿名用户");
                                 } else {
-                                    user_name.setText(userNo);
+                                    user_name.setText(nickName);
+                                }
+                                if (!TextUtils.isEmpty(userNo)) {
                                     SPUtils.getInstance().put(Constant.userNo, userNo);
                                 }
                             }
@@ -118,7 +122,7 @@ public class MineFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.mine_head_layout:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    ToastUtils.showShort("个人资料");
+                    startActivity(new Intent(mContext, UserInfoActivity.class));
                 }
                 break;
             case R.id.mine_person_layout:

@@ -92,6 +92,10 @@
         <activity
             android:name=".activity.SettingActivity"
             android:screenOrientation="portrait" />
+        <!--用户资料-->
+        <activity
+            android:name=".activity.UserInfoActivity"
+            android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

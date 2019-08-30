@@ -92,12 +92,14 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
             try {
                 LogUtils.json(response.get().toString());
                 JSONObject object = new JSONObject(response.get().toString());
-                callback.onSucceed(what, object);
                 String status = object.getString("status");
                 if (status.equals("0003")) {
                     //token失效
                     SPUtils.getInstance().put(Constant.token, "");
-                    mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                    ToastUtils.showShort(object.getString("errorMsg"));
+                    //mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                } else {
+                    callback.onSucceed(what, object);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -17,6 +17,7 @@ import cn.com.test.base.BaseActivity;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 
@@ -82,13 +83,17 @@ public class SettingActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting_update_pwd_layout:
-                startActivity(new Intent(mContext, UpdatePwdActivity.class));
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    startActivity(new Intent(mContext, UpdatePwdActivity.class));
+                }
                 break;
             case R.id.setting_check_update_layout:
                 startActivity(new Intent(mContext, AboutAsActivity.class));
                 break;
             case R.id.setting_logout_layout:
-                loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+                if (LoginUtils.getInstance().isLogin()) {
+                    loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+                }
                 break;
         }
     }

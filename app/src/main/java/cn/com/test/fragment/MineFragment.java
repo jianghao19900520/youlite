@@ -21,6 +21,7 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.activity.AboutAsActivity;
 import cn.com.test.activity.AddressManageActivity;
+import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.LoginActivity;
 import cn.com.test.activity.SettingActivity;
@@ -110,25 +111,39 @@ public class MineFragment extends BaseFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.mine_head_layout:
-                startActivity(new Intent(mContext, LoginActivity.class));
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    ToastUtils.showShort("个人资料");
+                }
                 break;
             case R.id.mine_person_layout:
-                ToastUtils.showShort("家庭成员");
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    ToastUtils.showShort("家庭成员");
+                }
                 break;
             case R.id.mine_page_layout:
-                ToastUtils.showShort("我的贴子");
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    ToastUtils.showShort("我的贴子");
+                }
                 break;
             case R.id.mine_grade_layout:
-                ToastUtils.showShort("我的收藏");
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    ToastUtils.showShort("我的收藏");
+                }
                 break;
             case R.id.mine_oder_layout:
-                ToastUtils.showShort("我的订单");
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    ToastUtils.showShort("我的订单");
+                }
                 break;
             case R.id.mine_address_layout:
-                startActivity(new Intent(mContext, AddressManageActivity.class));
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    startActivity(new Intent(mContext, AddressManageActivity.class));
+                }
                 break;
             case R.id.mine_aboutus_layout:
-                startActivity(new Intent(mContext, AboutAsActivity.class));
+                if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
+                    startActivity(new Intent(mContext, AboutAsActivity.class));
+                }
                 break;
             case R.id.mine_setting_layout:
                 startActivity(new Intent(mContext, SettingActivity.class));

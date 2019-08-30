@@ -61,8 +61,10 @@ public class OrderDetailActivity extends BaseActivity {
     TextView order_pay_money_title;
     @BindView(R.id.order_pay_money_text)
     TextView order_pay_money_text;
-    @BindView(R.id.order_buy_btn)
-    TextView order_buy_btn;
+    @BindView(R.id.order_left_btn)
+    TextView order_left_btn;
+    @BindView(R.id.order_right_btn)
+    TextView order_right_btn;
 
     private List<JSONObject> goodsList;
     private CommAdapter<JSONObject> mAdapter;
@@ -118,7 +120,7 @@ public class OrderDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取订单详情 2删除订单 3支付订单
+     * @param what 1.获取订单详情 2删除订单 3支付订单 4取消订单 5确认收货
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -136,6 +138,17 @@ public class OrderDetailActivity extends BaseActivity {
                 object.put("amount", totalAmount);
                 object.put("channel", 03);//03-支付宝 06-微信
                 relativeUrl = "health/payOrder";
+            } else if (what == 4) {
+                object.put("orderNo", orderNo);
+                relativeUrl = "health/cancelOrder";
+            } else if (what == 5) {
+                object.put("orderNo", orderNo);
+                relativeUrl = "health/receiveOrder";
+            } else if (what == 6) {
+                object.put("orderNo", orderNo);
+                object.put("expressCompany", "测试快递");
+                object.put("expressNo", "123456");
+                relativeUrl = "health/sendOrder";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -148,8 +161,11 @@ public class OrderDetailActivity extends BaseActivity {
                                 setOrderDetail(result);
                             } else if (what == 2) {
                                 finish();
-                            } else if (what == 3) {
+                            } else if (what == 3 || what == 4 || what == 5) {
+                                //刷新订单
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+                            } else if (what == 6) {
+                                loadData(5, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -170,14 +186,24 @@ public class OrderDetailActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.order_delete_btn, R.id.order_buy_btn})
+    @OnClick({R.id.order_left_btn, R.id.order_right_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.order_delete_btn:
-                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
-                break;
-            case R.id.order_buy_btn:
+            case R.id.order_left_btn:
                 if (stt.equals("01")) {
+                    //取消订单
+                    loadData(4, null, getString(R.string.string_loading), RequestMethod.POST);
+                } else if (stt.equals("02")) {
+                    //确认收货
+                    loadData(6, null, getString(R.string.string_loading), RequestMethod.POST);
+                } else {
+                    //删除订单
+                    loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+                }
+                break;
+            case R.id.order_right_btn:
+                if (stt.equals("01")) {
+                    //支付
                     AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
                             .setMessage("确定支付?").setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
@@ -187,9 +213,8 @@ public class OrderDetailActivity extends BaseActivity {
                             }).setNegativeButton("取消", null).create();
                     dialog.setCanceledOnTouchOutside(false);
                     dialog.show();
-                } else if (stt.equals("02")) {
-                    ToastUtils.showShort("确认收货");
                 } else {
+                    //再次购买
                     List<CartBean> submitOrderList = new ArrayList();
                     for (JSONObject object : goodsList) {
                         CartBean bean = null;
@@ -209,6 +234,7 @@ public class OrderDetailActivity extends BaseActivity {
 
     private void setOrderDetail(JSONObject result) throws JSONException {
         stt = result.getString("stt");
+        if (stt.equals("00")) stt = "03";// TODO: 2019/8/30  和接口定义的不一样，所以临时这么处理一下
         address_name.setText(result.getString("linkMan") + "  " + result.getString("linkPhone"));
         address_text.setText(result.getString("address"));
         order_no_text.setText("订单编号 : " + result.getString("orderNo"));
@@ -220,17 +246,26 @@ public class OrderDetailActivity extends BaseActivity {
             order_pay_money_title.setText("待付款 : ");
             totalAmount = ArithUtils.add(result.getString("totalAmount"), result.getString("postFee"));
             order_pay_money_text.setText("￥" + totalAmount);
-            order_buy_btn.setText("支付");
+            order_left_btn.setText("取消订单");
+            order_right_btn.setText("支付");
         } else if (stt.equals("02")) {
             order_pay_money_title.setText("实付款 : ");
             totalAmount = result.getString("payAmount");
             order_pay_money_text.setText("￥" + totalAmount);
-            order_buy_btn.setText("确认收货");
-        } else {
+            order_left_btn.setText("确认收货");
+            order_right_btn.setText("再次购买");
+        } else if (stt.equals("03")) {
             order_pay_money_title.setText("实付款 : ");
             totalAmount = result.getString("payAmount");
             order_pay_money_text.setText("￥" + totalAmount);
-            order_buy_btn.setText("再次购买");
+            order_left_btn.setText("删除订单");
+            order_right_btn.setText("再次购买");
+        } else if (stt.equals("04")) {
+            order_pay_money_title.setText("待付款 : ");
+            totalAmount = ArithUtils.add(result.getString("totalAmount"), result.getString("postFee"));
+            order_pay_money_text.setText("￥" + totalAmount);
+            order_left_btn.setText("删除订单");
+            order_right_btn.setText("再次购买");
         }
         goodsList.clear();
         JSONArray array = result.getJSONArray("detailList");

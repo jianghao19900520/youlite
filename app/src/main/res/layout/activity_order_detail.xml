@@ -206,26 +206,22 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/order_delete_btn"
-            android:layout_width="wrap_content"
+            android:id="@+id/order_left_btn"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:background="#a2a3a3"
             android:gravity="center"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="删除订单"
+            android:text=""
             android:textColor="#ffffff"
             android:textSize="16dp" />
 
         <TextView
-            android:id="@+id/order_buy_btn"
-            android:layout_width="wrap_content"
+            android:id="@+id/order_right_btn"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:background="@color/payColor"
             android:gravity="center"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="再次购买"
+            android:text=""
             android:textColor="#ffffff"
             android:textSize="16dp" />
 

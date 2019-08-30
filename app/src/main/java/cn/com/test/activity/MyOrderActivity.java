@@ -157,7 +157,8 @@ public class MyOrderActivity extends BaseActivity {
                                 }
                             });
                             break;
-                        case "03":
+                        case "00":
+                            // TODO: 2019/8/30  
                             holder.setText(R.id.item_my_order_status_text, "已完成");
                             holder.getView(R.id.item_my_order_delete_img).setVisibility(View.VISIBLE);
                             left_text.setVisibility(View.VISIBLE);
@@ -404,7 +405,8 @@ public class MyOrderActivity extends BaseActivity {
                 showList.clear();
                 for (JSONObject object : orderList) {
                     try {
-                        if (object.getString("stt").equals("03")) {
+                        if (object.getString("stt").equals("00")) {
+                            // TODO: 2019/8/30  
                             showList.add(object);
                         }
                     } catch (JSONException e) {

@@ -10,4 +10,6 @@
     <color name="lineColor">#d8d8d8</color>
     <color name="payColor">#e74868</color>
 
+    <color name="color_333333">#333333</color>
+
 </resources>

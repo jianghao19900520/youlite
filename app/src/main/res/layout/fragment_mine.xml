@@ -21,6 +21,7 @@
             android:paddingRight="20dp">
 
             <ImageView
+                android:id="@+id/user_img"
                 android:layout_width="65dp"
                 android:layout_height="65dp"
                 android:src="@mipmap/ic_head" />

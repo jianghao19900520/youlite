@@ -8,8 +8,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
@@ -36,6 +40,8 @@ import cn.com.test.utils.ToastUtils;
 
 public class MineFragment extends BaseFragment {
 
+    @BindView(R.id.user_img)
+    ImageView user_img;
     @BindView(R.id.user_name)
     TextView user_name;
 
@@ -84,8 +90,10 @@ public class MineFragment extends BaseFragment {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
+                                String userPic = result.getString("userPic");
                                 String userNo = result.getString("userNo");
                                 String nickName = result.getString("nickName");
+                                Glide.with(mContext).load(userPic).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(user_img);
                                 if (TextUtils.isEmpty(nickName)) {
                                     user_name.setText("匿名用户");
                                 } else {

@@ -104,6 +104,9 @@ public class GoodsInfoActivity extends BaseActivity {
             finish();
         }
         setViewHeightByWidth(goods_main_img);
+        cart_num_text.isShowZeroNumPoint(false);
+        cart_num_text.setZeroRadius(10);
+        cart_num_text.setmCount(0);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
@@ -203,8 +206,6 @@ public class GoodsInfoActivity extends BaseActivity {
         for (int i = 0; i < carList.length(); i++) {
             num += carList.getJSONObject(i).getInt("num");
         }
-        cart_num_text.isShowZeroNumPoint(false);
-        cart_num_text.setZeroRadius(10);
         cart_num_text.setmCount(num);
     }
 

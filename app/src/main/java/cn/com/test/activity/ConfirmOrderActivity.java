@@ -167,12 +167,7 @@ public class ConfirmOrderActivity extends BaseActivity {
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             startActivity(new Intent(mContext, AddressManageActivity.class).putExtra("isSelect", true));
                                         }
-                                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            finish();
-                                        }
-                                    }).create();
+                                    }).setNegativeButton("取消", null).create().show();
                                 }
                             } else if (what == 2) {
                                 //支付
@@ -184,12 +179,7 @@ public class ConfirmOrderActivity extends BaseActivity {
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 loadData(3, new String[]{orderNo, totalAmount}, getString(R.string.string_loading), RequestMethod.POST);
                                             }
-                                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                finish();
-                                            }
-                                        }).create();
+                                        }).setNegativeButton("取消", null).create();
                                 dialog.setCanceledOnTouchOutside(false);
                                 dialog.show();
                             } else if (what == 3) {
@@ -225,12 +215,7 @@ public class ConfirmOrderActivity extends BaseActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             startActivity(new Intent(mContext, AddressManageActivity.class).putExtra("isSelect", true));
                         }
-                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                        }
-                    }).create();
+                    }).setNegativeButton("取消", null).create().show();
                 } else {
                     loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 }

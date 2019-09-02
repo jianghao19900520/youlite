@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,7 @@ import cn.com.test.R;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.event.AddressEvent;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
@@ -46,6 +48,7 @@ public class AddressManageActivity extends BaseActivity {
     private List<JSONObject> addressList;
     private CommAdapter<JSONObject> mAdapter;
     private int width;
+    private boolean isSelect = false;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class AddressManageActivity extends BaseActivity {
 
     @Override
     public void init() {
+        isSelect = getIntent().getBooleanExtra("isSelect", false);
         WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -122,6 +126,15 @@ public class AddressManageActivity extends BaseActivity {
                     ViewGroup.LayoutParams params = item_address_layout.getLayoutParams();
                     params.width = width;
                     item_address_layout.setLayoutParams(params);
+                    item_address_layout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (isSelect) {
+                                EventBus.getDefault().post(new AddressEvent(item));
+                                finish();
+                            }
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

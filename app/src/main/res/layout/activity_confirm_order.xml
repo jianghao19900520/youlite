@@ -19,7 +19,6 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/submit_address_layout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp">
 
@@ -54,13 +53,12 @@
                     android:textColor="#333333"
                     android:textSize="15dp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/submit_name_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="20dp"
-                    android:background="@null"
                     android:lines="1"
                     android:singleLine="true"
                     android:textColor="#333333"
@@ -88,13 +86,12 @@
                     android:textColor="#333333"
                     android:textSize="15dp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/submit_number_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="20dp"
-                    android:background="@null"
                     android:inputType="number"
                     android:lines="1"
                     android:singleLine="true"
@@ -157,13 +154,12 @@
                     android:textColor="#333333"
                     android:textSize="15dp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/submit_detailed_address_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="20dp"
-                    android:background="@null"
                     android:lines="1"
                     android:singleLine="true"
                     android:textColor="#333333"

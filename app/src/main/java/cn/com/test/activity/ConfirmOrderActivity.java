@@ -23,6 +23,9 @@ import com.bumptech.glide.Glide;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +40,7 @@ import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.bean.AddressBean;
 import cn.com.test.bean.CartBean;
+import cn.com.test.event.AddressEvent;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ArithUtils;
@@ -47,14 +51,16 @@ public class ConfirmOrderActivity extends BaseActivity {
 
     @BindView(R.id.title)
     TextView title;
+    @BindView(R.id.title_right_text_btn)
+    TextView title_right_text_btn;
     @BindView(R.id.submit_name_text)
-    EditText submit_name_text;//收货人
+    TextView submit_name_text;//收货人
     @BindView(R.id.submit_number_text)
-    EditText submit_number_text;//手机号码
+    TextView submit_number_text;//手机号码
     @BindView(R.id.submit_address_text)
     TextView submit_address_text;//所在地址
     @BindView(R.id.submit_detailed_address_text)
-    EditText submit_detailed_address_text;//详细地址
+    TextView submit_detailed_address_text;//详细地址
     @BindView(R.id.goods_list)
     ListView goods_list;
     @BindView(R.id.goods_money_text)
@@ -80,10 +86,19 @@ public class ConfirmOrderActivity extends BaseActivity {
     @Override
     public void initTitle() {
         title.setText("确认订单");
+        title_right_text_btn.setText("地址管理");
+        title_right_text_btn.setVisibility(View.VISIBLE);
+        title_right_text_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(mContext, AddressManageActivity.class).putExtra("isSelect", true));
+            }
+        });
     }
 
     @Override
     public void init() {
+        EventBus.getDefault().register(mContext);
         Bundle bundleObject = getIntent().getExtras();
         goodsList = (ArrayList<CartBean>) bundleObject.getSerializable("goodsList");
         if (goodsList == null || goodsList.size() == 0) finish();
@@ -97,6 +112,12 @@ public class ConfirmOrderActivity extends BaseActivity {
         goods_list.setAdapter(mAdapter);
         initAddress();
         loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(mContext);
     }
 
     /**
@@ -137,11 +158,22 @@ public class ConfirmOrderActivity extends BaseActivity {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
-                                addressId = result.getString("id");
-                                submit_name_text.setText(result.getString("linkMan"));
-                                submit_number_text.setText(result.getString("linkPhone"));
-                                submit_address_text.setText(result.getString("province") + result.getString("city") + result.getString("area"));
-                                submit_detailed_address_text.setText(result.getString("address"));
+                                if (result.toString().contains("id")) {
+                                    EventBus.getDefault().post(new AddressEvent(result));
+                                } else {
+                                    new AlertDialog.Builder(mContext).setTitle("提示")
+                                            .setMessage("请您先添加一个收货地址").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            startActivity(new Intent(mContext, AddressManageActivity.class).putExtra("isSelect", true));
+                                        }
+                                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            finish();
+                                        }
+                                    }).create();
+                                }
                             } else if (what == 2) {
                                 //支付
                                 final String orderNo = result.getString("orderNo");
@@ -182,33 +214,26 @@ public class ConfirmOrderActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.submit_address_text, R.id.submit_order_btn, R.id.submit_address_layout})
+    @OnClick({R.id.submit_order_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.submit_address_text:
-                ShowPickerView();
-                break;
             case R.id.submit_order_btn:
-                if (TextUtils.isEmpty(submit_name_text.getText().toString().trim())) {
-                    ToastUtils.showShort("收货人不能为空");
-                    return;
+                if (TextUtils.isEmpty(addressId)) {
+                    new AlertDialog.Builder(mContext).setTitle("提示")
+                            .setMessage("请您先添加一个收货地址").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            startActivity(new Intent(mContext, AddressManageActivity.class).putExtra("isSelect", true));
+                        }
+                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    }).create();
+                } else {
+                    loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 }
-                if (TextUtils.isEmpty(submit_number_text.getText().toString().trim())) {
-                    ToastUtils.showShort("手机号码不能为空");
-                    return;
-                }
-                if (TextUtils.isEmpty(submit_address_text.getText().toString().trim())) {
-                    ToastUtils.showShort("所在地址不能为空");
-                    return;
-                }
-                if (TextUtils.isEmpty(submit_detailed_address_text.getText().toString().trim())) {
-                    ToastUtils.showShort("详细地址不能为空");
-                    return;
-                }
-                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
-                break;
-            case R.id.submit_address_layout:
-                startActivity(new Intent(mContext, AddressManageActivity.class));
                 break;
         }
     }
@@ -263,30 +288,6 @@ public class ConfirmOrderActivity extends BaseActivity {
             }
         });
         thread.start();
-    }
-
-    /*
-    省市县弹框
-     */
-    private void ShowPickerView() {
-        OptionsPickerView pvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
-            @Override
-            public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                String address = options1Items.get(options1).getPickerViewText() +
-                        options2Items.get(options1).get(options2) +
-                        options3Items.get(options1).get(options2).get(options3);
-                submit_address_text.setText(address);
-            }
-        })
-                .setTitleText("城市选择")
-                .setDividerColor(mContext.getResources().getColor(R.color.mainColor))
-                .setTextColorCenter(mContext.getResources().getColor(R.color.mainColor))
-                .setContentTextSize(25)
-                .build();
-        //pvOptions.setPicker(options1Items);//一级选择器
-        //pvOptions.setPicker(options1Items, options2Items);//二级选择器
-        pvOptions.setPicker(options1Items, options2Items, options3Items);//三级选择器
-        pvOptions.show();
     }
 
     private class GoodsAdapter extends BaseAdapter {
@@ -349,6 +350,20 @@ public class ConfirmOrderActivity extends BaseActivity {
             LinearLayout item_goods_num_layout;
         }
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updateAddress(AddressEvent event) {
+        try {
+            JSONObject result = event.getAddress();
+            addressId = result.getString("id");
+            submit_name_text.setText(result.getString("linkMan"));
+            submit_number_text.setText(result.getString("linkPhone"));
+            submit_address_text.setText(result.getString("province") + result.getString("city") + result.getString("area"));
+            submit_detailed_address_text.setText(result.getString("address"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }

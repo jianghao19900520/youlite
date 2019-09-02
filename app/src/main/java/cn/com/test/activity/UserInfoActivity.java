@@ -59,6 +59,7 @@ import cn.com.test.utils.FileUtils;
 import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
+import cn.com.test.utils.UploadHelper;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class UserInfoActivity extends BaseActivity {
@@ -270,9 +271,15 @@ public class UserInfoActivity extends BaseActivity {
                     return;
                 }
                 Uri uri = data.getData();
-                String filePath = FileUtils.getFilePathByUri(this, uri);
+                final String filePath = FileUtils.getFilePathByUri(this, uri);
                 if (!TextUtils.isEmpty(filePath)) {
-                    upload(new File(filePath));
+//                    upload(new File(filePath));
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new UploadHelper().upload("", "", new File(filePath));
+                        }
+                    }).start();
                 }
                 break;
             case RC_TAKE_PHOTO:

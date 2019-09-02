@@ -15,6 +15,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
@@ -42,7 +45,7 @@ import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
 
-public class MyOrderActivity extends BaseActivity {
+public class MyOrderActivity extends BaseActivity implements OnRefreshLoadmoreListener {
 
     @BindView(R.id.title)
     TextView title;
@@ -70,6 +73,8 @@ public class MyOrderActivity extends BaseActivity {
     TextView order_cancle_text;
     @BindView(R.id.order_cancle_line)
     View order_cancle_line;
+    @BindView(R.id.refreshLayout)
+    SmartRefreshLayout refreshLayout;
     @BindView(R.id.order_list)
     ListView order_list;
 
@@ -77,6 +82,7 @@ public class MyOrderActivity extends BaseActivity {
     private String orderType = "";//00=已完成 01=待付款 02=待发货 03=待收货 04=已取消
     private List<JSONObject> orderList;
     private CommAdapter<JSONObject> mAdapter;
+    private int pageIndex = 1;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -264,12 +270,27 @@ public class MyOrderActivity extends BaseActivity {
             }
         };
         order_list.setAdapter(mAdapter);
+        refreshLayout.setOnRefreshLoadmoreListener(this);
+        refreshLayout.setEnableLoadmore(true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+    }
+
+
+    @Override
+    public void onLoadmore(RefreshLayout refreshlayout) {
+        pageIndex++;
+        loadData(1, null, "", RequestMethod.POST);
+    }
+
+    @Override
+    public void onRefresh(RefreshLayout refreshlayout) {
+        pageIndex = 1;
+        loadData(1, null, "", RequestMethod.POST);
     }
 
     private void buyAgain(JSONObject item) {
@@ -305,8 +326,8 @@ public class MyOrderActivity extends BaseActivity {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
-                object.put("page", 0);
-                object.put("limit", 10);
+                object.put("page", pageIndex);
+                object.put("limit", 20);
                 object.put("stt", orderType);
                 relativeUrl = "health/userOrderList";
             } else if (what == 2) {
@@ -334,6 +355,11 @@ public class MyOrderActivity extends BaseActivity {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
+                                if (pageIndex == 1) {
+                                    refreshLayout.finishRefresh();
+                                } else {
+                                    refreshLayout.finishLoadmore();
+                                }
                                 setOrderList(result.getJSONArray("list"));
                             } else if (what == 2 || what == 3 || what == 4 || what == 5) {
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
@@ -460,7 +486,9 @@ public class MyOrderActivity extends BaseActivity {
     }
 
     private void setOrderList(JSONArray array) throws JSONException {
-        orderList.clear();
+        if (pageIndex == 1) {
+            orderList.clear();
+        }
         for (int i = 0; i < array.length(); i++) {
             orderList.add(array.getJSONObject(i));
         }

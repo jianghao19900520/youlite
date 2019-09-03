@@ -21,6 +21,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.android.tu.loadingdialog.LoadingDailog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
@@ -80,6 +81,7 @@ public class UserInfoActivity extends BaseActivity {
     private String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/";
     private String picPath;//当前正在拍摄的照片的路径
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private LoadingDailog dialog;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -111,7 +113,7 @@ public class UserInfoActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.根据token获取用户数据 2修改用户信息
+     * @param what 1.根据token获取用户数据 2修改用户信息 3提交头像地址
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -125,6 +127,9 @@ public class UserInfoActivity extends BaseActivity {
                 object.put("nickName", nick_edit.getText().toString().trim());
                 object.put("email", email_edit.getText().toString().trim());
                 object.put("gender", gender);
+                if (value != null) {
+                    object.put("userPic", value[0]);
+                }
                 relativeUrl = "health/modifyUserInfo";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
@@ -273,13 +278,26 @@ public class UserInfoActivity extends BaseActivity {
      * 压缩本地图片，新图片保存到.youlite目录下
      */
     private void pressPicture(String path) {
+        String newPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.youlite";
+        if (!new File(newPath).exists()) {
+            new File(newPath).mkdirs();
+        }
         Luban.with(mContext)
                 .load(path)                                   // 传人要压缩的图片列表
                 .ignoreBy(100)                                  // 忽略不压缩图片的大小
-                .setTargetDir(Environment.getExternalStorageDirectory().getAbsolutePath() + "/.youlite")                        // 设置压缩后文件存储位置
+                .setTargetDir(newPath)                        // 设置压缩后文件存储位置
                 .setCompressListener(new OnCompressListener() { //设置回调
                     @Override
                     public void onStart() {
+                        if (dialog == null) {
+                            dialog = new LoadingDailog.Builder(mContext)
+                                    .setMessage("图片上传中...")
+                                    .setCancelable(true)
+                                    .setCancelOutside(true).create();
+                        }
+                        if (!dialog.isShowing()) {
+                            dialog.show();
+                        }
                     }
 
                     @Override
@@ -289,11 +307,29 @@ public class UserInfoActivity extends BaseActivity {
                             public void run() {
                                 String result = mulpost(Constant.BASE_URL + "health/upload", file);
                                 try {
-                                    String picUrl = new JSONObject(result).getJSONObject("result").getString("netPath");
-                                    System.out.println("@@@" + picUrl);
+                                    final String picUrl = new JSONObject(result).getJSONObject("result").getString("path");
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (dialog != null) {
+                                                if (dialog.isShowing()) {
+                                                    dialog.dismiss();
+                                                }
+                                                dialog = null;
+                                            }
+                                            loadData(2, new String[]{picUrl.replace("/app/upload/", "")}, getString(R.string.string_loading), RequestMethod.POST);
+                                        }
+                                    });
                                 } catch (Exception e) {
+                                    if (dialog != null) {
+                                        if (dialog.isShowing()) {
+                                            dialog.dismiss();
+                                        }
+                                        dialog = null;
+                                    }
                                     ToastUtils.showShort("上传失败，请稍后再试");
                                 }
+
                             }
                         }).start();
                     }

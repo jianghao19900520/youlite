@@ -8,6 +8,7 @@
     <string name="error_url_error">URL错误。</string>
     <string name="error_unknow">未知错误。</string>
     <string name="error_http">请求失败，请稍后重试</string>
+
     <string name="string_loading">正在加载...</string>
 
 </resources>

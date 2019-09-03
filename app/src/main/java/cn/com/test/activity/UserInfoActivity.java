@@ -2,9 +2,7 @@ package cn.com.test.activity;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,22 +23,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.ExceptionUtils.MyApplication;
-import com.yanzhenjie.nohttp.FileBinary;
-import com.yanzhenjie.nohttp.NoHttp;
-import com.yanzhenjie.nohttp.OnUploadListener;
 import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.rest.Request;
-import com.yanzhenjie.nohttp.rest.RequestQueue;
 import com.yanzhenjie.nohttp.rest.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -49,8 +39,8 @@ import cn.com.test.base.BaseActivity;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.Abc;
 import cn.com.test.utils.FileUtils;
-import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -80,7 +70,6 @@ public class UserInfoActivity extends BaseActivity {
     private String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/";
     private String picPath;//当前正在拍摄的照片的路径
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    private ProgressDialog dialog;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -265,75 +254,26 @@ public class UserInfoActivity extends BaseActivity {
                 Uri uri = data.getData();
                 final String filePath = FileUtils.getFilePathByUri(this, uri);
                 if (!TextUtils.isEmpty(filePath)) {
-//                    upload(new File(filePath));
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//
-//                        }
-//                    }).start();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {//filePath, new File(filePath).getName()
+                            try {
+                                String ss = Abc.mulpost(Constant.BASE_URL + "health/batchUpload", new File(filePath));
+                                System.out.println(ss);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                System.out.println(e.toString());
+                            }
+                        }
+                    }).start();
                 }
                 break;
             case RC_TAKE_PHOTO:
                 // 通知图库更新
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + picPath)));
-                upload(new File(picPath));
+                //upload(new File(picPath));
                 break;
         }
-    }
-
-    private void upload(File file) {
-        RequestQueue requestQueue = NoHttp.newRequestQueue();
-        Request<String> request = NoHttp.createStringRequest(Constant.BASE_URL + "health/upload", RequestMethod.POST);
-        request.addHeader("token", SPUtils.getInstance().getString(Constant.token));
-        FileBinary binary = new FileBinary(file, file.getName());
-        binary.setUploadListener(1, new OnUploadListener() {
-            @Override
-            public void onStart(int what) {
-                if (dialog == null) {
-                    dialog = ProgressDialog.show(mContext, "提示", "上传中…", true, false, null);
-                } else {
-                    if (!dialog.isShowing()) {
-                        dialog.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancel(int what) {
-                if (dialog != null) {
-                    dialog.dismiss();
-                    dialog = null;
-                }
-                ToastUtils.showLong("上传取消");
-            }
-
-            @Override
-            public void onProgress(int what, int progress) {
-                dialog.setMessage("上传" + progress + "%…");
-                System.out.println("@@@@@@@@@@@@@@@@"+progress);
-            }
-
-            @Override
-            public void onFinish(int what) {
-                if (dialog != null) {
-                    dialog.dismiss();
-                    dialog = null;
-                }
-                ToastUtils.showLong("上传成功");
-            }
-
-            @Override
-            public void onError(int what, Exception exception) {
-                if (dialog != null) {
-                    dialog.dismiss();
-                    dialog = null;
-                }
-                ToastUtils.showLong("下载失败，请稍后重试");
-            }
-        });
-        request.add("file", binary);
-        requestQueue.add(1, request, null);
     }
 
 

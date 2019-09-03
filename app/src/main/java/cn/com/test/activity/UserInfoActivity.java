@@ -113,10 +113,10 @@ public class UserInfoActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.根据token获取用户数据 2修改用户信息 3提交头像地址
+     * @param what 1.根据token获取用户数据 2修改用户信息
      */
     @Override
-    public void loadData(int what, String[] value, String msg, RequestMethod method) {
+    public void loadData(int what, final String[] value, String msg, RequestMethod method) {
         try {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
@@ -162,6 +162,7 @@ public class UserInfoActivity extends BaseActivity {
                                 }
                             } else if (what == 2) {
                                 ToastUtils.showShort("修改成功");
+                                loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));

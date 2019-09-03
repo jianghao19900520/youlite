@@ -162,7 +162,7 @@ public class UserInfoActivity extends BaseActivity {
                                 }
                             } else if (what == 2) {
                                 ToastUtils.showShort("修改成功");
-                                loadData(1, null, getString(R.string.string_loading), RequestMethod.GET);
+                                loadData(1, null, "", RequestMethod.GET);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));

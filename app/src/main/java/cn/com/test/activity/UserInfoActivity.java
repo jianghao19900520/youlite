@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,15 @@ import com.yanzhenjie.nohttp.rest.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -39,10 +48,11 @@ import cn.com.test.base.BaseActivity;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
-import cn.com.test.utils.Abc;
 import cn.com.test.utils.FileUtils;
 import cn.com.test.utils.ToastUtils;
 import pub.devrel.easypermissions.EasyPermissions;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 public class UserInfoActivity extends BaseActivity {
 
@@ -247,35 +257,123 @@ public class UserInfoActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case RC_CHOOSE_PHOTO:
-                if (data == null) {
-                    return;
-                }
-                Uri uri = data.getData();
-                final String filePath = FileUtils.getFilePathByUri(this, uri);
-                if (!TextUtils.isEmpty(filePath)) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {//filePath, new File(filePath).getName()
-                            try {
-                                String ss = Abc.mulpost(Constant.BASE_URL + "health/batchUpload", new File(filePath));
-                                System.out.println(ss);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                System.out.println(e.toString());
-                            }
-                        }
-                    }).start();
-                }
-                break;
             case RC_TAKE_PHOTO:
-                // 通知图库更新
+                //拍照
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + picPath)));
-                //upload(new File(picPath));
+                pressPicture(picPath);
+                break;
+            case RC_CHOOSE_PHOTO:
+                //相册
+                pressPicture(FileUtils.getFilePathByUri(this, data.getData()));
                 break;
         }
     }
 
+    /**
+     * 压缩本地图片，新图片保存到.youlite目录下
+     */
+    private void pressPicture(String path) {
+        Luban.with(mContext)
+                .load(path)                                   // 传人要压缩的图片列表
+                .ignoreBy(100)                                  // 忽略不压缩图片的大小
+                .setTargetDir(Environment.getExternalStorageDirectory().getAbsolutePath() + "/.youlite")                        // 设置压缩后文件存储位置
+                .setCompressListener(new OnCompressListener() { //设置回调
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onSuccess(final File file) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String result = mulpost(Constant.BASE_URL + "health/upload", file);
+                                try {
+                                    String picUrl = new JSONObject(result).getJSONObject("result").getString("netPath");
+                                    System.out.println("@@@" + picUrl);
+                                } catch (Exception e) {
+                                    ToastUtils.showShort("上传失败，请稍后再试");
+                                }
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+                }).launch();
+    }
+
+    /**
+     * 上传图片
+     */
+    private String mulpost(String actionUrl, File file) {
+        try {
+            String result = "";
+            String BOUNDARY = java.util.UUID.randomUUID().toString();
+            String PREFIX = "--";
+            String CRLF = "\r\n";
+            String MULTIPART_FROM_DATA = "multipart/form-data";
+
+            StringBuffer headBuffer = new StringBuffer(); //构建文件头部信息
+            headBuffer.append(PREFIX);
+            headBuffer.append(BOUNDARY);
+            headBuffer.append(CRLF);
+            headBuffer.append("Content-Disposition: form-data; name=\"" + "upload_file" + "\"; filename=\"" + file.getName() + "\"" + CRLF);//模仿web上传文件提交一个form表单给服务器，表单名随意起
+            headBuffer.append("Content-Type: application/octet-stream" + CRLF);//若服务器端有文件类型的校验，必须明确指定Content-Type类型
+            headBuffer.append(CRLF);
+            Log.i("", headBuffer.toString());
+            byte[] headBytes = headBuffer.toString().getBytes();
+
+            StringBuffer endBuffer = new StringBuffer();//构建文件结束行
+            endBuffer.append(CRLF);
+            endBuffer.append(PREFIX);
+            endBuffer.append(BOUNDARY);
+            endBuffer.append(PREFIX);
+            endBuffer.append(CRLF);
+            byte[] endBytes = endBuffer.toString().getBytes();
+
+            URL uri = new URL(actionUrl);
+            HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
+            conn.setReadTimeout(5 * 1000);
+            conn.setDoInput(true);// 允许输入
+            conn.setDoOutput(true);// 允许输出
+            conn.setUseCaches(false);
+            conn.setRequestMethod("POST"); // Post方式
+            conn.setRequestProperty("connection", "keep-alive");
+            conn.setRequestProperty("Charsert", "UTF-8");
+            conn.setRequestProperty("Content-Type", MULTIPART_FROM_DATA
+                    + ";boundary=" + BOUNDARY);
+
+            DataOutputStream outStream = new DataOutputStream(
+                    conn.getOutputStream());
+
+            outStream.write(headBytes);//输出文件头部
+
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fileInputStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, length);//输出文件内容
+            }
+
+            fileInputStream.close();
+
+            outStream.write(endBytes);//输出结束行
+            outStream.close();
+
+            InputStream is = conn.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is, "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            result = br.readLine();
+            outStream.close();
+            conn.disconnect();
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
 }
 

@@ -43,5 +43,4 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.1.70.android'
     implementation 'pub.devrel:easypermissions:1.3.0'//动态权限申请库
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 }

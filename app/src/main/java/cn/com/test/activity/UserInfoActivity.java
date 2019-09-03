@@ -1,11 +1,10 @@
 package cn.com.test.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,28 +23,24 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.ExceptionUtils.MyApplication;
 import com.yanzhenjie.nohttp.FileBinary;
-import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.OnUploadListener;
 import com.yanzhenjie.nohttp.RequestMethod;
-import com.yanzhenjie.nohttp.download.DownloadListener;
-import com.yanzhenjie.nohttp.download.DownloadQueue;
-import com.yanzhenjie.nohttp.rest.OnResponseListener;
 import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.RequestQueue;
 import com.yanzhenjie.nohttp.rest.Response;
-import com.yanzhenjie.nohttp.rest.SimpleResponseListener;
-import com.yanzhenjie.nohttp.rest.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -56,10 +50,8 @@ import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.FileUtils;
-import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
-import cn.com.test.utils.UploadHelper;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class UserInfoActivity extends BaseActivity {
@@ -274,12 +266,12 @@ public class UserInfoActivity extends BaseActivity {
                 final String filePath = FileUtils.getFilePathByUri(this, uri);
                 if (!TextUtils.isEmpty(filePath)) {
 //                    upload(new File(filePath));
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new UploadHelper().upload("", "", new File(filePath));
-                        }
-                    }).start();
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                        }
+//                    }).start();
                 }
                 break;
             case RC_TAKE_PHOTO:

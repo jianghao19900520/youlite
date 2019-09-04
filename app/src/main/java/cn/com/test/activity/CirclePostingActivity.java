@@ -21,12 +21,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.tu.loadingdialog.LoadingDailog;
+import com.bigkoo.pickerview.OptionsPickerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -47,6 +49,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.AddressBean;
 import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
@@ -62,12 +65,21 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
     TextView title;
     @BindView(R.id.circle_posting_img_layout)
     LinearLayout circle_posting_img_layout;
+    @BindView(R.id.circle_posting_title_edit)
+    EditText circle_posting_title_edit;
+    @BindView(R.id.circle_posting_content_edit)
+    EditText circle_posting_content_edit;
+    @BindView(R.id.circle_posting_select_text)
+    EditText circle_posting_select_text;
 
     public static final int RC_TAKE_PHOTO = 1;
     public static final int RC_CHOOSE_PHOTO = 2;
     private String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/";
     private String picPath;//当前正在拍摄的照片的路径
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private List<String> optionsItems = new ArrayList<>();
+    private List<String> typeNoList = new ArrayList<>();
+    private String typeNo;//选择要发布的圈子
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -81,7 +93,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
 
     @Override
     public void init() {
-        loadData(1, null, "", RequestMethod.POST);
+        loadData(1, null, "", RequestMethod.GET);
     }
 
     /**
@@ -95,9 +107,9 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
             if (what == 1) {
                 relativeUrl = "health/bbsType";
             } else if (what == 2) {
-                object.put("title", "title");
-                object.put("typeNo", "1");
-                object.put("content", "content");
+                object.put("title", circle_posting_title_edit.getText().toString().trim());
+                object.put("typeNo", typeNo);
+                object.put("content", circle_posting_content_edit.getText().toString().trim());
                 relativeUrl = "health/postArticle";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
@@ -109,6 +121,12 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
                                 JSONArray list = result.getJSONArray("list");
+                                optionsItems.clear();
+                                typeNoList.clear();
+                                for (int i = 0; i < list.length(); i++) {
+                                    optionsItems.add(list.getJSONObject(i).getString("typeName"));
+                                    typeNoList.add(list.getJSONObject(i).getString("typeNo"));
+                                }
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -129,7 +147,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
         }
     }
 
-    @OnClick({R.id.circle_posting_camera_btn, R.id.circle_posting_submit_btn})
+    @OnClick({R.id.circle_posting_camera_btn, R.id.circle_posting_submit_btn, R.id.circle_posting_select_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.circle_posting_camera_btn:
@@ -141,6 +159,14 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                     String path = (String) imageView.getTag(R.id.indexTag);//要上传的图片路径
                     System.out.println("@@@" + path);
                 }
+                if (TextUtils.isEmpty(typeNo)) {
+                    ToastUtils.showShort("请先选择要发布的圈子");
+                    return;
+                }
+                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+                break;
+            case R.id.circle_posting_select_layout:
+                ShowPickerView();
                 break;
         }
     }
@@ -292,6 +318,27 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
 
     }
+
+    /*
+    省市县弹框
+     */
+    private void ShowPickerView() {
+        OptionsPickerView pvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                typeNo = typeNoList.get(options1);
+                circle_posting_select_text.setText(optionsItems.get(options1) + "  >");
+            }
+        })
+                .setTitleText("圈子选择")
+                .setDividerColor(mContext.getResources().getColor(R.color.mainColor))
+                .setTextColorCenter(mContext.getResources().getColor(R.color.mainColor))
+                .setContentTextSize(25)
+                .build();
+        pvOptions.setPicker(optionsItems);//一级选择器
+        pvOptions.show();
+    }
+
 }
 
 

@@ -34,6 +34,7 @@
                     android:textSize="18dp" />
 
                 <EditText
+                    android:id="@+id/circle_posting_title_edit"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
@@ -52,6 +53,7 @@
                 android:background="@color/lineColor" />
 
             <EditText
+                android:id="@+id/circle_posting_content_edit"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="#ffffff"
@@ -102,6 +104,7 @@
                     android:background="@color/lineColor" />
 
                 <RelativeLayout
+                    android:id="@+id/circle_posting_select_layout"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="#ffffff"
@@ -117,6 +120,7 @@
                         android:textSize="18dp" />
 
                     <TextView
+                        android:id="@+id/circle_posting_select_text"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_alignParentRight="true"

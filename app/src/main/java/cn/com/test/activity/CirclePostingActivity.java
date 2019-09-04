@@ -31,8 +31,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Response;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -45,6 +48,8 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
 import cn.com.test.constant.Constant;
+import cn.com.test.http.HttpListener;
+import cn.com.test.http.NetHelper;
 import cn.com.test.utils.FileUtils;
 import cn.com.test.utils.ToastUtils;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -76,11 +81,52 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
 
     @Override
     public void init() {
+        loadData(1, null, "", RequestMethod.POST);
     }
 
+    /**
+     * @param what 1.获取帖子类型 2.提交帖子
+     */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
+        try {
+            final JSONObject object = new JSONObject();
+            String relativeUrl = "";
+            if (what == 1) {
+                relativeUrl = "health/bbsType";
+            } else if (what == 2) {
+                object.put("title", "title");
+                object.put("typeNo", "1");
+                object.put("content", "content");
+                relativeUrl = "health/postArticle";
+            }
+            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
+                @Override
+                public void onSucceed(int what, JSONObject jsonObject) {
+                    try {
+                        int status = jsonObject.getInt("status");
+                        if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
+                            if (what == 1) {
+                                JSONArray list = result.getJSONArray("list");
+                            }
+                        } else {
+                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ToastUtils.showShort(getString(R.string.error_http));
+                    }
+                }
 
+                @Override
+                public void onFailed(int what, Response response) {
+                    ToastUtils.showShort(getString(R.string.error_http));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick({R.id.circle_posting_camera_btn, R.id.circle_posting_submit_btn})

@@ -82,7 +82,7 @@ public class CircleListActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取帖子类型
+     * @param what 1.获取帖子列表
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {

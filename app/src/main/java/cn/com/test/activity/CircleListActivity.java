@@ -7,6 +7,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 import com.youth.banner.Banner;
@@ -28,17 +31,20 @@ import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
 import cn.com.test.view.ListViewForScrollView;
 
-public class CircleListActivity extends BaseActivity {
+public class CircleListActivity extends BaseActivity implements OnRefreshLoadmoreListener {
 
     @BindView(R.id.title)
     TextView title;
     @BindView(R.id.circle_listview)
     ListView circle_listview;
+    @BindView(R.id.refreshLayout)
+    SmartRefreshLayout refreshLayout;
 
     private List<JSONObject> circleList;
     private CommAdapter<JSONObject> mAdapter;
 
     private String typeNo;
+    private int pageIndex = 1;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -72,13 +78,30 @@ public class CircleListActivity extends BaseActivity {
                     holder.setText(R.id.item_circle_name, item.getString("nickName"));
                     holder.setText(R.id.circle_comment_text, item.getString("commentNum"));
                     holder.setText(R.id.circle_like_text, item.getString("likeNum"));
+                    String createTime = item.getString("createTime");
+                    holder.setText(R.id.item_circle_time, createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         };
         circle_listview.setAdapter(mAdapter);
+        refreshLayout.setOnRefreshLoadmoreListener(this);
+        refreshLayout.setEnableLoadmore(true);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+    }
+
+
+    @Override
+    public void onLoadmore(RefreshLayout refreshlayout) {
+        pageIndex++;
+        loadData(1, null, "", RequestMethod.POST);
+    }
+
+    @Override
+    public void onRefresh(RefreshLayout refreshlayout) {
+        pageIndex = 1;
+        loadData(1, null, "", RequestMethod.POST);
     }
 
     /**
@@ -90,7 +113,7 @@ public class CircleListActivity extends BaseActivity {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
-                object.put("page", 1);
+                object.put("page", pageIndex);
                 object.put("limit", 20);
                 object.put("typeNo", typeNo);
                 relativeUrl = "health/bbsArticleList";
@@ -103,6 +126,11 @@ public class CircleListActivity extends BaseActivity {
                         if (status == 0) {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
+                                if (pageIndex == 1) {
+                                    refreshLayout.finishRefresh();
+                                } else {
+                                    refreshLayout.finishLoadmore();
+                                }
                                 setCircleList(result.getJSONArray("list"));
                             }
                         } else {
@@ -125,7 +153,9 @@ public class CircleListActivity extends BaseActivity {
     }
 
     private void setCircleList(JSONArray list) throws JSONException {
-        circleList.clear();
+        if (pageIndex == 1) {
+            circleList.clear();
+        }
         for (int i = 0; i < list.length(); i++) {
             circleList.add(list.getJSONObject(i));
         }

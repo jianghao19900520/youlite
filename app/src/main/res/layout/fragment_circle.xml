@@ -81,15 +81,17 @@
                         android:orientation="vertical">
 
                         <ImageView
+                            android:id="@+id/circle_type_img_1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@mipmap/circle_test" />
 
                         <TextView
+                            android:id="@+id/circle_type_text_1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:text="尿友圈"
+                            android:text=""
                             android:textColor="#333333"
                             android:textSize="16dp" />
 
@@ -103,15 +105,17 @@
                         android:orientation="vertical">
 
                         <ImageView
+                            android:id="@+id/circle_type_img_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@mipmap/circle_test" />
 
                         <TextView
+                            android:id="@+id/circle_type_text_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:text="好孕圈"
+                            android:text=""
                             android:textColor="#333333"
                             android:textSize="16dp" />
 
@@ -125,15 +129,17 @@
                         android:orientation="vertical">
 
                         <ImageView
+                            android:id="@+id/circle_type_img_3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@mipmap/circle_test" />
 
                         <TextView
+                            android:id="@+id/circle_type_text_3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:text="糖肾圈"
+                            android:text=""
                             android:textColor="#333333"
                             android:textSize="16dp" />
 
@@ -147,15 +153,17 @@
                         android:orientation="vertical">
 
                         <ImageView
+                            android:id="@+id/circle_type_img_4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@mipmap/circle_test" />
 
                         <TextView
+                            android:id="@+id/circle_type_text_4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:text="尿检答疑"
+                            android:text=""
                             android:textColor="#333333"
                             android:textSize="16dp" />
 

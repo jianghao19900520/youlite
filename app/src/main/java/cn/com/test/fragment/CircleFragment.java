@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,13 +16,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.yanzhenjie.nohttp.RequestMethod;
+import com.yanzhenjie.nohttp.rest.Response;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
 import com.youth.banner.loader.ImageLoader;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +42,10 @@ import cn.com.test.activity.OrderDetailActivity;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseFragment;
+import cn.com.test.constant.Constant;
+import cn.com.test.http.HttpListener;
+import cn.com.test.http.NetHelper;
+import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 import cn.com.test.view.ListViewForScrollView;
 
@@ -54,6 +63,22 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
     TextView friend_dynamic_text;
     @BindView(R.id.friend_dynamic_line)
     View friend_dynamic_line;
+    @BindView(R.id.circle_type_text_1)
+    TextView circle_type_text_1;
+    @BindView(R.id.circle_type_img_1)
+    ImageView circle_type_img_1;
+    @BindView(R.id.circle_type_text_2)
+    TextView circle_type_text_2;
+    @BindView(R.id.circle_type_img_2)
+    ImageView circle_type_img_2;
+    @BindView(R.id.circle_type_text_3)
+    TextView circle_type_text_3;
+    @BindView(R.id.circle_type_img_3)
+    ImageView circle_type_img_3;
+    @BindView(R.id.circle_type_text_4)
+    TextView circle_type_text_4;
+    @BindView(R.id.circle_type_img_4)
+    ImageView circle_type_img_4;
 
     private ArrayList<String> banner_path;
     private ArrayList<String> banner_title;
@@ -129,11 +154,57 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
             }
         };
         circle_listview.setAdapter(mAdapter);
+        loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
+    /**
+     * @param what 1.获取帖子类型
+     */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
+        try {
+            final JSONObject object = new JSONObject();
+            String relativeUrl = "";
+            if (what == 1) {
+                relativeUrl = "health/bbsType";
+            }
+            NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
+                @Override
+                public void onSucceed(int what, JSONObject jsonObject) {
+                    try {
+                        int status = jsonObject.getInt("status");
+                        if (status == 0) {
+                            JSONObject result = jsonObject.getJSONObject("result");
+                            if (what == 1) {
+                                JSONArray list = result.getJSONArray("list");
+                                if (list.length() >= 4) {
+                                    circle_type_text_1.setText(list.getJSONObject(0).getString("typeName"));
+                                    circle_type_img_1.setTag(list.getJSONObject(0).getString("typeNo"));
+                                    circle_type_text_2.setText(list.getJSONObject(1).getString("typeName"));
+                                    circle_type_img_2.setTag(list.getJSONObject(1).getString("typeNo"));
+                                    circle_type_text_3.setText(list.getJSONObject(2).getString("typeName"));
+                                    circle_type_img_3.setTag(list.getJSONObject(2).getString("typeNo"));
+                                    circle_type_text_4.setText(list.getJSONObject(3).getString("typeName"));
+                                    circle_type_img_4.setTag(list.getJSONObject(3).getString("typeNo"));
+                                }
+                            }
+                        } else {
+                            ToastUtils.showShort(jsonObject.getString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ToastUtils.showShort(getString(R.string.error_http));
+                    }
+                }
 
+                @Override
+                public void onFailed(int what, Response response) {
+                    ToastUtils.showShort(getString(R.string.error_http));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -156,7 +227,8 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
         }
     }
 
-    @OnClick({R.id.new_dynamic_text, R.id.friend_dynamic_text, R.id.circle_posting_layout})
+    @OnClick({R.id.new_dynamic_text, R.id.friend_dynamic_text, R.id.circle_posting_layout,
+            R.id.circle_type_img_1, R.id.circle_type_img_2, R.id.circle_type_img_3, R.id.circle_type_img_4})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.new_dynamic_text:
@@ -173,6 +245,18 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                 break;
             case R.id.circle_posting_layout:
                 startActivity(new Intent(mContext, CirclePostingActivity.class));
+                break;
+            case R.id.circle_type_img_1:
+//                startActivity(new Intent(mContext, CirclePostingActivity.class));
+                break;
+            case R.id.circle_type_img_2:
+//                startActivity(new Intent(mContext, CirclePostingActivity.class));
+                break;
+            case R.id.circle_type_img_3:
+//                startActivity(new Intent(mContext, CirclePostingActivity.class));
+                break;
+            case R.id.circle_type_img_4:
+//                startActivity(new Intent(mContext, CirclePostingActivity.class));
                 break;
         }
     }

@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
@@ -66,6 +69,7 @@ public class CircleListActivity extends BaseActivity implements OnRefreshLoadmor
             @Override
             public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
+                    ImageView item_circle_img = holder.getView(R.id.item_circle_img);
                     TextView item_circle_title = holder.getView(R.id.item_circle_title);
                     ImageView item_circle_pic = holder.getView(R.id.item_circle_pic);
                     item_circle_pic.setVisibility(View.GONE);
@@ -76,6 +80,7 @@ public class CircleListActivity extends BaseActivity implements OnRefreshLoadmor
                     } else {
                         item_circle_title.setVisibility(View.GONE);
                     }
+//                    Glide.with(mContext).load(item.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
                     holder.setText(R.id.item_circle_name, item.getString("nickName"));
                     holder.setText(R.id.circle_comment_text, item.getString("commentNum"));
                     holder.setText(R.id.circle_like_text, item.getString("likeNum"));

@@ -36,6 +36,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
+import cn.com.test.activity.CircleListActivity;
 import cn.com.test.activity.CirclePostingActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.OrderDetailActivity;
@@ -129,22 +130,22 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
             @Override
             public void convert(final CommViewHolder holder, JSONObject item, int position) {
                 try {
-                    View item_circle_content = holder.getView(R.id.item_circle_content);
+                    View item_circle_title = holder.getView(R.id.item_circle_title);
                     View item_circle_pic = holder.getView(R.id.item_circle_pic);
                     switch (item.getInt("type")) {
                         case 1:
                             holder.setText(R.id.item_circle_name, "匿名用户1");
-                            item_circle_content.setVisibility(View.VISIBLE);
+                            item_circle_title.setVisibility(View.VISIBLE);
                             item_circle_pic.setVisibility(View.VISIBLE);
                             break;
                         case 2:
                             holder.setText(R.id.item_circle_name, "匿名用户2");
-                            item_circle_content.setVisibility(View.GONE);
+                            item_circle_title.setVisibility(View.GONE);
                             item_circle_pic.setVisibility(View.VISIBLE);
                             break;
                         case 3:
                             holder.setText(R.id.item_circle_name, "匿名用户3");
-                            item_circle_content.setVisibility(View.VISIBLE);
+                            item_circle_title.setVisibility(View.VISIBLE);
                             item_circle_pic.setVisibility(View.GONE);
                             break;
                     }
@@ -247,16 +248,16 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                 startActivity(new Intent(mContext, CirclePostingActivity.class));
                 break;
             case R.id.circle_type_img_1:
-//                startActivity(new Intent(mContext, CirclePostingActivity.class));
+                startActivity(new Intent(mContext, CircleListActivity.class).putExtra("typeNo", (String) circle_type_img_1.getTag()).putExtra("typeName", circle_type_text_1.getText()));
                 break;
             case R.id.circle_type_img_2:
-//                startActivity(new Intent(mContext, CirclePostingActivity.class));
+                startActivity(new Intent(mContext, CircleListActivity.class).putExtra("typeNo", (String) circle_type_img_2.getTag()).putExtra("typeName", circle_type_text_2.getText()));
                 break;
             case R.id.circle_type_img_3:
-//                startActivity(new Intent(mContext, CirclePostingActivity.class));
+                startActivity(new Intent(mContext, CircleListActivity.class).putExtra("typeNo", (String) circle_type_img_3.getTag()).putExtra("typeName", circle_type_text_3.getText()));
                 break;
             case R.id.circle_type_img_4:
-//                startActivity(new Intent(mContext, CirclePostingActivity.class));
+                startActivity(new Intent(mContext, CircleListActivity.class).putExtra("typeNo", (String) circle_type_img_4.getTag()).putExtra("typeName", circle_type_text_4.getText()));
                 break;
         }
     }

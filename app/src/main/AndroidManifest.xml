@@ -96,7 +96,10 @@
         <activity
             android:name=".activity.UserInfoActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <!--帖子列表页-->
+        <activity
+            android:name=".activity.CircleListActivity"
+            android:screenOrientation="portrait" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -8,7 +8,7 @@
     android:paddingRight="10dp">
 
     <TextView
-        android:id="@+id/item_circle_content"
+        android:id="@+id/item_circle_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -93,6 +93,7 @@
                         android:src="@mipmap/circle_comment" />
 
                     <TextView
+                        android:id="@+id/circle_comment_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
@@ -131,6 +132,7 @@
                         android:src="@mipmap/circle_postlike" />
 
                     <TextView
+                        android:id="@+id/circle_like_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"

@@ -1,5 +1,6 @@
 package cn.com.test.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -63,7 +64,7 @@ public class CircleListActivity extends BaseActivity implements OnRefreshLoadmor
         circleList = new ArrayList<>();
         mAdapter = new CommAdapter<JSONObject>(mContext, circleList, R.layout.item_circle) {
             @Override
-            public void convert(final CommViewHolder holder, JSONObject item, int position) {
+            public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
                     TextView item_circle_title = holder.getView(R.id.item_circle_title);
                     ImageView item_circle_pic = holder.getView(R.id.item_circle_pic);
@@ -80,6 +81,16 @@ public class CircleListActivity extends BaseActivity implements OnRefreshLoadmor
                     holder.setText(R.id.circle_like_text, item.getString("likeNum"));
                     String createTime = item.getString("createTime");
                     holder.setText(R.id.item_circle_time, createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
+                    holder.getConvertView().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            try {
+                                startActivity(new Intent(mContext, CircleDetailActivity.class).putExtra("id", item.getString("id")));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

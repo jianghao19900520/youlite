@@ -75,11 +75,16 @@ public class CircleDetailActivity extends BaseActivity {
         id = getIntent().getStringExtra("id");
         if (TextUtils.isEmpty(id)) finish();
         commentList = new ArrayList<>();
-        mAdapter = new CommAdapter<JSONObject>(mContext, commentList, R.layout.item_circle) {
+        mAdapter = new CommAdapter<JSONObject>(mContext, commentList, R.layout.item_circle_comment) {
             @Override
             public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
-                    Glide.with(mContext).load(item.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
+                    ImageView item_comment_img = holder.getView(R.id.item_comment_img);
+                    Glide.with(mContext).load(item.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_comment_img);
+                    holder.setText(R.id.item_circle_name, item.getString("nickName"));
+                    String createTime = item.getString("createTime");
+                    holder.setText(R.id.item_circle_time, createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
+                    holder.setText(R.id.item_comment_text, item.getString("content"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

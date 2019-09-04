@@ -110,6 +110,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                 object.put("typeNo", typeNo);
                 object.put("title", circle_posting_title_edit.getText().toString().trim());
                 object.put("content", circle_posting_content_edit.getText().toString().trim());
+                object.put("imgList", new JSONArray().put(new JSONObject().put("toLoad", "317991bb21f248458fa67b4a3108a909.jpg").put("orderNum",1)));
                 relativeUrl = "health/postArticle";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {

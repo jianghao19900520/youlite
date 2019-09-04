@@ -1,15 +1,19 @@
 package cn.com.test.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.yanzhenjie.nohttp.RequestMethod;
@@ -53,6 +57,8 @@ public class CircleDetailActivity extends BaseActivity {
     EditText circle_comment_edit;
     @BindView(R.id.comment_listview)
     ListViewForScrollView comment_listview;
+    @BindView(R.id.circle_detail_img_layout)
+    LinearLayout circle_detail_img_layout;
 
     private String id;
     private String userNo;
@@ -111,6 +117,7 @@ public class CircleDetailActivity extends BaseActivity {
             } else if (what == 2) {
                 object.put("artId", artId);
                 object.put("content", circle_comment_edit.getText().toString().trim());
+                object.put("imgList", new JSONArray().put(new JSONObject().put("toLoad", "").put("orderNum", "")));
                 relativeUrl = "health/bbsComment";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
@@ -151,28 +158,39 @@ public class CircleDetailActivity extends BaseActivity {
         for (int i = 0; i < list.length(); i++) {
             JSONObject article = list.getJSONObject(i);
             if (article.getInt("type") == 0) {
-                //主贴
-                Glide.with(mContext).load(article.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
-                item_circle_name.setText(article.getString("nickName"));
-                String createTime = article.getString("createTime");
-                item_circle_time.setText(createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
-                item_circle_num.setText("评论" + result.getString("commentNum") + " | 点赞" + result.getString("likeNum"));
-                String title = result.getString("title");
-                if (TextUtils.isEmpty(title)) {
-                    item_circle_title.setVisibility(View.GONE);
-                } else {
-                    item_circle_title.setText(title);
-                    item_circle_title.setVisibility(View.VISIBLE);
+                //主贴，而且必须是第一条
+                if (i == 0) {
+                    Glide.with(mContext).load(article.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
+                    item_circle_name.setText(article.getString("nickName"));
+                    String createTime = article.getString("createTime");
+                    item_circle_time.setText(createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
+                    item_circle_num.setText("评论" + result.getString("commentNum") + " | 点赞" + result.getString("likeNum"));
+                    String title = result.getString("title");
+                    if (TextUtils.isEmpty(title)) {
+                        item_circle_title.setVisibility(View.GONE);
+                    } else {
+                        item_circle_title.setText(title);
+                        item_circle_title.setVisibility(View.VISIBLE);
+                    }
+                    String content = article.getString("content");
+                    if (TextUtils.isEmpty(content)) {
+                        item_circle_content.setVisibility(View.GONE);
+                    } else {
+                        item_circle_content.setText(content);
+                        item_circle_content.setVisibility(View.VISIBLE);
+                    }
+                    userNo = article.getString("userNo");
+                    artId = result.getString("artId");
+
+                    circle_detail_img_layout.removeAllViews();
+                    JSONArray picList = article.getJSONArray("picList");
+                    for (int j = 0; j < picList.length(); j++) {
+                        ImageView imageView = new ImageView(mContext);
+                        RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
+                        Glide.with(mContext).load(picList.getJSONObject(j).getString("netToLoad")).apply(requestOptions).into(imageView);
+                        circle_detail_img_layout.addView(imageView);
+                    }
                 }
-                String content = article.getString("content");
-                if (TextUtils.isEmpty(content)) {
-                    item_circle_content.setVisibility(View.GONE);
-                } else {
-                    item_circle_content.setText(content);
-                    item_circle_content.setVisibility(View.VISIBLE);
-                }
-                userNo = article.getString("userNo");
-                artId = result.getString("artId");
             } else {
                 //评论
                 commentList.add(article);

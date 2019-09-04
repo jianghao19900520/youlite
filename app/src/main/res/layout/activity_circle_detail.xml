@@ -93,6 +93,14 @@
                 android:textColor="#666666"
                 android:textSize="18dp" />
 
+            <LinearLayout
+                android:id="@+id/circle_detail_img_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:orientation="vertical" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"

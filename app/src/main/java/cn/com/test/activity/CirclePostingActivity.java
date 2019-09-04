@@ -107,8 +107,8 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
             if (what == 1) {
                 relativeUrl = "health/bbsType";
             } else if (what == 2) {
-                object.put("title", circle_posting_title_edit.getText().toString().trim());
                 object.put("typeNo", typeNo);
+                object.put("title", circle_posting_title_edit.getText().toString().trim());
                 object.put("content", circle_posting_content_edit.getText().toString().trim());
                 relativeUrl = "health/postArticle";
             }
@@ -327,7 +327,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
                 typeNo = typeNoList.get(options1);
-                circle_posting_select_text.setText(optionsItems.get(options1) + "  >");
+                circle_posting_select_text.setText(optionsItems.get(options1));
             }
         })
                 .setTitleText("圈子选择")

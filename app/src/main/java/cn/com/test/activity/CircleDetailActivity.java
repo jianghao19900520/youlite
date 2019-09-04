@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -15,22 +15,23 @@ import com.bumptech.glide.request.RequestOptions;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
+import cn.com.test.adapter.CommAdapter;
+import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
-import cn.com.test.bean.CartBean;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
-import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.ToastUtils;
+import cn.com.test.view.ListViewForScrollView;
 
 public class CircleDetailActivity extends BaseActivity {
 
@@ -50,10 +51,14 @@ public class CircleDetailActivity extends BaseActivity {
     TextView item_circle_content;
     @BindView(R.id.circle_comment_edit)
     EditText circle_comment_edit;
+    @BindView(R.id.comment_listview)
+    ListViewForScrollView comment_listview;
 
     private String id;
     private String userNo;
     private String artId;
+    private List<JSONObject> commentList;
+    private CommAdapter<JSONObject> mAdapter;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -69,6 +74,18 @@ public class CircleDetailActivity extends BaseActivity {
     public void init() {
         id = getIntent().getStringExtra("id");
         if (TextUtils.isEmpty(id)) finish();
+        commentList = new ArrayList<>();
+        mAdapter = new CommAdapter<JSONObject>(mContext, commentList, R.layout.item_circle) {
+            @Override
+            public void convert(final CommViewHolder holder, final JSONObject item, int position) {
+                try {
+                    Glide.with(mContext).load(item.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        comment_listview.setAdapter(mAdapter);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
@@ -120,29 +137,43 @@ public class CircleDetailActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 展示帖子详情和评论详情
+     */
     private void setCircleDetail(JSONObject result) throws JSONException {
-        JSONObject article = result.getJSONObject("articleList").getJSONArray("list").getJSONObject(0);
-        Glide.with(mContext).load(article.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
-        item_circle_name.setText(article.getString("nickName"));
-        String createTime = article.getString("createTime");
-        item_circle_time.setText(createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
-        item_circle_num.setText("评论" + result.getString("commentNum") + " | 点赞" + result.getString("likeNum"));
-        String title = result.getString("title");
-        if (TextUtils.isEmpty(title)) {
-            item_circle_title.setVisibility(View.GONE);
-        } else {
-            item_circle_title.setText(title);
-            item_circle_title.setVisibility(View.VISIBLE);
+        commentList.clear();
+        JSONArray list = result.getJSONObject("articleList").getJSONArray("list");
+        for (int i = 0; i < list.length(); i++) {
+            JSONObject article = list.getJSONObject(i);
+            if (article.getInt("type") == 0) {
+                //主贴
+                Glide.with(mContext).load(article.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
+                item_circle_name.setText(article.getString("nickName"));
+                String createTime = article.getString("createTime");
+                item_circle_time.setText(createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
+                item_circle_num.setText("评论" + result.getString("commentNum") + " | 点赞" + result.getString("likeNum"));
+                String title = result.getString("title");
+                if (TextUtils.isEmpty(title)) {
+                    item_circle_title.setVisibility(View.GONE);
+                } else {
+                    item_circle_title.setText(title);
+                    item_circle_title.setVisibility(View.VISIBLE);
+                }
+                String content = article.getString("content");
+                if (TextUtils.isEmpty(content)) {
+                    item_circle_content.setVisibility(View.GONE);
+                } else {
+                    item_circle_content.setText(content);
+                    item_circle_content.setVisibility(View.VISIBLE);
+                }
+                userNo = article.getString("userNo");
+                artId = result.getString("artId");
+            } else {
+                //评论
+                commentList.add(article);
+            }
         }
-        String content = article.getString("content");
-        if (TextUtils.isEmpty(content)) {
-            item_circle_content.setVisibility(View.GONE);
-        } else {
-            item_circle_content.setText(content);
-            item_circle_content.setVisibility(View.VISIBLE);
-        }
-        userNo = article.getString("userNo");
-        artId = result.getString("artId");
+        mAdapter.notifyDataSetChanged();
     }
 
     @OnClick({R.id.circle_comment_post_btn})

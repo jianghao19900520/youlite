@@ -95,6 +95,14 @@
 
         </LinearLayout>
 
+        <ListViewForScrollView
+            android:id="@+id/comment_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/lineColor"
+            android:dividerHeight="1px"
+            android:scrollbars="none" />
+
     </ScrollView>
 
     <LinearLayout
@@ -134,13 +142,13 @@
             android:id="@+id/circle_comment_edit"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:background="@drawable/search_btn_bg"
-            android:hint="说说你的看法"
+            android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_weight="5"
+            android:background="@drawable/search_btn_bg"
+            android:hint="说说你的看法"
             android:paddingLeft="10dp"
             android:textColor="#333333"
             android:textSize="18dp" />

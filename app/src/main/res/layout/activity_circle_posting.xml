@@ -40,8 +40,9 @@
                     android:layout_marginLeft="10dp"
                     android:background="#ffffff"
                     android:ellipsize="end"
-                    android:hint="（非必填，最多限50字）"
+                    android:hint="（非必填，最多限20字）"
                     android:lines="1"
+                    android:maxLength="20"
                     android:textColor="#333333"
                     android:textSize="18dp" />
 
@@ -58,7 +59,8 @@
                 android:layout_height="200dp"
                 android:background="#ffffff"
                 android:gravity="top"
-                android:hint="请输入内容，不能少于10个字..."
+                android:hint="（非必填，最多限50字）"
+                android:maxLength="50"
                 android:padding="10dp"
                 android:textColor="#333333"
                 android:textSize="18dp" />
@@ -121,6 +123,16 @@
 
                     <TextView
                         android:id="@+id/circle_posting_select_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="30dp"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="#333333"
+                        android:textSize="18dp" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_alignParentRight="true"

@@ -1,9 +1,11 @@
 package cn.com.test.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,11 +18,18 @@ import com.yanzhenjie.nohttp.rest.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.bean.CartBean;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
+import cn.com.test.utils.LoginUtils;
 import cn.com.test.utils.ToastUtils;
 
 public class CircleDetailActivity extends BaseActivity {
@@ -39,9 +48,12 @@ public class CircleDetailActivity extends BaseActivity {
     TextView item_circle_title;
     @BindView(R.id.item_circle_content)
     TextView item_circle_content;
+    @BindView(R.id.circle_comment_edit)
+    EditText circle_comment_edit;
 
     private String id;
     private String userNo;
+    private String artId;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -61,7 +73,7 @@ public class CircleDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取帖子详情
+     * @param what 1.获取帖子详情 2发表评论
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -74,6 +86,10 @@ public class CircleDetailActivity extends BaseActivity {
                 object.put("page", 1);
                 object.put("limit", 100);
                 relativeUrl = "health/bbsArticleDetail";
+            } else if (what == 2) {
+                object.put("artId", artId);
+                object.put("content", circle_comment_edit.getText().toString().trim());
+                relativeUrl = "health/bbsComment";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -126,6 +142,18 @@ public class CircleDetailActivity extends BaseActivity {
             item_circle_content.setVisibility(View.VISIBLE);
         }
         userNo = article.getString("userNo");
+        artId = result.getString("artId");
+    }
+
+    @OnClick({R.id.circle_comment_post_btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.circle_comment_post_btn:
+                if (!TextUtils.isEmpty(circle_comment_edit.getText().toString().trim())) {
+                    loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+                }
+                break;
+        }
     }
 
 }

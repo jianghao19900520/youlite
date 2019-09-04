@@ -70,7 +70,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
     @BindView(R.id.circle_posting_content_edit)
     EditText circle_posting_content_edit;
     @BindView(R.id.circle_posting_select_text)
-    EditText circle_posting_select_text;
+    TextView circle_posting_select_text;
 
     public static final int RC_TAKE_PHOTO = 1;
     public static final int RC_CHOOSE_PHOTO = 2;

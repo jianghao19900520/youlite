@@ -262,6 +262,7 @@ public class UserInfoActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) return;
         switch (requestCode) {
             case RC_TAKE_PHOTO:
                 //拍照

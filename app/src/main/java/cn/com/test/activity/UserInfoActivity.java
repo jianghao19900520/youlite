@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
@@ -41,6 +42,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -55,7 +57,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
-public class UserInfoActivity extends BaseActivity {
+public class UserInfoActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks {
 
     @BindView(R.id.title)
     TextView title;
@@ -262,7 +264,6 @@ public class UserInfoActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) return;
         switch (requestCode) {
             case RC_TAKE_PHOTO:
                 //拍照
@@ -270,6 +271,7 @@ public class UserInfoActivity extends BaseActivity {
                 pressPicture(picPath);
                 break;
             case RC_CHOOSE_PHOTO:
+                if (data == null) return;
                 //相册
                 pressPicture(FileUtils.getFilePathByUri(this, data.getData()));
                 break;
@@ -411,6 +413,25 @@ public class UserInfoActivity extends BaseActivity {
             e.printStackTrace();
             return "";
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //框架要求必须这么写
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    //成功打开权限
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    //用户未同意权限
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
     }
 
 }

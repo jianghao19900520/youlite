@@ -26,11 +26,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.tu.loadingdialog.LoadingDailog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.yanzhenjie.nohttp.RequestMethod;
 
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,9 +44,12 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.constant.Constant;
 import cn.com.test.utils.FileUtils;
 import cn.com.test.utils.ToastUtils;
 import pub.devrel.easypermissions.EasyPermissions;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 public class CirclePostingActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks {
 
@@ -87,6 +93,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                 for (int i = 0; i < circle_posting_img_layout.getChildCount(); i++) {
                     ImageView imageView = (ImageView) circle_posting_img_layout.getChildAt(i);
                     String path = (String) imageView.getTag(R.id.indexTag);//要上传的图片路径
+                    System.out.println("@@@" + path);
                 }
                 break;
         }
@@ -160,60 +167,65 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case RC_CHOOSE_PHOTO:
-                if (data == null) {
-                    return;
-                }
-                Uri uri = data.getData();
-                String filePath = FileUtils.getFilePathByUri(this, uri);
-                if (!TextUtils.isEmpty(filePath)) {
-                    ImageView imageView = new ImageView(mContext);
-                    RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
-                    Glide.with(mContext).load(filePath).apply(requestOptions).into(imageView);
-                    circle_posting_img_layout.addView(imageView);
-                    imageView.setTag(R.id.indexTag, filePath);
-                    imageView.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(final View view) {
-                            AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
-                                    .setMessage("确定要删除该张照片？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            circle_posting_img_layout.removeView(view);
-                                        }
-                                    }).setNegativeButton("取消", null).create();
-                            dialog.setCanceledOnTouchOutside(false);
-                            dialog.show();
-                            return true;
-                        }
-                    });
-                }
-                break;
             case RC_TAKE_PHOTO:
-                ImageView imageView = new ImageView(mContext);
-                RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
-                Glide.with(mContext).load(picPath).apply(requestOptions).into(imageView);
-                circle_posting_img_layout.addView(imageView);
-                imageView.setTag(R.id.indexTag, picPath);
-                imageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(final View view) {
-                        AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
-                                .setMessage("确定要删除该张照片？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        circle_posting_img_layout.removeView(view);
-                                    }
-                                }).setNegativeButton("取消", null).create();
-                        dialog.setCanceledOnTouchOutside(false);
-                        dialog.show();
-                        return true;
-                    }
-                });
-                // 通知图库更新
+                //拍照
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + picPath)));
+                pressPicture(picPath);
+                break;
+            case RC_CHOOSE_PHOTO:
+                if (data == null) return;
+                //相册
+                pressPicture(FileUtils.getFilePathByUri(this, data.getData()));
                 break;
         }
+    }
+
+    /**
+     * 压缩本地图片，新图片保存到.youlite目录下
+     */
+    private void pressPicture(String path) {
+        String newPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.youlite";
+        if (!new File(newPath).exists()) {
+            new File(newPath).mkdirs();
+        }
+        Luban.with(mContext)
+                .load(path)                                   // 传人要压缩的图片列表
+                .ignoreBy(100)                                  // 忽略不压缩图片的大小
+                .setTargetDir(newPath)                        // 设置压缩后文件存储位置
+                .setCompressListener(new OnCompressListener() { //设置回调
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onSuccess(final File file) {
+                        ImageView imageView = new ImageView(mContext);
+                        RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
+                        Glide.with(mContext).load(file).apply(requestOptions).into(imageView);
+                        circle_posting_img_layout.addView(imageView);
+                        imageView.setTag(R.id.indexTag, file.getAbsolutePath());
+                        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(final View view) {
+                                AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
+                                        .setMessage("确定要删除该张照片？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                circle_posting_img_layout.removeView(view);
+                                            }
+                                        }).setNegativeButton("取消", null).create();
+                                dialog.setCanceledOnTouchOutside(false);
+                                dialog.show();
+                                return true;
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        ToastUtils.showShort("图片压缩失败，请重新拍摄");
+                    }
+                }).launch();
     }
 
     @Override

@@ -36,6 +36,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
+import cn.com.test.activity.CircleAllActivity;
 import cn.com.test.activity.CircleListActivity;
 import cn.com.test.activity.CirclePostingActivity;
 import cn.com.test.activity.HomeActivity;
@@ -229,7 +230,8 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
     }
 
     @OnClick({R.id.new_dynamic_text, R.id.friend_dynamic_text, R.id.circle_posting_layout,
-            R.id.circle_type_img_1, R.id.circle_type_img_2, R.id.circle_type_img_3, R.id.circle_type_img_4})
+            R.id.circle_type_img_1, R.id.circle_type_img_2, R.id.circle_type_img_3, R.id.circle_type_img_4,
+            R.id.circle_all_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.new_dynamic_text:
@@ -258,6 +260,9 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                 break;
             case R.id.circle_type_img_4:
                 startActivity(new Intent(mContext, CircleListActivity.class).putExtra("typeNo", (String) circle_type_img_4.getTag()).putExtra("typeName", circle_type_text_4.getText()));
+                break;
+            case R.id.circle_all_btn:
+                startActivity(new Intent(mContext, CircleAllActivity.class).putExtra("typeNo", (String) circle_type_img_4.getTag()).putExtra("typeName", circle_type_text_4.getText()));
                 break;
         }
     }

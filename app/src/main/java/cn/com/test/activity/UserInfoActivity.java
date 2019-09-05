@@ -321,7 +321,7 @@ public class UserInfoActivity extends BaseActivity implements EasyPermissions.Pe
                                                 }
                                                 dialog = null;
                                             }
-                                            loadData(2, new String[]{picUrl.replace("/app/upload/", "")}, getString(R.string.string_loading), RequestMethod.POST);
+                                            loadData(2, new String[]{picUrl}, getString(R.string.string_loading), RequestMethod.POST);
                                         }
                                     });
                                 } catch (Exception e) {

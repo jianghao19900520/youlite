@@ -104,12 +104,17 @@
         <activity
             android:name=".activity.CircleDetailActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <!--全部圈子页-->
         <activity
             android:name=".activity.CircleAllActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <!--我的帖子-->
+        <activity
+            android:name=".activity.MyCircleListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

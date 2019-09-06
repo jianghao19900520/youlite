@@ -28,6 +28,7 @@ import cn.com.test.activity.AddressManageActivity;
 import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.LoginActivity;
+import cn.com.test.activity.MyCircleListActivity;
 import cn.com.test.activity.SettingActivity;
 import cn.com.test.activity.UserInfoActivity;
 import cn.com.test.base.BaseFragment;
@@ -140,7 +141,7 @@ public class MineFragment extends BaseFragment {
                 break;
             case R.id.mine_page_layout:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    ToastUtils.showShort("我的贴子");
+                    startActivity(new Intent(mContext, MyCircleListActivity.class));
                 }
                 break;
             case R.id.mine_grade_layout:

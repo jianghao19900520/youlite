@@ -95,7 +95,7 @@ public class AboutAsActivity extends BaseActivity {
     }
 
     private void download() {
-        downloadRequest = NoHttp.createDownloadRequest("http://zstore.2025123.com.cn/yuejian.apk", path, filename, false, true);
+        downloadRequest = NoHttp.createDownloadRequest("http://106.52.216.72/web/youlite.apk  ", path, filename, false, true);
         DownloadQueue downloadQueue = new DownloadQueue(1);
         downloadQueue.add(0, downloadRequest, new DownloadListener() {
             @Override

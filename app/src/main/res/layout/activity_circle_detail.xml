@@ -145,7 +145,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:drawableTop="@mipmap/circle_postlike"
+            android:drawableTop="@mipmap/circle_postlike_n"
             android:paddingTop="10dp"
             android:text="分享"
             android:visibility="gone" />
@@ -155,7 +155,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:drawableTop="@mipmap/circle_postlike"
+            android:drawableTop="@mipmap/circle_postlike_n"
             android:paddingTop="10dp"
             android:text="收藏"
             android:visibility="gone" />
@@ -164,7 +164,7 @@
             android:id="@+id/circle_like_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:drawableTop="@mipmap/circle_postlike"
+            android:drawableTop="@mipmap/circle_postlike_n"
             android:paddingTop="10dp"
             android:text="点赞" />
 

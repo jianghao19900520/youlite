@@ -131,7 +131,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@mipmap/circle_postlike" />
+                        android:src="@mipmap/circle_postlike_n" />
 
                     <TextView
                         android:id="@+id/circle_like_text"

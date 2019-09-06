@@ -32,7 +32,7 @@ public class AboutAsActivity extends BaseActivity {
     TextView title;
 
     private DownloadRequest downloadRequest;
-    private String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download";
+    private String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.youlite";
     private String filename = "youlite.apk";
     private ProgressDialog dialog;
 
@@ -95,7 +95,7 @@ public class AboutAsActivity extends BaseActivity {
     }
 
     private void download() {
-        downloadRequest = NoHttp.createDownloadRequest("http://106.52.216.72/web/youlite.apk  ", path, filename, false, true);
+        downloadRequest = NoHttp.createDownloadRequest("http://106.52.216.72/web/youlite.apk", path, filename, false, true);
         DownloadQueue downloadQueue = new DownloadQueue(1);
         downloadQueue.add(0, downloadRequest, new DownloadListener() {
             @Override

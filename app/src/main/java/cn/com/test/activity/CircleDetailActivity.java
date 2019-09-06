@@ -60,6 +60,8 @@ public class CircleDetailActivity extends BaseActivity {
     TextView circle_collection_btn;
     @BindView(R.id.circle_like_btn)
     TextView circle_like_btn;
+    @BindView(R.id.new_comment_layout)
+    TextView new_comment_layout;
 
     private String id;
     private String artId = "";
@@ -186,6 +188,11 @@ public class CircleDetailActivity extends BaseActivity {
     private void setCircleDetail(JSONObject result) throws JSONException {
         commentList.clear();
         JSONArray list = result.getJSONObject("articleList").getJSONArray("list");
+        if (list.length() > 1) {
+            new_comment_layout.setVisibility(View.VISIBLE);
+        } else {
+            new_comment_layout.setVisibility(View.GONE);
+        }
         for (int i = 0; i < list.length(); i++) {
             JSONObject article = list.getJSONObject(i);
             if (article.getInt("type") == 0) {

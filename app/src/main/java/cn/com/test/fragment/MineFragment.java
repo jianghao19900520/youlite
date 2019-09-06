@@ -25,12 +25,10 @@ import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.activity.AboutAsActivity;
 import cn.com.test.activity.AddressManageActivity;
-import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.HomeActivity;
-import cn.com.test.activity.LoginActivity;
 import cn.com.test.activity.MyCircleListActivity;
 import cn.com.test.activity.MyCollectListActivity;
-import cn.com.test.activity.MyFamilyListActivity;
+import cn.com.test.activity.MyCareListActivity;
 import cn.com.test.activity.MyOrderActivity;
 import cn.com.test.activity.SettingActivity;
 import cn.com.test.activity.UserInfoActivity;
@@ -139,7 +137,7 @@ public class MineFragment extends BaseFragment {
                 break;
             case R.id.mine_person_layout:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    startActivity(new Intent(mContext, MyFamilyListActivity.class));
+                    startActivity(new Intent(mContext, MyCareListActivity.class));
                 }
                 break;
             case R.id.mine_page_layout:

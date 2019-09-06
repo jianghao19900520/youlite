@@ -1,8 +1,12 @@
 package cn.com.test.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -26,19 +30,23 @@ import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
 
-public class MyFamilyListActivity extends BaseActivity implements OnRefreshLoadmoreListener {
+public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmoreListener {
 
     @BindView(R.id.title)
     TextView title;
+    @BindView(R.id.title_right_text_btn)
+    TextView title_right_text_btn;
     @BindView(R.id.list_view)
     ListView list_view;
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
 
-    private List<JSONObject> familyList;
+    private List<JSONObject> careList;
     private CommAdapter<JSONObject> mAdapter;
 
     private int pageIndex = 1;
+    private String[] typeName;
+    private String[] typeNo;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -47,13 +55,21 @@ public class MyFamilyListActivity extends BaseActivity implements OnRefreshLoadm
 
     @Override
     public void initTitle() {
-        title.setText("家庭成员");
+        title.setText("关联成员");
+        title_right_text_btn.setText("添加关联");
+        title_right_text_btn.setVisibility(View.VISIBLE);
+        title_right_text_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showListDialog();
+            }
+        });
     }
 
     @Override
     public void init() {
-        familyList = new ArrayList<>();
-        mAdapter = new CommAdapter<JSONObject>(mContext, familyList, R.layout.item_circle) {
+        careList = new ArrayList<>();
+        mAdapter = new CommAdapter<JSONObject>(mContext, careList, R.layout.item_circle) {
             @Override
             public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
@@ -83,7 +99,7 @@ public class MyFamilyListActivity extends BaseActivity implements OnRefreshLoadm
     }
 
     /**
-     * @param what 1.获取帖子列表 2取消收藏
+     * @param what 1.获取关联列表 2获取关联类型 3绑定关联
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -93,10 +109,13 @@ public class MyFamilyListActivity extends BaseActivity implements OnRefreshLoadm
             if (what == 1) {
                 object.put("page", pageIndex);
                 object.put("limit", 20);
-                relativeUrl = "health/collectList";
+                relativeUrl = "health/userRelationList";
             } else if (what == 2) {
-                object.put("idsList", new JSONArray().put(new JSONObject().put("atricleId", value[0])));
-                relativeUrl = "health/cancelCollect";
+                relativeUrl = "health/relateionType";
+            } else if (what == 3) {
+                object.put("typeNo", value[0]);
+                object.put("phone", "13597061095");
+                relativeUrl = "health/setUserRelation";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -111,10 +130,16 @@ public class MyFamilyListActivity extends BaseActivity implements OnRefreshLoadm
                                 } else {
                                     refreshLayout.finishLoadmore();
                                 }
-                                setFamilyList(result.getJSONArray("list"));
-                            } else {
-                                pageIndex = 1;
-                                loadData(1, null, "", RequestMethod.POST);
+                                setCareList(result.getJSONArray("list"));
+                                loadData(2, null, "", RequestMethod.GET);
+                            } else if (what == 2) {
+                                JSONArray list = result.getJSONArray("list");
+                                typeName = new String[list.length()];
+                                typeNo = new String[list.length()];
+                                for (int i = 0; i < list.length(); i++) {
+                                    typeName[i] = list.getJSONObject(i).getString("typeName");
+                                    typeNo[i] = list.getJSONObject(i).getString("typeNo");
+                                }
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -135,14 +160,27 @@ public class MyFamilyListActivity extends BaseActivity implements OnRefreshLoadm
         }
     }
 
-    private void setFamilyList(JSONArray list) throws JSONException {
+    private void setCareList(JSONArray list) throws JSONException {
         if (pageIndex == 1) {
-            familyList.clear();
+            careList.clear();
         }
         for (int i = 0; i < list.length(); i++) {
-            familyList.add(list.getJSONObject(i));
+            careList.add(list.getJSONObject(i));
         }
         mAdapter.notifyDataSetChanged();
+    }
+
+    private void showListDialog() {
+        AlertDialog.Builder listDialog =
+                new AlertDialog.Builder(mContext);
+        listDialog.setTitle("我是一个列表Dialog");
+        listDialog.setItems(typeName, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                loadData(3, new String[]{typeNo[which]}, getString(R.string.string_loading), RequestMethod.POST);
+            }
+        });
+        listDialog.show();
     }
 
 }

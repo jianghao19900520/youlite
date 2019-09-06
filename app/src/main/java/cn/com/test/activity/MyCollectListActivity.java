@@ -166,7 +166,7 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
                                     refreshLayout.finishLoadmore();
                                 }
                                 setCircleList(result.getJSONArray("list"));
-                            } else {
+                            } else if (what == 2) {
                                 pageIndex = 1;
                                 loadData(1, null, "", RequestMethod.POST);
                             }

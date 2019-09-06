@@ -122,7 +122,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <!--家庭成员-->
         <activity
-            android:name=".activity.MyFamilyListActivity"
+            android:name=".activity.MyCareListActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <!--apk安装权限-->

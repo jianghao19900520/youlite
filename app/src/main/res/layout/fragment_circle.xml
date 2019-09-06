@@ -311,7 +311,7 @@
                     android:layout_margin="10dp">
 
                     <cn.com.test.view.ListViewForScrollView
-                        android:id="@+id/circle_listview"
+                        android:id="@+id/list_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:divider="@color/lineColor"

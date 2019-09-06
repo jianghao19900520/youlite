@@ -30,6 +30,7 @@ import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.LoginActivity;
 import cn.com.test.activity.MyCircleListActivity;
 import cn.com.test.activity.MyCollectListActivity;
+import cn.com.test.activity.MyFamilyListActivity;
 import cn.com.test.activity.MyOrderActivity;
 import cn.com.test.activity.SettingActivity;
 import cn.com.test.activity.UserInfoActivity;
@@ -138,7 +139,7 @@ public class MineFragment extends BaseFragment {
                 break;
             case R.id.mine_person_layout:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    ToastUtils.showShort("家庭成员");
+                    startActivity(new Intent(mContext, MyFamilyListActivity.class));
                 }
                 break;
             case R.id.mine_page_layout:

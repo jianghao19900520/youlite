@@ -1,18 +1,9 @@
 package cn.com.test.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.bumptech.glide.request.RequestOptions;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
@@ -35,7 +26,7 @@ import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
 
-public class MyCollectListActivity extends BaseActivity implements OnRefreshLoadmoreListener {
+public class MyFamilyListActivity extends BaseActivity implements OnRefreshLoadmoreListener {
 
     @BindView(R.id.title)
     TextView title;
@@ -44,7 +35,7 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
 
-    private List<JSONObject> circleList;
+    private List<JSONObject> familyList;
     private CommAdapter<JSONObject> mAdapter;
 
     private int pageIndex = 1;
@@ -56,62 +47,17 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
 
     @Override
     public void initTitle() {
-        title.setText("我的收藏");
+        title.setText("家庭成员");
     }
 
     @Override
     public void init() {
-        circleList = new ArrayList<>();
-        mAdapter = new CommAdapter<JSONObject>(mContext, circleList, R.layout.item_circle) {
+        familyList = new ArrayList<>();
+        mAdapter = new CommAdapter<JSONObject>(mContext, familyList, R.layout.item_circle) {
             @Override
             public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
-                    ImageView item_circle_img = holder.getView(R.id.item_circle_img);
-                    TextView item_circle_title = holder.getView(R.id.item_circle_title);
-                    ImageView item_circle_pic = holder.getView(R.id.item_circle_pic);
-                    item_circle_pic.setVisibility(View.GONE);
-                    String title = item.getString("title");
-                    if (!TextUtils.isEmpty(title)) {
-                        item_circle_title.setText(title);
-                        item_circle_title.setVisibility(View.VISIBLE);
-                    } else {
-                        item_circle_title.setVisibility(View.GONE);
-                    }
-                    Glide.with(mContext).load(item.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
-                    holder.setText(R.id.item_circle_name, item.getString("nickName"));
-                    holder.setText(R.id.circle_comment_text, item.getString("commentNum"));
-                    holder.setText(R.id.circle_like_text, item.getString("likeNum"));
-                    String createTime = item.getString("createTime");
-                    holder.setText(R.id.item_circle_time, createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
-                    holder.getConvertView().setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            try {
-                                startActivity(new Intent(mContext, CircleDetailActivity.class).putExtra("id", item.getString("id")));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    holder.getConvertView().setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
-                                    .setMessage("确定要取消收藏吗？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            try {
-                                                loadData(2, new String[]{item.getString("atricleId")}, getString(R.string.string_loading), RequestMethod.POST);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }).setNegativeButton("取消", null).create();
-                            dialog.setCanceledOnTouchOutside(false);
-                            dialog.show();
-                            return true;
-                        }
-                    });
+                    item.getString("");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -165,7 +111,7 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
                                 } else {
                                     refreshLayout.finishLoadmore();
                                 }
-                                setCircleList(result.getJSONArray("list"));
+                                setFamilyList(result.getJSONArray("list"));
                             } else {
                                 pageIndex = 1;
                                 loadData(1, null, "", RequestMethod.POST);
@@ -189,12 +135,12 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
         }
     }
 
-    private void setCircleList(JSONArray list) throws JSONException {
+    private void setFamilyList(JSONArray list) throws JSONException {
         if (pageIndex == 1) {
-            circleList.clear();
+            familyList.clear();
         }
         for (int i = 0; i < list.length(); i++) {
-            circleList.add(list.getJSONObject(i));
+            familyList.add(list.getJSONObject(i));
         }
         mAdapter.notifyDataSetChanged();
     }

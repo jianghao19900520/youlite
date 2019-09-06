@@ -37,8 +37,8 @@ public class MyCircleListActivity extends BaseActivity implements OnRefreshLoadm
 
     @BindView(R.id.title)
     TextView title;
-    @BindView(R.id.circle_listview)
-    ListView circle_listview;
+    @BindView(R.id.list_view)
+    ListView list_view;
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
 
@@ -49,7 +49,7 @@ public class MyCircleListActivity extends BaseActivity implements OnRefreshLoadm
 
     @Override
     public void setContent(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_circle_list);
+        setContentView(R.layout.activity_list_view);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class MyCircleListActivity extends BaseActivity implements OnRefreshLoadm
                 }
             }
         };
-        circle_listview.setAdapter(mAdapter);
+        list_view.setAdapter(mAdapter);
         refreshLayout.setOnRefreshLoadmoreListener(this);
         refreshLayout.setEnableLoadmore(true);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);

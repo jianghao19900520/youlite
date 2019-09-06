@@ -16,7 +16,6 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
-import com.youth.banner.Banner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,14 +32,13 @@ import cn.com.test.base.BaseActivity;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
-import cn.com.test.view.ListViewForScrollView;
 
 public class CircleListActivity extends BaseActivity implements OnRefreshLoadmoreListener {
 
     @BindView(R.id.title)
     TextView title;
-    @BindView(R.id.circle_listview)
-    ListView circle_listview;
+    @BindView(R.id.list_view)
+    ListView list_view;
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
 
@@ -52,7 +50,7 @@ public class CircleListActivity extends BaseActivity implements OnRefreshLoadmor
 
     @Override
     public void setContent(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_circle_list);
+        setContentView(R.layout.activity_list_view);
     }
 
     @Override
@@ -101,7 +99,7 @@ public class CircleListActivity extends BaseActivity implements OnRefreshLoadmor
                 }
             }
         };
-        circle_listview.setAdapter(mAdapter);
+        list_view.setAdapter(mAdapter);
         refreshLayout.setOnRefreshLoadmoreListener(this);
         refreshLayout.setEnableLoadmore(true);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);

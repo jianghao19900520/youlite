@@ -7,12 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,14 +43,11 @@ import cn.com.test.activity.CircleDetailActivity;
 import cn.com.test.activity.CircleListActivity;
 import cn.com.test.activity.CirclePostingActivity;
 import cn.com.test.activity.HomeActivity;
-import cn.com.test.activity.OrderDetailActivity;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseFragment;
-import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
-import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 import cn.com.test.view.ListViewForScrollView;
 
@@ -85,8 +79,8 @@ public class CircleFragment extends BaseFragment implements OnBannerListener, On
     TextView circle_type_text_4;
     @BindView(R.id.circle_type_img_4)
     ImageView circle_type_img_4;
-    @BindView(R.id.circle_listview)
-    ListViewForScrollView circle_listview;
+    @BindView(R.id.list_view)
+    ListViewForScrollView list_view;
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.load_more_btn)
@@ -169,7 +163,7 @@ public class CircleFragment extends BaseFragment implements OnBannerListener, On
                 }
             }
         };
-        circle_listview.setAdapter(mAdapter);
+        list_view.setAdapter(mAdapter);
         refreshLayout.setOnRefreshLoadmoreListener(this);
         refreshLayout.setEnableLoadmore(true);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);

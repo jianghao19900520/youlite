@@ -120,6 +120,11 @@
             android:name=".activity.MyCollectListActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <!--家庭成员-->
+        <activity
+            android:name=".activity.MyFamilyListActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <!--apk安装权限-->
         <provider
             android:name="android.support.v4.content.FileProvider"

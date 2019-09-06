@@ -56,15 +56,17 @@ public class CircleDetailActivity extends BaseActivity {
     ListViewForScrollView comment_listview;
     @BindView(R.id.circle_detail_img_layout)
     LinearLayout circle_detail_img_layout;
+    @BindView(R.id.circle_collection_btn)
+    TextView circle_collection_btn;
     @BindView(R.id.circle_like_btn)
     TextView circle_like_btn;
 
     private String id;
-    private String userNo;
-    private String artId;
+    private String artId = "";
     private List<JSONObject> commentList;
     private CommAdapter<JSONObject> mAdapter;
     private boolean liked = false;//是否点过赞了
+    private boolean collected = false;//是否点收藏了
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -101,7 +103,7 @@ public class CircleDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取帖子详情 2发表评论 3点赞
+     * @param what 1.获取帖子详情 2发表评论 3点赞 4获取收藏列表 5收藏
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -123,6 +125,13 @@ public class CircleDetailActivity extends BaseActivity {
                 object.put("outId", value[0]);
                 object.put("type", value[1]);//0=主贴 //1=一级评论 2=二级评论
                 relativeUrl = "health/bbsLikeOperate";
+            } else if (what == 4) {
+                object.put("page", 1);
+                object.put("limit", 100);
+                relativeUrl = "health/collectList";
+            } else if (what == 5) {
+                object.put("atricleId", artId);
+                relativeUrl = "health/collectAtricle";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -140,6 +149,17 @@ public class CircleDetailActivity extends BaseActivity {
                                 liked = true;
                                 circle_like_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_postlike_p), null, null);
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+                            } else if (what == 4) {
+                                JSONArray list = result.getJSONArray("list");
+                                for (int i = 0; i < list.length(); i++) {
+                                    if (artId.equals(list.getJSONObject(i).getString("atricleId"))) {
+                                        circle_collection_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_collection_p), null, null);
+                                        collected = true;
+                                    }
+                                }
+                            } else {
+                                circle_collection_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_collection_p), null, null);
+                                collected = true;
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -190,7 +210,6 @@ public class CircleDetailActivity extends BaseActivity {
                         item_circle_content.setText(content);
                         item_circle_content.setVisibility(View.VISIBLE);
                     }
-                    userNo = article.getString("userNo");
                     artId = result.getString("artId");
 
                     circle_detail_img_layout.removeAllViews();
@@ -218,20 +237,27 @@ public class CircleDetailActivity extends BaseActivity {
         } else {
             circle_like_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_postlike_n), null, null);
         }
+        loadData(4, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
-    @OnClick({R.id.circle_comment_post_btn, R.id.circle_like_btn})
+    @OnClick({R.id.circle_comment_post_btn, R.id.circle_collection_btn, R.id.circle_like_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.circle_comment_post_btn:
+                //评论
                 if (!TextUtils.isEmpty(circle_comment_edit.getText().toString().trim())) {
                     loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 }
                 break;
+            case R.id.circle_collection_btn:
+                //收藏
+                if (!collected) {
+                    loadData(5, null, getString(R.string.string_loading), RequestMethod.POST);
+                }
+                break;
             case R.id.circle_like_btn:
-                if (liked) {
-                    ToastUtils.showShort("您已经赞过了");
-                } else {
+                //点赞
+                if (!liked) {
                     loadData(3, new String[]{artId, "0"}, getString(R.string.string_loading), RequestMethod.POST);
                 }
                 break;

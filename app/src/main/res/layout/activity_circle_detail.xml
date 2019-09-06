@@ -143,22 +143,13 @@
         android:paddingRight="10dp">
 
         <TextView
+            android:id="@+id/circle_collection_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:drawableTop="@mipmap/circle_postlike_n"
-            android:paddingTop="10dp"
-            android:text="分享"
-            android:visibility="gone" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:drawableTop="@mipmap/circle_postlike_n"
+            android:drawableTop="@mipmap/circle_collection_n"
             android:paddingTop="10dp"
-            android:text="收藏"
-            android:visibility="gone" />
+            android:text="收藏" />
 
         <TextView
             android:id="@+id/circle_like_btn"

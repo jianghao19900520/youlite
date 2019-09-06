@@ -80,7 +80,7 @@ public class CircleFragment extends BaseFragment implements OnBannerListener, On
     @BindView(R.id.circle_type_img_4)
     ImageView circle_type_img_4;
     @BindView(R.id.list_view)
-    ListViewForScrollView list_view;
+    ListViewForScrollView circle_listview;
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.load_more_btn)
@@ -163,7 +163,7 @@ public class CircleFragment extends BaseFragment implements OnBannerListener, On
                 }
             }
         };
-        list_view.setAdapter(mAdapter);
+        circle_listview.setAdapter(mAdapter);
         refreshLayout.setOnRefreshLoadmoreListener(this);
         refreshLayout.setEnableLoadmore(true);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);

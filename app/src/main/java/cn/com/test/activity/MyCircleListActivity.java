@@ -67,7 +67,6 @@ public class MyCircleListActivity extends BaseActivity implements OnRefreshLoadm
                     ImageView item_circle_img = holder.getView(R.id.item_circle_img);
                     TextView item_circle_title = holder.getView(R.id.item_circle_title);
                     ImageView item_circle_pic = holder.getView(R.id.item_circle_pic);
-                    item_circle_pic.setVisibility(View.GONE);
                     String title = item.getString("title");
                     if (!TextUtils.isEmpty(title)) {
                         item_circle_title.setText(title);
@@ -76,6 +75,7 @@ public class MyCircleListActivity extends BaseActivity implements OnRefreshLoadm
                         item_circle_title.setVisibility(View.GONE);
                     }
                     Glide.with(mContext).load(item.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
+                    Glide.with(mContext).load(item.getString("netToLoad")).into(item_circle_pic);
                     holder.setText(R.id.item_circle_name, item.getString("nickName"));
                     holder.setText(R.id.circle_comment_text, item.getString("commentNum"));
                     holder.setText(R.id.circle_like_text, item.getString("likeNum"));

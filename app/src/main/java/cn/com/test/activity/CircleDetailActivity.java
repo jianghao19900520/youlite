@@ -1,15 +1,11 @@
 package cn.com.test.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -32,6 +28,7 @@ import cn.com.test.R;
 import cn.com.test.adapter.CommAdapter;
 import cn.com.test.adapter.CommViewHolder;
 import cn.com.test.base.BaseActivity;
+import cn.com.test.constant.Constant;
 import cn.com.test.http.HttpListener;
 import cn.com.test.http.NetHelper;
 import cn.com.test.utils.ToastUtils;
@@ -59,12 +56,15 @@ public class CircleDetailActivity extends BaseActivity {
     ListViewForScrollView comment_listview;
     @BindView(R.id.circle_detail_img_layout)
     LinearLayout circle_detail_img_layout;
+    @BindView(R.id.circle_like_btn)
+    TextView circle_like_btn;
 
     private String id;
     private String userNo;
     private String artId;
     private List<JSONObject> commentList;
     private CommAdapter<JSONObject> mAdapter;
+    private boolean liked = false;//是否点过赞了
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -133,6 +133,13 @@ public class CircleDetailActivity extends BaseActivity {
                             JSONObject result = jsonObject.getJSONObject("result");
                             if (what == 1) {
                                 setCircleDetail(result);
+                            } else if (what == 2) {
+                                loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+                            } else if (what == 3) {
+                                Constant.circleLikeMap.put(artId, "");
+                                liked = true;
+                                circle_like_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_postlike_p), null, null);
+                                loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -201,6 +208,16 @@ public class CircleDetailActivity extends BaseActivity {
             }
         }
         mAdapter.notifyDataSetChanged();
+        for (String key : Constant.circleLikeMap.keySet()) {
+            if (key.equals(artId)) {
+                liked = true;
+            }
+        }
+        if (liked) {
+            circle_like_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_postlike_p), null, null);
+        } else {
+            circle_like_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_postlike_n), null, null);
+        }
     }
 
     @OnClick({R.id.circle_comment_post_btn, R.id.circle_like_btn})
@@ -212,7 +229,11 @@ public class CircleDetailActivity extends BaseActivity {
                 }
                 break;
             case R.id.circle_like_btn:
-                loadData(3, new String[]{artId, "0"}, getString(R.string.string_loading), RequestMethod.POST);
+                if (liked) {
+                    ToastUtils.showShort("您已经赞过了");
+                } else {
+                    loadData(3, new String[]{artId, "0"}, getString(R.string.string_loading), RequestMethod.POST);
+                }
                 break;
         }
     }

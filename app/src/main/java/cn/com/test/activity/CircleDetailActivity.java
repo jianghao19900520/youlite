@@ -101,7 +101,7 @@ public class CircleDetailActivity extends BaseActivity {
     }
 
     /**
-     * @param what 1.获取帖子详情 2发表评论
+     * @param what 1.获取帖子详情 2发表评论 3点赞
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -119,6 +119,10 @@ public class CircleDetailActivity extends BaseActivity {
                 object.put("content", circle_comment_edit.getText().toString().trim());
                 object.put("imgList", new JSONArray().put(new JSONObject().put("toLoad", "").put("orderNum", "")));
                 relativeUrl = "health/bbsComment";
+            } else if (what == 3) {
+                object.put("outId", value[0]);
+                object.put("type", value[1]);//0=主贴 //1=一级评论 2=二级评论
+                relativeUrl = "health/bbsLikeOperate";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -199,13 +203,16 @@ public class CircleDetailActivity extends BaseActivity {
         mAdapter.notifyDataSetChanged();
     }
 
-    @OnClick({R.id.circle_comment_post_btn})
+    @OnClick({R.id.circle_comment_post_btn, R.id.circle_like_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.circle_comment_post_btn:
                 if (!TextUtils.isEmpty(circle_comment_edit.getText().toString().trim())) {
                     loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 }
+                break;
+            case R.id.circle_like_btn:
+                loadData(3, new String[]{artId, "0"}, getString(R.string.string_loading), RequestMethod.POST);
                 break;
         }
     }

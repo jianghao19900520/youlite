@@ -54,7 +54,7 @@
             android:background="@color/backgroundColor" />
 
         <LinearLayout
-            android:id="@+id/mine_person_layout"
+            android:id="@+id/mine_care_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#ffffff"
@@ -74,7 +74,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:paddingLeft="20dp"
-                android:text="家庭成员"
+                android:text="关联成员"
                 android:textColor="#333333"
                 android:textSize="17dp" />
 

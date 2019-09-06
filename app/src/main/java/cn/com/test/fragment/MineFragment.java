@@ -124,7 +124,7 @@ public class MineFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.mine_head_layout, R.id.mine_person_layout,
+    @OnClick({R.id.mine_head_layout, R.id.mine_care_layout,
             R.id.mine_page_layout, R.id.mine_grade_layout,
             R.id.mine_oder_layout, R.id.mine_address_layout,
             R.id.mine_aboutus_layout, R.id.mine_setting_layout})
@@ -135,7 +135,7 @@ public class MineFragment extends BaseFragment {
                     startActivity(new Intent(mContext, UserInfoActivity.class));
                 }
                 break;
-            case R.id.mine_person_layout:
+            case R.id.mine_care_layout:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
                     startActivity(new Intent(mContext, MyCareListActivity.class));
                 }

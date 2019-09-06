@@ -1,9 +1,15 @@
 package cn.com.test.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +53,7 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
     private int pageIndex = 1;
     private String[] typeName;
     private String[] typeNo;
+    private int width;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -61,19 +68,46 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
         title_right_text_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showListDialog();
+                loadData(2, null, "", RequestMethod.GET);
             }
         });
     }
 
     @Override
     public void init() {
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        width = displayMetrics.widthPixels;
         careList = new ArrayList<>();
-        mAdapter = new CommAdapter<JSONObject>(mContext, careList, R.layout.item_circle) {
+        mAdapter = new CommAdapter<JSONObject>(mContext, careList, R.layout.item_care) {
             @Override
             public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
-                    item.getString("");
+                    TextView item_care_name = holder.getView(R.id.item_care_name);
+                    TextView item_care_phone = holder.getView(R.id.item_care_phone);
+                    TextView item_care_type = holder.getView(R.id.item_care_type);
+                    item_care_name.setText(item.getString("nickName"));
+                    item_care_phone.setText(item.getString("phone"));
+                    item_care_type.setText(item.getString("typeName"));
+                    holder.getView(R.id.item_del_btn).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //删除
+                            try {
+                                loadData(4, new String[]{item.getString("touserNo")}, getString(R.string.string_loading), RequestMethod.POST);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    HorizontalScrollView item_care_scroll = holder.getView(R.id.item_care_scroll);
+                    item_care_scroll.scrollTo(0, 0);
+                    //动态设置宽度
+                    LinearLayout item_care_layout = holder.getView(R.id.item_care_layout);
+                    ViewGroup.LayoutParams params = item_care_layout.getLayoutParams();
+                    params.width = width;
+                    item_care_layout.setLayoutParams(params);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -99,7 +133,7 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
     }
 
     /**
-     * @param what 1.获取关联列表 2获取关联类型 3绑定关联
+     * @param what 1.获取关联列表 2获取关联类型 3绑定关联 4解除绑定
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -116,6 +150,9 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
                 object.put("typeNo", value[0]);
                 object.put("phone", "13597061095");
                 relativeUrl = "health/setUserRelation";
+            } else if (what == 4) {
+                object.put("idsList", new JSONArray().put(new JSONObject().put("toUserNo", value[0])));
+                relativeUrl = "health/cancelUserRelation";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -131,7 +168,6 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
                                     refreshLayout.finishLoadmore();
                                 }
                                 setCareList(result.getJSONArray("list"));
-                                loadData(2, null, "", RequestMethod.GET);
                             } else if (what == 2) {
                                 JSONArray list = result.getJSONArray("list");
                                 typeName = new String[list.length()];
@@ -140,6 +176,9 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
                                     typeName[i] = list.getJSONObject(i).getString("typeName");
                                     typeNo[i] = list.getJSONObject(i).getString("typeNo");
                                 }
+                                showListDialog();
+                            } else if (what == 3 || what == 4) {
+                                loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));

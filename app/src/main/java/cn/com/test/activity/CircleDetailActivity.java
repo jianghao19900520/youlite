@@ -152,7 +152,7 @@ public class CircleDetailActivity extends BaseActivity {
                             } else if (what == 4) {
                                 JSONArray list = result.getJSONArray("list");
                                 for (int i = 0; i < list.length(); i++) {
-                                    if (artId.equals(list.getJSONObject(i).getString("atricleId"))) {
+                                    if (artId.equals(list.getJSONObject(i).getString("id"))) {
                                         circle_collection_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(null, getResources().getDrawable(R.mipmap.circle_collection_p), null, null);
                                         collected = true;
                                     }

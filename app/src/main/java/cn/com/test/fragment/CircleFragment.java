@@ -12,12 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.Response;
 import com.youth.banner.Banner;
@@ -37,6 +42,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.test.R;
 import cn.com.test.activity.CircleAllActivity;
+import cn.com.test.activity.CircleDetailActivity;
 import cn.com.test.activity.CircleListActivity;
 import cn.com.test.activity.CirclePostingActivity;
 import cn.com.test.activity.HomeActivity;
@@ -55,12 +61,12 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
 
     @BindView(R.id.banner)
     Banner banner;
-    @BindView(R.id.circle_listview)
-    ListViewForScrollView circle_listview;
     @BindView(R.id.new_dynamic_text)
     TextView new_dynamic_text;
     @BindView(R.id.new_dynamic_line)
     View new_dynamic_line;
+    @BindView(R.id.circle_listview)
+    ListViewForScrollView circle_listview;
     @BindView(R.id.friend_dynamic_text)
     TextView friend_dynamic_text;
     @BindView(R.id.friend_dynamic_line)
@@ -86,6 +92,8 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
     private ArrayList<String> banner_title;
     private List<JSONObject> circleList;
     private CommAdapter<JSONObject> mAdapter;
+    private int pageIndex = 1;
+    private int circleType;//0=全部 1=好友
 
     @Override
     public View setContent(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -118,38 +126,38 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
         banner.setImages(banner_path)
                 .setOnBannerListener(this)
                 .start();
-
         circleList = new ArrayList<>();
-        try {
-            circleList.add(new JSONObject().put("type", 1));
-            circleList.add(new JSONObject().put("type", 2));
-            circleList.add(new JSONObject().put("type", 3));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         mAdapter = new CommAdapter<JSONObject>(mContext, circleList, R.layout.item_circle) {
             @Override
-            public void convert(final CommViewHolder holder, JSONObject item, int position) {
+            public void convert(final CommViewHolder holder, final JSONObject item, int position) {
                 try {
-                    View item_circle_title = holder.getView(R.id.item_circle_title);
-                    View item_circle_pic = holder.getView(R.id.item_circle_pic);
-                    switch (item.getInt("type")) {
-                        case 1:
-                            holder.setText(R.id.item_circle_name, "匿名用户1");
-                            item_circle_title.setVisibility(View.VISIBLE);
-                            item_circle_pic.setVisibility(View.VISIBLE);
-                            break;
-                        case 2:
-                            holder.setText(R.id.item_circle_name, "匿名用户2");
-                            item_circle_title.setVisibility(View.GONE);
-                            item_circle_pic.setVisibility(View.VISIBLE);
-                            break;
-                        case 3:
-                            holder.setText(R.id.item_circle_name, "匿名用户3");
-                            item_circle_title.setVisibility(View.VISIBLE);
-                            item_circle_pic.setVisibility(View.GONE);
-                            break;
+                    ImageView item_circle_img = holder.getView(R.id.item_circle_img);
+                    TextView item_circle_title = holder.getView(R.id.item_circle_title);
+                    ImageView item_circle_pic = holder.getView(R.id.item_circle_pic);
+                    item_circle_pic.setVisibility(View.GONE);
+                    String title = item.getString("title");
+                    if (!TextUtils.isEmpty(title)) {
+                        item_circle_title.setText(title);
+                        item_circle_title.setVisibility(View.VISIBLE);
+                    } else {
+                        item_circle_title.setVisibility(View.GONE);
                     }
+                    Glide.with(mContext).load(item.getString("userPic")).apply(RequestOptions.bitmapTransform(new CircleCrop())).into(item_circle_img);
+                    holder.setText(R.id.item_circle_name, item.getString("nickName"));
+                    holder.setText(R.id.circle_comment_text, item.getString("commentNum"));
+                    holder.setText(R.id.circle_like_text, item.getString("likeNum"));
+                    String createTime = item.getString("createTime");
+                    holder.setText(R.id.item_circle_time, createTime.substring(0, 4) + "-" + createTime.substring(4, 6) + "-" + createTime.substring(6, 8) + " " + createTime.substring(8, 10) + ":" + createTime.substring(10, 12) + ":" + createTime.substring(12, 14));
+                    holder.getConvertView().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            try {
+                                startActivity(new Intent(mContext, CircleDetailActivity.class).putExtra("id", item.getString("id")));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -157,10 +165,13 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
         };
         circle_listview.setAdapter(mAdapter);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
+        pageIndex = 1;
+        circleType = 0;
+        loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
     }
 
     /**
-     * @param what 1.获取帖子类型
+     * @param what 1.获取帖子类型 2.获取帖子列表
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -169,6 +180,15 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
             String relativeUrl = "";
             if (what == 1) {
                 relativeUrl = "health/bbsType";
+            } else if (what == 2) {
+                object.put("page", pageIndex);
+                object.put("limit", 20);
+                object.put("typeNo", "");
+                if (circleType == 0) {
+                    relativeUrl = "health/bbsArticleList";
+                } else {
+                    relativeUrl = "health/bbsRelationArticleList";
+                }
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -189,6 +209,13 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                                     circle_type_text_4.setText(list.getJSONObject(3).getString("typeName"));
                                     circle_type_img_4.setTag(list.getJSONObject(3).getString("typeNo"));
                                 }
+                            } else if (what == 2) {
+                                if (pageIndex == 1) {
+//                                    refreshLayout.finishRefresh();
+                                } else {
+//                                    refreshLayout.finishLoadmore();
+                                }
+                                setCircleList(result.getJSONArray("list"));
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -239,12 +266,18 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                 friend_dynamic_text.setTextColor(Color.parseColor("#999999"));
                 new_dynamic_line.setVisibility(View.VISIBLE);
                 friend_dynamic_line.setVisibility(View.INVISIBLE);
+                pageIndex = 1;
+                circleType = 0;
+                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 break;
             case R.id.friend_dynamic_text:
                 new_dynamic_text.setTextColor(Color.parseColor("#999999"));
                 friend_dynamic_text.setTextColor(getResources().getColor(R.color.mainColor));
                 new_dynamic_line.setVisibility(View.INVISIBLE);
                 friend_dynamic_line.setVisibility(View.VISIBLE);
+                pageIndex = 1;
+                circleType = 1;
+                loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
                 break;
             case R.id.circle_posting_layout:
                 startActivity(new Intent(mContext, CirclePostingActivity.class));
@@ -265,6 +298,16 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                 startActivity(new Intent(mContext, CircleAllActivity.class).putExtra("typeNo", (String) circle_type_img_4.getTag()).putExtra("typeName", circle_type_text_4.getText()));
                 break;
         }
+    }
+
+    private void setCircleList(JSONArray list) throws JSONException {
+        if (pageIndex == 1) {
+            circleList.clear();
+        }
+        for (int i = 0; i < list.length(); i++) {
+            circleList.add(list.getJSONObject(i));
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
 }

@@ -1,5 +1,7 @@
 package cn.com.test.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -91,6 +93,25 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
                             }
                         }
                     });
+                    holder.getConvertView().setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
+                                    .setMessage("确定要取消收藏吗？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            try {
+                                                loadData(2, new String[]{item.getString("atricleId")}, getString(R.string.string_loading), RequestMethod.POST);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).setNegativeButton("取消", null).create();
+                            dialog.setCanceledOnTouchOutside(false);
+                            dialog.show();
+                            return true;
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -116,7 +137,7 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
     }
 
     /**
-     * @param what 1.获取帖子列表
+     * @param what 1.获取帖子列表 2取消收藏
      */
     @Override
     public void loadData(int what, String[] value, String msg, RequestMethod method) {
@@ -127,6 +148,9 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
                 object.put("page", pageIndex);
                 object.put("limit", 20);
                 relativeUrl = "health/collectList";
+            } else if (what == 2) {
+                object.put("idsList", new JSONArray().put(new JSONObject().put("atricleId", value[0])));
+                relativeUrl = "health/cancelCollect";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
                 @Override
@@ -142,6 +166,9 @@ public class MyCollectListActivity extends BaseActivity implements OnRefreshLoad
                                     refreshLayout.finishLoadmore();
                                 }
                                 setCircleList(result.getJSONArray("list"));
+                            } else {
+                                pageIndex = 1;
+                                loadData(1, null, "", RequestMethod.POST);
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));

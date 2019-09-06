@@ -29,6 +29,8 @@ import cn.com.test.activity.CartActivity;
 import cn.com.test.activity.HomeActivity;
 import cn.com.test.activity.LoginActivity;
 import cn.com.test.activity.MyCircleListActivity;
+import cn.com.test.activity.MyCollectListActivity;
+import cn.com.test.activity.MyOrderActivity;
 import cn.com.test.activity.SettingActivity;
 import cn.com.test.activity.UserInfoActivity;
 import cn.com.test.base.BaseFragment;
@@ -146,12 +148,12 @@ public class MineFragment extends BaseFragment {
                 break;
             case R.id.mine_grade_layout:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    ToastUtils.showShort("我的收藏");
+                    startActivity(new Intent(mContext, MyCollectListActivity.class));
                 }
                 break;
             case R.id.mine_oder_layout:
                 if (LoginUtils.getInstance().checkLoginStatus(mContext)) {
-                    ToastUtils.showShort("我的订单");
+                    startActivity(new Intent(mContext, MyOrderActivity.class));
                 }
                 break;
             case R.id.mine_address_layout:

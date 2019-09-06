@@ -127,7 +127,7 @@ public class CircleDetailActivity extends BaseActivity {
                 relativeUrl = "health/bbsLikeOperate";
             } else if (what == 4) {
                 object.put("page", 1);
-                object.put("limit", 100);
+                object.put("limit", 999);
                 relativeUrl = "health/collectList";
             } else if (what == 5) {
                 object.put("atricleId", artId);

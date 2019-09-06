@@ -57,7 +57,7 @@ import cn.com.test.utils.SPUtils;
 import cn.com.test.utils.ToastUtils;
 import cn.com.test.view.ListViewForScrollView;
 
-public class CircleFragment extends BaseFragment implements OnBannerListener {
+public class CircleFragment extends BaseFragment implements OnBannerListener, OnRefreshLoadmoreListener {
 
     @BindView(R.id.banner)
     Banner banner;
@@ -65,8 +65,6 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
     TextView new_dynamic_text;
     @BindView(R.id.new_dynamic_line)
     View new_dynamic_line;
-    @BindView(R.id.circle_listview)
-    ListViewForScrollView circle_listview;
     @BindView(R.id.friend_dynamic_text)
     TextView friend_dynamic_text;
     @BindView(R.id.friend_dynamic_line)
@@ -87,6 +85,14 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
     TextView circle_type_text_4;
     @BindView(R.id.circle_type_img_4)
     ImageView circle_type_img_4;
+    @BindView(R.id.circle_listview)
+    ListViewForScrollView circle_listview;
+    @BindView(R.id.refreshLayout)
+    SmartRefreshLayout refreshLayout;
+    @BindView(R.id.load_more_btn)
+    TextView load_more_btn;
+    @BindView(R.id.circle_scroll_view)
+    ScrollView circle_scroll_view;
 
     private ArrayList<String> banner_path;
     private ArrayList<String> banner_title;
@@ -164,23 +170,41 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
             }
         };
         circle_listview.setAdapter(mAdapter);
+        refreshLayout.setOnRefreshLoadmoreListener(this);
+        refreshLayout.setEnableLoadmore(true);
         loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
         pageIndex = 1;
         circleType = 0;
-        loadData(2, null, getString(R.string.string_loading), RequestMethod.POST);
+        loadData(2, new String[]{""}, getString(R.string.string_loading), RequestMethod.POST);
+    }
+
+
+    @Override
+    public void onLoadmore(RefreshLayout refreshlayout) {
+        pageIndex++;
+        loadData(2, null, "", RequestMethod.POST);
+    }
+
+    @Override
+    public void onRefresh(RefreshLayout refreshlayout) {
+        pageIndex = 1;
+        loadData(2, null, "", RequestMethod.POST);
     }
 
     /**
      * @param what 1.获取帖子类型 2.获取帖子列表
      */
     @Override
-    public void loadData(int what, String[] value, String msg, RequestMethod method) {
+    public void loadData(int what, final String[] value, String msg, RequestMethod method) {
         try {
             final JSONObject object = new JSONObject();
             String relativeUrl = "";
             if (what == 1) {
                 relativeUrl = "health/bbsType";
             } else if (what == 2) {
+                if (pageIndex == 1) {
+                    load_more_btn.setVisibility(View.VISIBLE);
+                }
                 object.put("page", pageIndex);
                 object.put("limit", 20);
                 object.put("typeNo", "");
@@ -211,11 +235,19 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
                                 }
                             } else if (what == 2) {
                                 if (pageIndex == 1) {
-//                                    refreshLayout.finishRefresh();
+                                    refreshLayout.finishRefresh();
                                 } else {
-//                                    refreshLayout.finishLoadmore();
+                                    refreshLayout.finishLoadmore();
                                 }
                                 setCircleList(result.getJSONArray("list"));
+                                if (value != null) {
+                                    circle_scroll_view.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            circle_scroll_view.scrollTo(0, 0);
+                                        }
+                                    }, 200);
+                                }
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -258,7 +290,7 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
 
     @OnClick({R.id.new_dynamic_text, R.id.friend_dynamic_text, R.id.circle_posting_layout,
             R.id.circle_type_img_1, R.id.circle_type_img_2, R.id.circle_type_img_3, R.id.circle_type_img_4,
-            R.id.circle_all_btn})
+            R.id.circle_all_btn, R.id.load_more_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.new_dynamic_text:
@@ -297,6 +329,9 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
             case R.id.circle_all_btn:
                 startActivity(new Intent(mContext, CircleAllActivity.class).putExtra("typeNo", (String) circle_type_img_4.getTag()).putExtra("typeName", circle_type_text_4.getText()));
                 break;
+            case R.id.load_more_btn:
+                onLoadmore(refreshLayout);
+                break;
         }
     }
 
@@ -304,8 +339,12 @@ public class CircleFragment extends BaseFragment implements OnBannerListener {
         if (pageIndex == 1) {
             circleList.clear();
         }
-        for (int i = 0; i < list.length(); i++) {
-            circleList.add(list.getJSONObject(i));
+        if (list.length() > 0) {
+            for (int i = 0; i < list.length(); i++) {
+                circleList.add(list.getJSONObject(i));
+            }
+        } else {
+            load_more_btn.setVisibility(View.GONE);
         }
         mAdapter.notifyDataSetChanged();
     }

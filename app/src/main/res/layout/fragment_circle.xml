@@ -6,6 +6,7 @@
     android:background="#ffffff">
 
     <ScrollView
+        android:id="@+id/circle_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none">
@@ -210,7 +211,8 @@
                     android:layout_height="80dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="0dp"
@@ -302,14 +304,32 @@
                     android:layout_height="1px"
                     android:background="@color/lineColor" />
 
-                <cn.com.test.view.ListViewForScrollView
-                    android:id="@+id/circle_listview"
+                <com.scwang.smartrefresh.layout.SmartRefreshLayout
+                    android:id="@+id/refreshLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:scrollbars="none" />
+                    android:layout_margin="10dp">
+
+                    <cn.com.test.view.ListViewForScrollView
+                        android:id="@+id/circle_listview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:divider="@color/lineColor"
+                        android:dividerHeight="1px"
+                        android:scrollbars="none" />
+
+                </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/load_more_btn"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@color/backgroundColor"
+                android:gravity="center"
+                android:text="点击此处加载更多"
+                android:textSize="15dp" />
 
         </LinearLayout>
     </ScrollView>

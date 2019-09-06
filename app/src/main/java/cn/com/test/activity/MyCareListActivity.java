@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -148,7 +150,7 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
                 relativeUrl = "health/relateionType";
             } else if (what == 3) {
                 object.put("typeNo", value[0]);
-                object.put("phone", "13597061095");
+                object.put("phone", value[1]);
                 relativeUrl = "health/setUserRelation";
             } else if (what == 4) {
                 object.put("idsList", new JSONArray().put(new JSONObject().put("toUserNo", value[0])));
@@ -176,7 +178,7 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
                                     typeName[i] = list.getJSONObject(i).getString("typeName");
                                     typeNo[i] = list.getJSONObject(i).getString("typeNo");
                                 }
-                                showListDialog();
+                                showTypeDialog();
                             } else if (what == 3 || what == 4) {
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             }
@@ -209,14 +211,27 @@ public class MyCareListActivity extends BaseActivity implements OnRefreshLoadmor
         mAdapter.notifyDataSetChanged();
     }
 
-    private void showListDialog() {
-        AlertDialog.Builder listDialog =
-                new AlertDialog.Builder(mContext);
-        listDialog.setTitle("我是一个列表Dialog");
+    private void showInputDialog(final String typeNo) {
+        final EditText editText = new EditText(mContext);
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        AlertDialog.Builder inputDialog = new AlertDialog.Builder(mContext);
+        inputDialog.setTitle("请输入该成员的手机号码").setView(editText);
+        inputDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        loadData(3, new String[]{typeNo, editText.getText().toString().trim()}, getString(R.string.string_loading), RequestMethod.POST);
+                    }
+                }).show();
+    }
+
+    private void showTypeDialog() {
+        AlertDialog.Builder listDialog = new AlertDialog.Builder(mContext);
+        listDialog.setTitle("请选择成员类型");
         listDialog.setItems(typeName, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                loadData(3, new String[]{typeNo[which]}, getString(R.string.string_loading), RequestMethod.POST);
+                showInputDialog(typeNo[which]);
             }
         });
         listDialog.show();

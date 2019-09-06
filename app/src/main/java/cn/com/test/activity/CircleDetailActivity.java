@@ -145,6 +145,7 @@ public class CircleDetailActivity extends BaseActivity {
                             if (what == 1) {
                                 setCircleDetail(result);
                             } else if (what == 2) {
+                                circle_comment_edit.setText("");
                                 loadData(1, null, getString(R.string.string_loading), RequestMethod.POST);
                             } else if (what == 3) {
                                 Constant.circleLikeMap.put(artId, "");

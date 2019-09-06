@@ -1,7 +1,9 @@
 package cn.com.test.http;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -20,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.com.test.R;
+import cn.com.test.activity.AddressManageActivity;
 import cn.com.test.activity.LoginActivity;
 import cn.com.test.constant.Constant;
 import cn.com.test.utils.LogUtils;
@@ -96,8 +99,13 @@ public class HttpResponseListener<T> implements OnResponseListener<T> {
                 if (status.equals("0003")) {
                     //token失效
                     SPUtils.getInstance().put(Constant.token, "");
-                    ToastUtils.showShort(object.getString("errorMsg"));
-                    //mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                    new AlertDialog.Builder(mContext).setTitle("提示")
+                            .setMessage(object.getString("errorMsg")).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mContext.startActivity(new Intent(mContext, LoginActivity.class));
+                        }
+                    }).setNegativeButton("取消", null).create().show();
                 } else {
                     callback.onSucceed(what, object);
                 }

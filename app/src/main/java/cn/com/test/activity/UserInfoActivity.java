@@ -83,7 +83,7 @@ public class UserInfoActivity extends BaseActivity implements EasyPermissions.Pe
     private String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/";
     private String picPath;//当前正在拍摄的照片的路径
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    private LoadingDailog dialog;
+    private LoadingDailog uploadDialog;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -293,14 +293,14 @@ public class UserInfoActivity extends BaseActivity implements EasyPermissions.Pe
                 .setCompressListener(new OnCompressListener() { //设置回调
                     @Override
                     public void onStart() {
-                        if (dialog == null) {
-                            dialog = new LoadingDailog.Builder(mContext)
+                        if (uploadDialog == null) {
+                            uploadDialog = new LoadingDailog.Builder(mContext)
                                     .setMessage("图片上传中...")
                                     .setCancelable(true)
                                     .setCancelOutside(true).create();
                         }
-                        if (!dialog.isShowing()) {
-                            dialog.show();
+                        if (!uploadDialog.isShowing()) {
+                            uploadDialog.show();
                         }
                     }
 
@@ -309,27 +309,37 @@ public class UserInfoActivity extends BaseActivity implements EasyPermissions.Pe
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                String result = mulpost(Constant.BASE_URL + "health/upload", file);
                                 try {
+                                    String result = mulpost(Constant.BASE_URL + "health/upload", file);
                                     final String picUrl = new JSONObject(result).getJSONObject("result").getString("path");
+                                    if (TextUtils.isEmpty(picUrl)) {
+                                        if (uploadDialog != null) {
+                                            if (uploadDialog.isShowing()) {
+                                                uploadDialog.dismiss();
+                                            }
+                                            uploadDialog = null;
+                                        }
+                                        ToastUtils.showShort("上传失败，请稍后再试");
+                                        return;
+                                    }
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            if (dialog != null) {
-                                                if (dialog.isShowing()) {
-                                                    dialog.dismiss();
+                                            if (uploadDialog != null) {
+                                                if (uploadDialog.isShowing()) {
+                                                    uploadDialog.dismiss();
                                                 }
-                                                dialog = null;
+                                                uploadDialog = null;
                                             }
                                             loadData(2, new String[]{picUrl}, getString(R.string.string_loading), RequestMethod.POST);
                                         }
                                     });
                                 } catch (Exception e) {
-                                    if (dialog != null) {
-                                        if (dialog.isShowing()) {
-                                            dialog.dismiss();
+                                    if (uploadDialog != null) {
+                                        if (uploadDialog.isShowing()) {
+                                            uploadDialog.dismiss();
                                         }
-                                        dialog = null;
+                                        uploadDialog = null;
                                     }
                                     ToastUtils.showShort("上传失败，请稍后再试");
                                 }
@@ -340,6 +350,13 @@ public class UserInfoActivity extends BaseActivity implements EasyPermissions.Pe
 
                     @Override
                     public void onError(Throwable e) {
+                        if (uploadDialog != null) {
+                            if (uploadDialog.isShowing()) {
+                                uploadDialog.dismiss();
+                            }
+                            uploadDialog = null;
+                        }
+                        ToastUtils.showShort("上传失败，请稍后再试");
                     }
                 }).launch();
     }
@@ -347,7 +364,7 @@ public class UserInfoActivity extends BaseActivity implements EasyPermissions.Pe
     /**
      * 上传图片
      */
-    private String mulpost(String actionUrl, File file) {
+    private String mulpost(String actionUrl, File file) throws Exception {
         try {
             String result = "";
             String BOUNDARY = java.util.UUID.randomUUID().toString();

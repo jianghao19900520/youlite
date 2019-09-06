@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -80,6 +89,7 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
     private List<String> optionsItems = new ArrayList<>();
     private List<String> typeNoList = new ArrayList<>();
     private String typeNo;//选择要发布的圈子
+    private Dialog uploadDialog;
 
     @Override
     public void setContent(Bundle savedInstanceState) {
@@ -110,7 +120,13 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                 object.put("typeNo", typeNo);
                 object.put("title", circle_posting_title_edit.getText().toString().trim());
                 object.put("content", circle_posting_content_edit.getText().toString().trim());
-                object.put("imgList", new JSONArray().put(new JSONObject().put("toLoad", "317991bb21f248458fa67b4a3108a909.jpg").put("orderNum",1)));
+                JSONArray imgList = new JSONArray();
+                for (int i = 0; i < circle_posting_img_layout.getChildCount(); i++) {
+                    ImageView imageView = (ImageView) circle_posting_img_layout.getChildAt(i);
+                    String path = (String) imageView.getTag(R.id.indexTag);//要上传的图片路径
+                    imgList.put(new JSONObject().put("toLoad", path));
+                }
+                object.put("imgList", imgList);
                 relativeUrl = "health/postArticle";
             }
             NetHelper.getInstance().request(mContext, what, relativeUrl, object, method, msg, new HttpListener() {
@@ -128,6 +144,9 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                                     optionsItems.add(list.getJSONObject(i).getString("typeName"));
                                     typeNoList.add(list.getJSONObject(i).getString("typeNo"));
                                 }
+                            } else if (what == 2) {
+                                ToastUtils.showShort("发布成功");
+                                finish();
                             }
                         } else {
                             ToastUtils.showShort(jsonObject.getString("errorMsg"));
@@ -155,11 +174,6 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                 showBottomDialog();
                 break;
             case R.id.circle_posting_submit_btn:
-                for (int i = 0; i < circle_posting_img_layout.getChildCount(); i++) {
-                    ImageView imageView = (ImageView) circle_posting_img_layout.getChildAt(i);
-                    String path = (String) imageView.getTag(R.id.indexTag);//要上传的图片路径
-                    System.out.println("@@@" + path);
-                }
                 if (TextUtils.isEmpty(typeNo)) {
                     ToastUtils.showShort("请先选择要发布的圈子");
                     return;
@@ -268,37 +282,162 @@ public class CirclePostingActivity extends BaseActivity implements EasyPermissio
                 .setCompressListener(new OnCompressListener() { //设置回调
                     @Override
                     public void onStart() {
+                        if (uploadDialog == null) {
+                            uploadDialog = new LoadingDailog.Builder(mContext)
+                                    .setMessage("图片加载中...")
+                                    .setCancelable(true)
+                                    .setCancelOutside(true).create();
+                        }
+                        if (!uploadDialog.isShowing()) {
+                            uploadDialog.show();
+                        }
                     }
 
                     @Override
                     public void onSuccess(final File file) {
-                        ImageView imageView = new ImageView(mContext);
-                        RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
-                        Glide.with(mContext).load(file).apply(requestOptions).into(imageView);
-                        circle_posting_img_layout.addView(imageView);
-                        imageView.setTag(R.id.indexTag, file.getAbsolutePath());
-                        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                        new Thread(new Runnable() {
                             @Override
-                            public boolean onLongClick(final View view) {
-                                AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
-                                        .setMessage("确定要删除该张照片？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                circle_posting_img_layout.removeView(view);
+                            public void run() {
+                                try {
+                                    String result = mulpost(Constant.BASE_URL + "health/upload", file);
+                                    final String picUrl = new JSONObject(result).getJSONObject("result").getString("path");
+                                    if (TextUtils.isEmpty(picUrl)) {
+                                        if (uploadDialog != null) {
+                                            if (uploadDialog.isShowing()) {
+                                                uploadDialog.dismiss();
                                             }
-                                        }).setNegativeButton("取消", null).create();
-                                dialog.setCanceledOnTouchOutside(false);
-                                dialog.show();
-                                return true;
+                                            uploadDialog = null;
+                                        }
+                                        ToastUtils.showShort("加载失败，请稍后再试");
+                                        return;
+                                    }
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (uploadDialog != null) {
+                                                if (uploadDialog.isShowing()) {
+                                                    uploadDialog.dismiss();
+                                                }
+                                                uploadDialog = null;
+                                            }
+                                            ImageView imageView = new ImageView(mContext);
+                                            RequestOptions requestOptions = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE);
+                                            Glide.with(mContext).load(file).apply(requestOptions).into(imageView);
+                                            circle_posting_img_layout.addView(imageView);
+                                            imageView.setTag(R.id.indexTag, picUrl);
+                                            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                                                @Override
+                                                public boolean onLongClick(final View view) {
+                                                    AlertDialog dialog = new AlertDialog.Builder(mContext).setTitle("提示")
+                                                            .setMessage("确定要删除该张照片？").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                                    circle_posting_img_layout.removeView(view);
+                                                                }
+                                                            }).setNegativeButton("取消", null).create();
+                                                    dialog.setCanceledOnTouchOutside(false);
+                                                    dialog.show();
+                                                    return true;
+                                                }
+                                            });
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    if (uploadDialog != null) {
+                                        if (uploadDialog.isShowing()) {
+                                            uploadDialog.dismiss();
+                                        }
+                                        uploadDialog = null;
+                                    }
+                                    ToastUtils.showShort("加载失败，请稍后再试");
+                                }
+
                             }
-                        });
+                        }).start();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        ToastUtils.showShort("图片压缩失败，请重新拍摄");
+                        if (uploadDialog != null) {
+                            if (uploadDialog.isShowing()) {
+                                uploadDialog.dismiss();
+                            }
+                            uploadDialog = null;
+                        }
+                        ToastUtils.showShort("加载失败，请稍后再试");
                     }
                 }).launch();
+    }
+
+    /**
+     * 上传图片
+     */
+    private String mulpost(String actionUrl, File file) throws Exception {
+        try {
+            String result = "";
+            String BOUNDARY = java.util.UUID.randomUUID().toString();
+            String PREFIX = "--";
+            String CRLF = "\r\n";
+            String MULTIPART_FROM_DATA = "multipart/form-data";
+
+            StringBuffer headBuffer = new StringBuffer(); //构建文件头部信息
+            headBuffer.append(PREFIX);
+            headBuffer.append(BOUNDARY);
+            headBuffer.append(CRLF);
+            headBuffer.append("Content-Disposition: form-data; name=\"" + "upload_file" + "\"; filename=\"" + file.getName() + "\"" + CRLF);//模仿web上传文件提交一个form表单给服务器，表单名随意起
+            headBuffer.append("Content-Type: application/octet-stream" + CRLF);//若服务器端有文件类型的校验，必须明确指定Content-Type类型
+            headBuffer.append(CRLF);
+            Log.i("", headBuffer.toString());
+            byte[] headBytes = headBuffer.toString().getBytes();
+
+            StringBuffer endBuffer = new StringBuffer();//构建文件结束行
+            endBuffer.append(CRLF);
+            endBuffer.append(PREFIX);
+            endBuffer.append(BOUNDARY);
+            endBuffer.append(PREFIX);
+            endBuffer.append(CRLF);
+            byte[] endBytes = endBuffer.toString().getBytes();
+
+            URL uri = new URL(actionUrl);
+            HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
+            conn.setReadTimeout(5 * 1000);
+            conn.setDoInput(true);// 允许输入
+            conn.setDoOutput(true);// 允许输出
+            conn.setUseCaches(false);
+            conn.setRequestMethod("POST"); // Post方式
+            conn.setRequestProperty("connection", "keep-alive");
+            conn.setRequestProperty("Charsert", "UTF-8");
+            conn.setRequestProperty("Content-Type", MULTIPART_FROM_DATA
+                    + ";boundary=" + BOUNDARY);
+
+            DataOutputStream outStream = new DataOutputStream(
+                    conn.getOutputStream());
+
+            outStream.write(headBytes);//输出文件头部
+
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fileInputStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, length);//输出文件内容
+            }
+
+            fileInputStream.close();
+
+            outStream.write(endBytes);//输出结束行
+            outStream.close();
+
+            InputStream is = conn.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is, "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            result = br.readLine();
+            outStream.close();
+            conn.disconnect();
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     @Override
